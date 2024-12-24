@@ -1,6 +1,7 @@
 name: build and upload
 
 on:
+  workflow_dispatch: 
   push:
     branches: [ main, exmod ]
   pull_request:
