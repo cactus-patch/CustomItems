@@ -22,10 +22,11 @@ public class Tranquilizer {
     public override string Description => "A gun that temporarily tranquilizes entities; might be unreliable.";
     public override ItemType ItemType => ItemType.GunCOM15;
 
-    public override SettingsBase Settings => new Settings {
+    public override SettingsBase Settings => new FirearmSettings {
       PickedUpText = new TextDisplay($"You have picked up a <i>{Name}</i>.<br><i>{Description}</i>", channel: TextChannelType.Hint),
       SelectedText = new TextDisplay($"You have selected a <i>{Name}</i>.<br><i>{Description}</i>", channel: TextChannelType.Hint),
       NotifyItemToSpectators = true,
+      ChamberSize = 3, // TODO: should change this by config
       SpawnProperties = new SpawnProperties {
         Limit = 1,
         DynamicSpawnPoints = [
@@ -67,5 +68,6 @@ public class Tranquilizer {
     public bool EffectiveOn173 { get; set; } = false;
     public float SCPChance { get; set; } = 0.5f;
     public float HumanChance { get; set; } = 0.7f;
+    public int ChamberSize { get; set; } = 3;
   }
 }
