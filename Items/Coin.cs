@@ -1,46 +1,41 @@
 using Exiled.API.Enums;
-using Exiled.API.Features;
+using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
-using Exiled.CustomModules.API.Features.Attributes;
-using Exiled.CustomModules.API.Features.CustomItems;
-using Exiled.CustomModules.API.Features.CustomItems.Items;
-using Exiled.CustomModules.API.Features.Generic;
+using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
 using PlayerEvents = Exiled.Events.Handlers.Player;
 using MEC;
 
 namespace CustomItems.Items;
 
-public class Coin {
-  [ModuleIdentifier]
-  public class Item : CustomItem<Behaviour> {
-    public override string Name => "Coin";
+[CustomItem(ItemType.Coin)]
+public class Coin : CustomItem {
+    public override string Name { get; set; } = "Coin";
     public override uint Id { get; set; } = 393;
-    public override string Description => "\"What's the most you ever lost on a coin toss?\"";
-
-    public override SettingsBase Settings => new Settings {
-      PickedUpText = new TextDisplay($"You have picked up a <i>{Name}</i>.<br><i>{Description}</i>", channel: TextChannelType.Hint),
-      SelectedText = new TextDisplay($"You have selected a <i>{Name}</i>.<br><i>{Description}</i>", channel: TextChannelType.Hint),
-      NotifyItemToSpectators = true,
-      SpawnProperties = new SpawnProperties {
-        Limit = 3,
-        DynamicSpawnPoints = [
-          new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczCafe, Chance = 0.5f },
-          new DynamicSpawnPoint { Location = SpawnLocationType.InsideLocker, Chance = 0.3f },
-          new DynamicSpawnPoint { Location = SpawnLocationType.InsideServersBottom, Chance = 0.3f },
-          new DynamicSpawnPoint { Location = SpawnLocationType.InsideEscapeSecondary, Chance = 0.5f }
-        ]
-      }
+    public override string Description { get; set; } = "<i>\"What's the most you ever lost on a coin toss?\"</i>";
+    public override float Weight { get; set; } = 1f;
+    public override SpawnProperties? SpawnProperties { get; set; } = new() {
+      Limit = 3,
+      DynamicSpawnPoints = [
+        new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczCafe, Chance = 50 },
+        new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczWc, Chance = 50 },
+        new DynamicSpawnPoint { Location = SpawnLocationType.InsideHczArmory, Chance = 50 },
+        new DynamicSpawnPoint { Location = SpawnLocationType.InsideEscapeSecondary, Chance = 50 }
+      ]
     };
-  }
   
-  public class Behaviour : ItemBehaviour {
     protected override void SubscribeEvents() {
       PlayerEvents.FlippingCoin += OnFlippingCoin;
       
       base.SubscribeEvents();
     }
-    
+
+    protected override void UnsubscribeEvents() {
+      PlayerEvents.FlippingCoin -= OnFlippingCoin;
+      
+      base.UnsubscribeEvents();
+    }
+
     private void OnFlippingCoin(FlippingCoinEventArgs ev) {
       if (!Check(ev.Item)) return;
       Timing.CallDelayed(2f, () => {
@@ -58,5 +53,4 @@ public class Coin {
         ev.Player.EnableEffect(EffectType.Invigorated, addDurationIfActive: true);
       });
     }
-  }
 }
