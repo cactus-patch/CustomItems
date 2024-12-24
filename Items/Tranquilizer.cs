@@ -1,10 +1,9 @@
+using System.ComponentModel;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
-using Exiled.CustomModules.API.Features.Attributes;
-using Exiled.CustomModules.API.Features.CustomItems;
-using Exiled.CustomModules.API.Features.CustomItems.Items.Firearms;
-using Exiled.CustomModules.API.Features.Generic;
+using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
 using MEC;
 using PlayerRoles;
@@ -13,42 +12,43 @@ using Random = UnityEngine.Random;
 
 namespace CustomItems.Items;
 
-public class Tranquilizer {
-  [ModuleIdentifier]
-  public class Item : CustomItem<Behaviour> {
-    public override string Name => "Tranquilizer";
+[CustomItem(ItemType.GunCOM15)]
+public class Tranquilizer : CustomWeapon {
+    public override string Name { get; set; } = "Tranquilizer";
     public override uint Id { get; set; } = 1290;
-    public override bool IsEnabled { get; set; } = true;
-    public override string Description => "A gun that temporarily tranquilizes entities; might be unreliable.";
-    public override ItemType ItemType => ItemType.GunCOM15;
+    public override string Description { get; set; } = "A gun that temporarily tranquilizes entities; might be unreliable.";
+    public override float Weight { get; set; } = 1f;
+    public override float Damage { get; set; } = 1f;
+    public override byte ClipSize { get; set; } = 3;
+    
+    [Description("Whether the tranquilizer is effective on SCP-173.")]
+    public bool EffectiveOn173 { get; set; } = false;
+    
+    [Description("The effectiveness of tranquilizer on SCPs in decimal percentage.")]
+    public float ScpChance { get; set; } = 0.5f;
+    
+    [Description("The effectiveness of tranquilizer on humans in decimal percentage.")]
+    public float HumanChance { get; set; } = 0.75f;
 
-    public override SettingsBase Settings => new FirearmSettings {
-      PickedUpText = new TextDisplay($"You have picked up a <i>{Name}</i>.<br><i>{Description}</i>", channel: TextChannelType.Hint),
-      SelectedText = new TextDisplay($"You have selected a <i>{Name}</i>.<br><i>{Description}</i>", channel: TextChannelType.Hint),
-      NotifyItemToSpectators = true,
-      ChamberSize = 3, // TODO: should change this by config
-      SpawnProperties = new SpawnProperties {
-        Limit = 1,
-        DynamicSpawnPoints = [
-          new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczCafe, Chance = 0.25f },
-          new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczWc, Chance = 0.25f, },
-          new DynamicSpawnPoint { Position = Room.Get(RoomType.LczGlassBox).Position, Chance = 0.75f, }
-        ]
-      }
+    public override SpawnProperties? SpawnProperties { get; set; } = new() {
+      Limit = 1,
+      DynamicSpawnPoints = [
+        new DynamicSpawnPoint { Chance = 25, Location = SpawnLocationType.InsideLczCafe },
+        new DynamicSpawnPoint { Chance = 25, Location = SpawnLocationType.InsideLczWc },
+        new DynamicSpawnPoint { Chance = 75, Position = Room.Get(RoomType.LczGlassBox).Position }
+      ],
     };
-  }
   
-  public class Behaviour : FirearmBehaviour {
     protected override void OnShot(ShotEventArgs ev) {
       var rand = Random.value;
-      var effective = ev.Player.IsScp ? rand > 0.5f : rand > 0.75f; // TODO: get values from config
+      var effective = ev.Player.IsScp ? rand < ScpChance : rand < HumanChance;
       if ((ev.Player.Role == RoleTypeId.Scp173) || !effective) return;
 
       var lift = Lift.List.First(lift => lift.IsInElevator(ev.Player.Position));
       ev.Player.Scale = Vector3.zero;
-      ev.Player.EnableEffect(EffectType.Ensnared, Byte.MaxValue);
-      ev.Player.EnableEffect(EffectType.Flashed, Byte.MaxValue);
-      ev.Player.EnableEffect(EffectType.Deafened, Byte.MaxValue);
+      ev.Player.EnableEffect(EffectType.Ensnared, byte.MaxValue);
+      ev.Player.EnableEffect(EffectType.Flashed, byte.MaxValue);
+      ev.Player.EnableEffect(EffectType.Deafened, byte.MaxValue);
 
       Timing.CallDelayed(5, () => {
         ev.Player.DisableEffect(EffectType.Ensnared);
@@ -60,14 +60,4 @@ public class Tranquilizer {
       
       base.OnShot(ev);
     }
-  }
-  
-  [ModuleIdentifier]
-  public class Config : ModulePointer<CustomItem> {
-    public override uint Id { get; set; } = 1290;
-    public bool EffectiveOn173 { get; set; } = false;
-    public float SCPChance { get; set; } = 0.5f;
-    public float HumanChance { get; set; } = 0.7f;
-    public int ChamberSize { get; set; } = 3;
-  }
 }
