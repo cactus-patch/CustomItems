@@ -12,4 +12,10 @@
       <PackageReference Include="EXILED" Version="9.0.0-beta.5" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Assembly-CSharp-firstpass">
+        <HintPath>refs\Assembly-CSharp-firstpass.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>
