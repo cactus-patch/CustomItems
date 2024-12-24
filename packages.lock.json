@@ -2,11 +2,11 @@
   "version": 1,
   "dependencies": {
     ".NETFramework,Version=v4.8": {
-      "EXILED": {
+      "ExMod.Exiled": {
         "type": "Direct",
-        "requested": "[9.0.0-beta.5, )",
-        "resolved": "9.0.0-beta.5",
-        "contentHash": "mm0INn645JJ/P1e8r+cNWsBXfFOzqGeVWt8kKkAoa4BrkVNZgKcLQXZzWzfG+R/6T7eYq1e4cYtK4RcE8pgNgA=="
+        "requested": "[9.0.1, )",
+        "resolved": "9.0.1",
+        "contentHash": "FCUtAhVa29U42K9zEEFMoGMLNp58y8dZJXelLuVgexZklSyHCgazMl7B8rT6NyHuDOuWXNt9oSoOyec23PwwWA=="
       },
       "Microsoft.NETFramework.ReferenceAssemblies": {
         "type": "Direct",
