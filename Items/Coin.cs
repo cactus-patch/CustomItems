@@ -4,16 +4,18 @@ using Exiled.API.Features.Spawn;
 using Exiled.CustomModules.API.Features.Attributes;
 using Exiled.CustomModules.API.Features.CustomItems;
 using Exiled.CustomModules.API.Features.CustomItems.Items;
+using Exiled.CustomModules.API.Features.Generic;
 using Exiled.Events.EventArgs.Player;
 using PlayerEvents = Exiled.Events.Handlers.Player;
 using MEC;
 
 namespace CustomItems.Items;
 
-[ModuleIdentifier]
 public class Coin {
+  [ModuleIdentifier]
   public class Item : CustomItem<Behaviour> {
     public override string Name => "Coin";
+    public override uint Id { get; set; } = 393;
     public override string Description => "\"What's the most you ever lost on a coin toss?\"";
 
     public override SettingsBase Settings => new Settings {
@@ -43,6 +45,7 @@ public class Coin {
       if (!Check(ev.Item)) return;
       Timing.CallDelayed(2f, () => {
         if (ev.IsTails && !ev.Player.IsDead) {
+          ev.Player.IsGodModeEnabled = false;
           ev.Player.Explode();
           ev.Player.Kill("You lost.");
           return;
