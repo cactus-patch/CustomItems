@@ -23,32 +23,34 @@ public class Tranquilizer {
     public override ItemType ItemType => ItemType.GunCOM15;
 
     public override SettingsBase Settings => new FirearmSettings {
-      PickedUpText = new TextDisplay($"You have picked up a <i>{Name}</i>.<br><i>{Description}</i>", channel: TextChannelType.Hint),
-      SelectedText = new TextDisplay($"You have selected a <i>{Name}</i>.<br><i>{Description}</i>", channel: TextChannelType.Hint),
+      PickedUpText = new TextDisplay($"You have picked up a <i>{Name}</i>.<br><i>{Description}</i>",
+        channel: TextChannelType.Hint),
+      SelectedText = new TextDisplay($"You have selected a <i>{Name}</i>.<br><i>{Description}</i>",
+        channel: TextChannelType.Hint),
       NotifyItemToSpectators = true,
       ChamberSize = 3, // TODO: should change this by config
       SpawnProperties = new SpawnProperties {
         Limit = 1,
         DynamicSpawnPoints = [
           new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczCafe, Chance = 0.25f },
-          new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczWc, Chance = 0.25f, },
-          new DynamicSpawnPoint { Position = Room.Get(RoomType.LczGlassBox).Position, Chance = 0.75f, }
+          new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczWc, Chance = 0.25f },
+          new DynamicSpawnPoint { Position = Room.Get(RoomType.LczGlassBox).Position, Chance = 0.75f }
         ]
       }
     };
   }
-  
+
   public class Behaviour : FirearmBehaviour {
     protected override void OnShot(ShotEventArgs ev) {
       var rand = Random.value;
       var effective = ev.Player.IsScp ? rand > 0.5f : rand > 0.75f; // TODO: get values from config
-      if ((ev.Player.Role == RoleTypeId.Scp173) || !effective) return;
+      if (ev.Player.Role == RoleTypeId.Scp173 || !effective) return;
 
       var lift = Lift.List.First(lift => lift.IsInElevator(ev.Player.Position));
       ev.Player.Scale = Vector3.zero;
-      ev.Player.EnableEffect(EffectType.Ensnared, Byte.MaxValue);
-      ev.Player.EnableEffect(EffectType.Flashed, Byte.MaxValue);
-      ev.Player.EnableEffect(EffectType.Deafened, Byte.MaxValue);
+      ev.Player.EnableEffect(EffectType.Ensnared, byte.MaxValue);
+      ev.Player.EnableEffect(EffectType.Flashed, byte.MaxValue);
+      ev.Player.EnableEffect(EffectType.Deafened, byte.MaxValue);
 
       Timing.CallDelayed(5, () => {
         ev.Player.DisableEffect(EffectType.Ensnared);
@@ -57,11 +59,11 @@ public class Tranquilizer {
         if (lift != null) ev.Player.Teleport(lift.Position + Vector3.up * 1.5f);
         ev.Player.Scale = Vector3.one;
       });
-      
+
       base.OnShot(ev);
     }
   }
-  
+
   [ModuleIdentifier]
   public class Config : ModulePointer<CustomItem> {
     public override uint Id { get; set; } = 1290;

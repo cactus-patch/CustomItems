@@ -9,16 +9,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="EXILED" Version="9.0.0-beta.5" />
+        <PackageReference Include="EXILED" Version="9.0.0-beta.5"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Assembly-CSharp-firstpass">
-        <HintPath>refs\Assembly-CSharp-firstpass.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.CoreModule">
-        <HintPath>refs\UnityEngine.CoreModule.dll</HintPath>
-      </Reference>
+        <Reference Include="Assembly-CSharp-firstpass">
+            <HintPath>refs\Assembly-CSharp-firstpass.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>refs\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 </Project>

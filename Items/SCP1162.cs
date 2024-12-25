@@ -17,7 +17,7 @@ public class SCP1162 {
     ItemType.Adrenaline,
     ItemType.KeycardGuard,
     ItemType.KeycardScientist,
-    ItemType.KeycardZoneManager,
+    ItemType.KeycardZoneManager
   ];
 
   [ModuleIdentifier]
@@ -26,16 +26,17 @@ public class SCP1162 {
     public override uint Id => 432;
     public override string Description => "Hold an item and pick it up to get another.";
     public override ItemType ItemType => ItemType.SCP500;
+
     public override SettingsBase Settings => new Settings {
       Scale = Vector3.one * 3,
       SpawnProperties = new SpawnProperties {
         StaticSpawnPoints = [
-          new StaticSpawnPoint { Position = Room.Get(RoomType.Lcz173).Position + (Vector3.up * 1.5f) }
+          new StaticSpawnPoint { Position = Room.Get(RoomType.Lcz173).Position + Vector3.up * 1.5f }
         ]
       }
     };
-}
-  
+  }
+
   public class Behaviour : ItemBehaviour {
     protected override void OnPickingUp(PickingUpItemEventArgs ev) {
       var item = ev.Player.CurrentItem;
@@ -43,7 +44,7 @@ public class SCP1162 {
         ev.Player.EnableEffect(EffectType.SeveredHands, byte.MaxValue);
         return;
       }
-      
+
       ev.Player.RemoveItem(item);
       ev.Player.AddItem(ItemTypes[Random.Range(0, ItemTypes.Length)]);
       // base.OnPickingUp(ev);

@@ -14,7 +14,7 @@ public class Plugin : Plugin<Config> {
     Instance = this;
     base.OnEnabled();
   }
-  
+
   public override void OnDisabled() {
     Instance = null;
     base.OnDisabled();
