@@ -1,4 +1,5 @@
 ﻿using Exiled.API.Features;
+using Exiled.CustomItems.API.Features;
 
 namespace CustomItems;
 
@@ -12,11 +13,13 @@ public class Plugin : Plugin<Config> {
 
   public override void OnEnabled() {
     Instance = this;
+    CustomItem.RegisterItems();
     base.OnEnabled();
   }
   
   public override void OnDisabled() {
     Instance = null;
+    CustomItem.UnregisterItems();
     base.OnDisabled();
   }
 }
