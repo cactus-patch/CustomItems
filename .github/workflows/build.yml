@@ -2,9 +2,9 @@ name: build and upload
 
 on:
   push:
-    branches: [ main exmod ]
+    branches: [ exmod, main ]
   pull_request:
-    branches: [ main exmod ]
+    branches: [ exmod, main ]
 
 jobs:  
   build:    
