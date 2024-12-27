@@ -13,7 +13,8 @@ public class Plugin : Plugin<Config> {
 
   public override void OnEnabled() {
     Instance = this;
-    CustomItem.RegisterItems();
+    Config.LoadItemsConfig();
+    CustomItem.RegisterItems(overrideClass: Config.ItemsConfig);
     base.OnEnabled();
   }
   
