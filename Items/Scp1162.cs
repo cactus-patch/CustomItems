@@ -17,7 +17,7 @@ public class Scp1162 : CustomItem {
     public override uint Id { get; set; } = 432;
     public override string Description { get; set; } = "Hold an item and pick it up to get another.";
     public override float Weight { get; set; } = 0f;
-    public override Vector3 Scale { get; set; } = Vector3.one * 3f;
+    public override Vector3 Scale { get; set; } = new(7f, 0.1f, 7f);
     
     public override SpawnProperties? SpawnProperties { get; set; }
     
@@ -33,7 +33,23 @@ public class Scp1162 : CustomItem {
 
     private void OnRoundStarted() {
       var room = Room.Get(RoomType.Lcz173);
-      Spawn(room.Position);
+      var localPos = new Vector3(16.68f, 12f, 8.11f);
+      var globalPos = room.Position + localPos;
+      var roomRot = room.Rotation;
+      if (Math.Abs(roomRot.eulerAngles.y - 90) < 1) {
+        globalPos.x += localPos.z;
+        globalPos.z -= localPos.x;
+      } else if (Math.Abs(roomRot.eulerAngles.y - 180) < 1) {
+        globalPos.x -= localPos.x;
+        globalPos.z -= localPos.z;
+      } else if (Math.Abs(roomRot.eulerAngles.x - 270) < 1) {
+        globalPos.x -= localPos.z;
+        globalPos.z += localPos.x;
+      }
+
+      var item = Spawn(globalPos)!;
+      item.Rigidbody.useGravity = false;
+      item.Rigidbody.detectCollisions = false;
     }
 
     protected override void SubscribeEvents() {

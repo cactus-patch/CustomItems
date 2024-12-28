@@ -17,6 +17,12 @@
           "Microsoft.NETFramework.ReferenceAssemblies.net48": "1.0.3"
         }
       },
+      "Unity3D": {
+        "type": "Direct",
+        "requested": "[3.0.0, )",
+        "resolved": "3.0.0",
+        "contentHash": "HFpsRJnbnaG1SBRvjkZg5oOkDOyleELcocQpJf+31biF+QUjF7Ysv9PrCMpfsUzR++toeWUKRUGq8jdHEqD8sQ=="
+      },
       "Microsoft.NETFramework.ReferenceAssemblies.net48": {
         "type": "Transitive",
         "resolved": "1.0.3",

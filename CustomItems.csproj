@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <UnityVersion>6000.0.32f1</UnityVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +20,7 @@
 
     <ItemGroup>
       <PackageReference Include="ExMod.Exiled" Version="9.1.1" />
+      <PackageReference Include="Unity3D" Version="3.0.0" />
     </ItemGroup>
 
 </Project>
