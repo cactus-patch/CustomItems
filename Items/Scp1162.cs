@@ -17,11 +17,11 @@ public class Scp1162 : CustomItem {
     public override string Description { get; set; } = "Hold an item and pick it up to get another.";
     public override float Weight { get; set; } = 0f;
     public override Vector3 Scale { get; set; } = Vector3.one * 3f;
-
+    
     public override SpawnProperties? SpawnProperties { get; set; } = new() {
       Limit = 1,
-      StaticSpawnPoints = [
-        new StaticSpawnPoint { Position = Room.Get(RoomType.Lcz173).Position + (Vector3.up * 5f) }
+      DynamicSpawnPoints = [
+        new DynamicSpawnPoint { Location = SpawnLocationType.Inside173Bottom }
       ]
     };
     

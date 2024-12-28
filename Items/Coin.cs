@@ -14,6 +14,7 @@ public class Coin : CustomItem {
     public override uint Id { get; set; } = 393;
     public override string Description { get; set; } = "<i>\"What's the most you ever lost on a coin toss?\"</i>";
     public override float Weight { get; set; } = 1f;
+    
     public override SpawnProperties? SpawnProperties { get; set; } = new() {
       Limit = 3,
       DynamicSpawnPoints = [

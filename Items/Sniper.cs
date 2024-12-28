@@ -13,7 +13,7 @@ public class Sniper : CustomWeapon {
   public override float Weight { get; set; } = 8f;
   public override float Damage { get; set; } = 7.5f;
   public override byte ClipSize { get; set; } = 1;
-
+  
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 1,
     DynamicSpawnPoints = [

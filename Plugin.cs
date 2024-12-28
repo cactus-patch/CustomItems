@@ -1,10 +1,10 @@
-﻿using Exiled.API.Features;
+﻿using CustomItems.Items;
+using Exiled.API.Features;
 using Exiled.CustomItems.API.Features;
 
 namespace CustomItems;
 
 public class Plugin : Plugin<Config> {
-  public override string Prefix => "[CactusPatch]";
   public override string Name => "CustomItems";
   public override string Author => "furry";
   public override Version Version => new(9, 0, 0);
@@ -13,13 +13,14 @@ public class Plugin : Plugin<Config> {
 
   public override void OnEnabled() {
     Instance = this;
-    Config.LoadItemsConfig();
-    CustomItem.RegisterItems(overrideClass: Config.ItemsConfig);
+    Log.Info("registering items");
+    CustomItem.RegisterItems(overrideClass: Config);
     base.OnEnabled();
   }
   
   public override void OnDisabled() {
     Instance = null;
+    Log.Info("unregistering items");
     CustomItem.UnregisterItems();
     base.OnDisabled();
   }

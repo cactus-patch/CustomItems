@@ -35,7 +35,7 @@ public class Tranquilizer : CustomWeapon {
       DynamicSpawnPoints = [
         new DynamicSpawnPoint { Chance = 25, Location = SpawnLocationType.InsideLczCafe },
         new DynamicSpawnPoint { Chance = 25, Location = SpawnLocationType.InsideLczWc },
-        new DynamicSpawnPoint { Chance = 75, Position = Room.Get(RoomType.LczGlassBox).Position }
+        new DynamicSpawnPoint { Chance = 75, Location = SpawnLocationType.Inside330Chamber }
       ],
     };
   
