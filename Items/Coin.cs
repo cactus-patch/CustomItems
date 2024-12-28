@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Exiled.API.Enums;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
@@ -24,6 +25,16 @@ public class Coin : CustomItem {
         new DynamicSpawnPoint { Location = SpawnLocationType.InsideEscapeSecondary, Chance = 50 }
       ]
     };
+
+    public record Effect(EffectType Type, float Duration, byte Intensity);
+
+    [Description("Effects to give if coin landed on heads.")]
+    public Effect[] Effects { get; set; } = [
+      new (EffectType.DamageReduction, 30, 125),
+      new (EffectType.RainbowTaste, 30, byte.MaxValue),
+      new (EffectType.Invigorated, 30, byte.MaxValue),
+      new (EffectType.MovementBoost, 30, 125)
+    ];
   
     protected override void SubscribeEvents() {
       PlayerEvents.FlippingCoin += OnFlippingCoin;
@@ -48,10 +59,9 @@ public class Coin : CustomItem {
         }
 
         ev.Player.ShowHint("You won -- you feel the adrenaline rushing in your veins.");
-        ev.Player.EnableEffect(EffectType.DamageReduction, intensity: 125, addDurationIfActive: true);
-        ev.Player.EnableEffect(EffectType.RainbowTaste, intensity: 3, addDurationIfActive: true);
-        ev.Player.EnableEffect(EffectType.MovementBoost, intensity: 3, addDurationIfActive: true);
-        ev.Player.EnableEffect(EffectType.Invigorated, addDurationIfActive: true);
+        Effects.ForEach((effect) => {
+          ev.Player.EnableEffect(effect.Type, effect.Intensity, effect.Duration, addDurationIfActive: true);
+        });
       });
     }
 }

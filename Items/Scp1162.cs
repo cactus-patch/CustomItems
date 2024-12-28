@@ -59,6 +59,6 @@ public class Scp1162 : CustomItem {
       ev.Player.RemoveItem(item);
       item = ev.Player.AddItem(ItemTypes[Random.Range(0, ItemTypes.Length)]);
       ev.Player.CurrentItem = item;
-      // base.OnPickingUp(ev);
+      base.OnPickingUp(ev);
     }
 }
