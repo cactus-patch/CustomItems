@@ -44,22 +44,23 @@ public class Tranquilizer : CustomWeapon {
 
   protected override void OnShot(ShotEventArgs ev) {
     var rand = Random.value;
-    var effective = ev.Player.IsScp ? rand < ScpChance : rand < HumanChance;
-    if (ev.Player.Role == RoleTypeId.Scp173 || !effective) return;
+    var effective = ev.Target.IsScp ? rand < ScpChance : rand < HumanChance;
 
-    var lift = Lift.List.First(lift => lift.IsInElevator(ev.Player.Position));
-    ev.Player.Scale = Vector3.zero;
-    ev.Player.EnableEffect(EffectType.Ensnared, byte.MaxValue);
-    ev.Player.EnableEffect(EffectType.Flashed, byte.MaxValue);
-    ev.Player.EnableEffect(EffectType.Deafened, byte.MaxValue);
+    if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) && effective) {
+      var lift = Lift.List.First(lift => lift.IsInElevator(ev.Target.Position));
+      ev.Target.Scale = Vector3.zero;
+      ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
+      ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
+      ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
 
-    Timing.CallDelayed(5, () => {
-      ev.Player.DisableEffect(EffectType.Ensnared);
-      ev.Player.DisableEffect(EffectType.Flashed);
-      ev.Player.DisableEffect(EffectType.Deafened);
-      if (lift != null) ev.Player.Teleport(lift.Position + Vector3.up * 1.5f);
-      ev.Player.Scale = Vector3.one;
-    });
+      Timing.CallDelayed(5, () => {
+        ev.Target.DisableEffect(EffectType.Ensnared);
+        ev.Target.DisableEffect(EffectType.Flashed);
+        ev.Target.DisableEffect(EffectType.Deafened);
+        if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 1.5f);
+        ev.Target.Scale = Vector3.one;
+      });
+    }
 
     base.OnShot(ev);
   }
