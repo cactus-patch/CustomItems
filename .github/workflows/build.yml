@@ -24,4 +24,4 @@ jobs:
       - run: dotnet build
       - uses: actions/upload-artifact@v4.5.0
         with:
-          path: bin
+          path: bin/Debug/net48/CustomItems.dll
