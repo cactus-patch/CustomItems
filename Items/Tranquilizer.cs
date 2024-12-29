@@ -45,8 +45,12 @@ public class Tranquilizer : CustomWeapon {
   protected override void OnShot(ShotEventArgs ev) {
     var rand = Random.value;
     var effective = ev.Target.IsScp ? rand < ScpChance : rand < HumanChance;
-
-    if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) && effective) {
+    if (ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) {
+      base.OnShot(ev);
+      return;
+    }
+    
+    if (effective) {
       var lift = Lift.List.First(lift => lift.IsInElevator(ev.Target.Position));
       ev.Target.Scale = Vector3.zero;
       ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
