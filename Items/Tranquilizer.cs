@@ -7,6 +7,7 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
 using MEC;
 using PlayerRoles;
+using PlayerStatsSystem;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -56,6 +57,7 @@ public class Tranquilizer : CustomWeapon {
       ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
       ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
       ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
+      var ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname, new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
 
       Timing.CallDelayed(5, () => {
         ev.Target.DisableEffect(EffectType.Ensnared);
@@ -63,6 +65,7 @@ public class Tranquilizer : CustomWeapon {
         ev.Target.DisableEffect(EffectType.Deafened);
         if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 1.5f);
         ev.Target.Scale = Vector3.one;
+        ragdoll.Destroy();
       });
     }
 
