@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using CustomItems.Types;
 using Exiled.API.Enums;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
@@ -19,21 +20,19 @@ public class Coin : CustomItem {
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 3,
     DynamicSpawnPoints = [
-      new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczCafe, Chance = 50 },
-      new DynamicSpawnPoint { Location = SpawnLocationType.InsideLczWc, Chance = 50 },
-      new DynamicSpawnPoint { Location = SpawnLocationType.InsideHczArmory, Chance = 50 },
-      new DynamicSpawnPoint { Location = SpawnLocationType.InsideEscapePrimary, Chance = 50 }
+      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideLczCafe, Chance = 50 },
+      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideLczWc, Chance = 50 },
+      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideHczArmory, Chance = 50 },
+      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideEscapePrimary, Chance = 50 }
     ]
   };
 
-  public record Effect(EffectType Type, float Duration, byte Intensity);
-
   [Description("Effects to give if coin landed on heads.")]
-  public Effect[] Effects { get; set; } = [
-    new(EffectType.DamageReduction, 30, 125),
-    new(EffectType.RainbowTaste, 30, byte.MaxValue),
-    new(EffectType.Invigorated, 30, byte.MaxValue),
-    new(EffectType.MovementBoost, 30, 125)
+  public CoinEffect[] Effects { get; set; } = [
+    new() { Type = EffectType.DamageReduction, Duration = 15, Intensity = 75 },
+    new() { Type = EffectType.RainbowTaste, Duration = 15, Intensity = byte.MaxValue },
+    new() { Type = EffectType.Invigorated, Duration = 15, Intensity = byte.MaxValue },
+    new() { Type = EffectType.MovementBoost, Duration = 15, Intensity = 75 }
   ];
 
   protected override void SubscribeEvents() {
