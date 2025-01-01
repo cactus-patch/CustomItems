@@ -17,7 +17,7 @@ public class Plugin : Plugin<Config> {
     CustomItem.RegisterItems(overrideClass: Config);
     base.OnEnabled();
   }
-  
+
   public override void OnDisabled() {
     Instance = null;
     Log.Info("Unregistering items");

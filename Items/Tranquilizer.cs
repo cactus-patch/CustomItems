@@ -36,9 +36,9 @@ public class Tranquilizer : CustomWeapon {
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 1,
     DynamicSpawnPoints = [
-      new DynamicSpawnPoint { Chance = 25, Location = SpawnLocationType.InsideLczCafe },
-      new DynamicSpawnPoint { Chance = 25, Location = SpawnLocationType.InsideLczWc },
-      new DynamicSpawnPoint { Chance = 75, Location = SpawnLocationType.Inside330Chamber }
+      new DynamicSpawnPoint() { Chance = 25, Location = SpawnLocationType.InsideLczCafe },
+      new DynamicSpawnPoint() { Chance = 25, Location = SpawnLocationType.InsideLczWc },
+      new DynamicSpawnPoint() { Chance = 75, Location = SpawnLocationType.Inside330Chamber }
     ]
   };
 
@@ -49,7 +49,7 @@ public class Tranquilizer : CustomWeapon {
       base.OnShot(ev);
       return;
     }
-    
+
     if (effective) {
       var lift = Lift.List.First(lift => lift.IsInElevator(ev.Target.Position));
       ev.Target.Scale = Vector3.zero;
