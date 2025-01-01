@@ -15,10 +15,6 @@ jobs:
         with:
           dotnet-version: 9
           cache: true
-      - uses: xiaotianxt/bypass-cloudflare-for-github-action@v1.1.1
-        with:
-          cf_zone_id: ${{ secrets.CF_ZONE_ID }}
-          cf_api_token: ${{ secrets.CF_API_TOKEN }}
       - run: curl -sSL https://ftp.furry.coffee/refs.tar.gz | tar xvzf -
       - run: dotnet restore --locked-mode
       - run: dotnet build
