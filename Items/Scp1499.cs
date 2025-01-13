@@ -34,7 +34,7 @@ public class Scp1499 : CustomItem {
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 1,
     DynamicSpawnPoints = [
-      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideSurfaceNuke }
+      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideSurfaceNuke, Chance = 100 }
     ]
   };
 

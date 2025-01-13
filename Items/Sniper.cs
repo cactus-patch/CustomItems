@@ -20,7 +20,7 @@ public class Sniper : CustomWeapon {
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 1,
     DynamicSpawnPoints = [
-      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideHczArmory }
+      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideHczArmory, Chance = 100 }
     ]
   };
 }
