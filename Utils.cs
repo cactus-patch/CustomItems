@@ -5,9 +5,8 @@ using UnityEngine;
 namespace CustomItems;
 
 public static class Utils {
-  public static Vector3 GetGlobalCords((RoomType, Vector3) tuple) {
-    var room = Room.Get(tuple.Item1);
-    var localPos = tuple.Item2;
+  public static Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos) {
+    var room = Room.Get(roomType);
     var rotation = room.Rotation;
     var roomPos = room.Position;
     if (Math.Abs(rotation.eulerAngles.y) < 1.0)
