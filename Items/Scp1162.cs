@@ -31,25 +31,9 @@ public class Scp1162 : CustomItem {
     ItemType.KeycardZoneManager
   ];
 
-  private static Vector3 GetGlobalCords(Vector3 localPos, Room room) {
-    var rotation = room.Rotation;
-    var roomPos = room.Position;
-    if (Math.Abs(rotation.eulerAngles.y) < 1.0)
-      return new Vector3(roomPos.x + localPos.x, roomPos.y + localPos.y, roomPos.z + localPos.z);
-    if (Math.Abs(rotation.eulerAngles.y - 90f) < 1.0)
-      return new Vector3(roomPos.x + localPos.z, roomPos.y + localPos.y, roomPos.z - localPos.x);
-    if (Math.Abs(rotation.eulerAngles.y - 180f) < 1.0)
-      return new Vector3(roomPos.x - localPos.x, roomPos.y + localPos.y, roomPos.z - localPos.z);
-    if (Math.Abs(rotation.eulerAngles.y - 270f) < 1.0)
-      return new Vector3(roomPos.x - localPos.z, roomPos.y + localPos.y, roomPos.z + localPos.x);
-    return Vector3.zero;
-  }
-
-
   private void OnRoundStarted() {
     var room = Room.Get(RoomType.Lcz173);
-    var localPos = new Vector3(16.68f, 11.65f, 8.11f);
-    var globalPos = GetGlobalCords(localPos, room);
+    var globalPos = Utils.GetGlobalCords((RoomType.Lcz173, new Vector3(16.68f, 11.65f, 8.11f)));
     var rotation = room.Rotation;
     var rot = new Vector3(0f, 1f, 0.0f);
     var quaternion = Quaternion.Euler(rot.x, rotation.eulerAngles.y + rot.y, rot.z);
