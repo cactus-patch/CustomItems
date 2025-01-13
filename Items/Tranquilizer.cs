@@ -7,9 +7,12 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
 using MEC;
 using PlayerRoles;
+using PlayerRoles.PlayableScps.Scp096;
 using PlayerStatsSystem;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using YamlDotNet.Serialization;
+using Random = System.Random;
+using Scp096Role = Exiled.API.Features.Roles.Scp096Role;
 
 namespace CustomItems.Items;
 
@@ -34,6 +37,8 @@ public class Tranquilizer : CustomWeapon {
   [Description("The effectiveness of tranquilizer on humans in decimal percentage.")]
   public float HumanChance { get; set; } = 0.75f;
 
+  [YamlIgnore] private readonly Random _rng = new();
+
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 1,
     DynamicSpawnPoints = [
@@ -44,30 +49,40 @@ public class Tranquilizer : CustomWeapon {
   };
 
   protected override void OnShot(ShotEventArgs ev) {
-    var rand = Random.value;
+    if (ev.Target == null) return;
+    
+    var rand = _rng.NextDouble();
     var effective = ev.Target.IsScp ? rand < ScpChance : rand < HumanChance;
-    if (ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) {
+    if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective) {
       base.OnShot(ev);
       return;
     }
 
-    if (effective) {
-      var lift = Lift.List.First(lift => lift.IsInElevator(ev.Target.Position));
-      ev.Target.Scale = Vector3.zero;
-      ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
-      ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
-      ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
-      var ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname, new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
-
-      Timing.CallDelayed(5, () => {
-        ev.Target.DisableEffect(EffectType.Ensnared);
-        ev.Target.DisableEffect(EffectType.Flashed);
-        ev.Target.DisableEffect(EffectType.Deafened);
-        if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 1.5f);
-        ev.Target.Scale = Vector3.one;
-        ragdoll.Destroy();
-      });
+    var lift = ev.Player.Lift;
+    ev.Target.Scale = Vector3.zero;
+    ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
+    ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
+    ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
+    Ragdoll? ragdoll = null;
+    if (ev.Target.Role != RoleTypeId.Scp106) ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname, new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
+    if (ev.Target.Role == RoleTypeId.Scp096) {
+      var crybaby = (Scp096Role)ev.Target.Role;
+      if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed) crybaby.RageManager.ServerEndEnrage();
     }
+
+    Timing.CallDelayed(5, () => {
+      ev.Target.DisableEffect(EffectType.Ensnared);
+      ev.Target.DisableEffect(EffectType.Flashed);
+      ev.Target.DisableEffect(EffectType.Deafened);
+      if (lift != null) {
+        ev.Target.Teleport(lift.Position + Vector3.up * 2f);
+      }
+      else {
+        ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f);
+      }
+      ev.Target.Scale = Vector3.one;
+      ragdoll?.Destroy();
+    });
 
     base.OnShot(ev);
   }
