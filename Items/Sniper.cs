@@ -1,7 +1,15 @@
 using Exiled.API.Enums;
+using Exiled.API.Extensions;
+using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
+using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
+using Exiled.Events.EventArgs.Item;
+using Exiled.Events.EventArgs.Player;
+using InventorySystem.Items.Firearms.Attachments;
+using YamlDotNet.Serialization;
+using ItemEvents = Exiled.Events.Handlers.Item;
 
 namespace CustomItems.Items;
 
@@ -17,19 +25,39 @@ public class Sniper : CustomWeapon {
   public override float Damage { get; set; } = 118f;
   public override byte ClipSize { get; set; } = 1;
 
+  [YamlIgnore]
+  public override AttachmentName[] Attachments { get; set; } = [
+    AttachmentName.LowcapMagAP,
+    AttachmentName.Foregrip,
+    AttachmentName.ScopeSight,
+    AttachmentName.RecoilReducingStock,
+    AttachmentName.RifleBody,
+    AttachmentName.SoundSuppressor,
+    AttachmentName.AmmoCounter
+  ];
+  
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
-    Limit = 1,
-    DynamicSpawnPoints = [
-      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideHczArmory, Chance = 100 }
+    Limit = 0,
+    RoomSpawnPoints = [
+      new RoomSpawnPoint() { Room = RoomType.HczArmory, Chance = 100 }
     ]
   };
 
-  private void OnChangingAttachment(ChangingAttachmentEventArgs ev)
-    {
-        if (ev.Attachment.Name != "Low Cap AP Magazine" || ev.Attachment.Name = "Low Cap FMJ magazine")
-        {
-            ev.IsAllowed = false;
-            ev.Player.ShowHint($"You are not allowed to use the {ev.Attachment.Name} attachment.", 5);
-        }
-    }
+  protected override void SubscribeEvents() {
+    ItemEvents.ChangingAttachments += OnChangingAttachments;
+    
+    base.SubscribeEvents();
+  }
+
+  protected override void UnsubscribeEvents() {
+    ItemEvents.ChangingAttachments -= OnChangingAttachments;
+    
+    base.UnsubscribeEvents();
+  }
+
+  private void OnChangingAttachments(ChangingAttachmentsEventArgs ev) {
+    if (!Check(ev.Item) || ev.Player.NetId < 2) return;
+    ev.IsAllowed = false;
+    ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
+  }
 }
