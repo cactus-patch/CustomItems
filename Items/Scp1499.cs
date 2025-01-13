@@ -38,16 +38,14 @@ public class Scp1499 : CustomItem {
     ]
   };
 
-  private void OnUsingItem(UsingItemEventArgs ev) {
-    if (!Check(ev.Item) || !ev.IsAllowed || ev.Cooldown > 0) return;
-    Timing.CallDelayed(1.5f, () => {
-      ev.Player.DisableEffect(EffectType.Invisible);
-      ev.Player.EnableEffect(EffectType.DamageReduction, byte.MaxValue, Duration);
+  private void OnUsedItem(UsedItemEventArgs ev) {
+    if (!Check(ev.Item)) return;
+    ev.Player.DisableEffect(EffectType.Invisible); 
+    ev.Player.EnableEffect(EffectType.DamageReduction, byte.MaxValue, Duration);
 
-      var handle = Timing.CallDelayed(Duration, () => TeleportPrevious(ev.Player.NetId));
-      _lastPositions.Add(ev.Player.NetId, (ev.Player.Position, ev.Player.Lift, handle));
-      ev.Player.Teleport(Utils.GetGlobalCords(Room, RelativePosition));
-    });
+    var handle = Timing.CallDelayed(Duration, () => TeleportPrevious(ev.Player.NetId));
+    _lastPositions.Add(ev.Player.NetId, (ev.Player.Position, ev.Player.Lift, handle));
+    ev.Player.Teleport(Utils.GetGlobalCords(Room, RelativePosition));
   }
 
   private void TeleportPrevious(uint netId) {
@@ -66,13 +64,13 @@ public class Scp1499 : CustomItem {
   }
 
   protected override void SubscribeEvents() {
-    PlayerEvents.UsingItem += OnUsingItem;
+    PlayerEvents.UsedItem += OnUsedItem;
     
     base.SubscribeEvents();
   }
 
   protected override void UnsubscribeEvents() {
-    PlayerEvents.UsingItem -= OnUsingItem;
+    PlayerEvents.UsedItem -= OnUsedItem;
 
     base.UnsubscribeEvents();
   }
