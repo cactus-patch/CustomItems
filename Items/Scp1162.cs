@@ -19,20 +19,22 @@ public class Scp1162 : CustomItem {
   public override string Description { get; set; } = "Hold an item and pick it up to get another.";
   public override float Weight { get; set; } = 0f;
   public override Vector3 Scale { get; set; } = new(10f, 0.1f, 10f);
+  
+  [Description("Chance from 0 to 1 that the item will be destroyed.")]
+  public float LoseChance { get; set; } = 0.15f;
 
   public override SpawnProperties? SpawnProperties { get; set; }
   [YamlIgnore] private readonly Random _rng = new();
 
   [Description("Types of items that can be traded from SCP-1162.")]
   public ItemType[] ItemTypes { get; set; } = [
-    ItemType.None,
     ItemType.Medkit,
     ItemType.Adrenaline,
     ItemType.KeycardGuard,
     ItemType.KeycardScientist,
     ItemType.KeycardZoneManager
   ];
-
+  
   private void OnRoundStarted() {
     var room = Room.Get(RoomType.Lcz173);
     var globalPos = Utils.GetGlobalCords(RoomType.Lcz173, new Vector3(16.68f, 11.6f, 8.11f));
@@ -68,6 +70,7 @@ public class Scp1162 : CustomItem {
       }
       else {
         ev.Player.RemoveItem(item);
+        if (_rng.NextDouble() < LoseChance) return;
         item = ev.Player.AddItem(ItemTypes[_rng.Next(0, ItemTypes.Length)]);
         ev.Player.CurrentItem = item;
       }
