@@ -41,10 +41,10 @@ public class Tranquilizer : CustomWeapon {
 
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 1,
-    DynamicSpawnPoints = [
-      new DynamicSpawnPoint() { Chance = 25, Location = SpawnLocationType.InsideLczCafe },
-      new DynamicSpawnPoint() { Chance = 25, Location = SpawnLocationType.InsideLczWc },
-      new DynamicSpawnPoint() { Chance = 75, Location = SpawnLocationType.Inside330Chamber }
+    RoomSpawnPoints = [
+      new RoomSpawnPoint() { Room = RoomType.LczCafe, Chance = 25 },
+      new RoomSpawnPoint() { Room = RoomType.LczGlassBox, Chance = 25 },
+      new RoomSpawnPoint() { Room = RoomType.LczPlants, Chance = 75 }
     ]
   };
 

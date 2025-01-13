@@ -19,10 +19,12 @@ public class Coin : CustomItem {
 
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 3,
+    RoomSpawnPoints = [
+      new RoomSpawnPoint() { Room = RoomType.LczCafe, Chance = 50 },
+      new RoomSpawnPoint() { Room = RoomType.LczToilets, Chance = 50 },
+      new RoomSpawnPoint() { Room = RoomType.HczArmory, Chance = 50 },
+    ],
     DynamicSpawnPoints = [
-      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideLczCafe, Chance = 50 },
-      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideLczWc, Chance = 50 },
-      new DynamicSpawnPoint() { Location = SpawnLocationType.InsideHczArmory, Chance = 50 },
       new DynamicSpawnPoint() { Location = SpawnLocationType.InsideEscapePrimary, Chance = 50 }
     ]
   };
