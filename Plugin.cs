@@ -1,5 +1,4 @@
-﻿using CustomItems.Items;
-using Exiled.API.Features;
+﻿using Exiled.API.Features;
 using Exiled.CustomItems.API.Features;
 
 namespace CustomItems;
