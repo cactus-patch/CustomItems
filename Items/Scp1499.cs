@@ -19,13 +19,17 @@ public class Scp1499 : CustomItem {
   public override string Description { get; set; } = "<i>A breath away from oblivion.</i>";
   public override float Weight { get; set; } = 5f;
   
-  [Description("Room and its relative position to teleport player to after using SCP-1499.")]
-  public (RoomType, Vector3) Position { get; set; } = (RoomType.Hcz106, new Vector3(5.75f, 10f, -10.75f));
+  [Description("Room to teleport player to after using SCP-1499.")]
+  public RoomType Room { get; set; } = RoomType.Hcz106;
+
+  [Description("Relative position of room mentioned above to teleport player to after using SCP-1499.")]
+  public Vector3 RelativePosition { get; set; } = new (5.75f, 10f, -10.75f);
   
   [Description("Time for player to wander in seconds.")]
   public float Duration { get; set; } = 15f;
 
-  [YamlIgnore] private Dictionary<uint, (Vector3, Lift?, CoroutineHandle)> _lastPositions = [];
+  [YamlIgnore]
+  private readonly Dictionary<uint, (Vector3, Lift?, CoroutineHandle)> _lastPositions = [];
 
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 1,
@@ -42,7 +46,7 @@ public class Scp1499 : CustomItem {
 
       var handle = Timing.CallDelayed(Duration, () => TeleportPrevious(ev.Player.NetId));
       _lastPositions.Add(ev.Player.NetId, (ev.Player.Position, ev.Player.Lift, handle));
-      ev.Player.Teleport(Utils.GetGlobalCords(Position));
+      ev.Player.Teleport(Utils.GetGlobalCords(Room, RelativePosition));
     });
   }
 
@@ -51,7 +55,7 @@ public class Scp1499 : CustomItem {
     if (!_lastPositions.TryGetValue(netId, out var lastPos)) return;
     
     if (lastPos.Item2 != null) {
-      player.Teleport(lastPos.Item2.Position + Vector3.up * 1.5f);
+      player.Teleport(lastPos.Item2.Position + Vector3.up * 2f);
     }
     else {
       player.Teleport(lastPos.Item1);
@@ -78,8 +82,7 @@ public class Scp1499 : CustomItem {
     if (!_lastPositions.ContainsKey(ev.Player.NetId)) return;
     ev.IsAllowed = false;
     TeleportPrevious(ev.Player.NetId);
-
-    ev.Player.DropItem(ev.Item);
+    
     base.OnDroppingItem(ev);
   }
 }
