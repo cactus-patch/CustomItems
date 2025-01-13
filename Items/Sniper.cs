@@ -23,4 +23,13 @@ public class Sniper : CustomWeapon {
       new DynamicSpawnPoint() { Location = SpawnLocationType.InsideHczArmory, Chance = 100 }
     ]
   };
+
+  private void OnChangingAttachment(ChangingAttachmentEventArgs ev)
+    {
+        if (ev.Attachment.Name != "Low Cap AP Magazine" || ev.Attachment.Name = "Low Cap FMJ magazine")
+        {
+            ev.IsAllowed = false;
+            ev.Player.ShowHint($"You are not allowed to use the {ev.Attachment.Name} attachment.", 5);
+        }
+    }
 }
