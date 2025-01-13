@@ -6,7 +6,8 @@ using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using YamlDotNet.Serialization;
+using Random = System.Random;
 using ServerEvents = Exiled.Events.Handlers.Server;
 
 namespace CustomItems.Items;
@@ -20,6 +21,7 @@ public class Scp1162 : CustomItem {
   public override Vector3 Scale { get; set; } = new(10f, 0.1f, 10f);
 
   public override SpawnProperties? SpawnProperties { get; set; }
+  [YamlIgnore] private readonly Random _rng = new();
 
   [Description("Types of items that can be traded from SCP-1162.")]
   public ItemType[] ItemTypes { get; set; } = [
@@ -33,7 +35,7 @@ public class Scp1162 : CustomItem {
 
   private void OnRoundStarted() {
     var room = Room.Get(RoomType.Lcz173);
-    var globalPos = Utils.GetGlobalCords((RoomType.Lcz173, new Vector3(16.68f, 11.65f, 8.11f)));
+    var globalPos = Utils.GetGlobalCords(RoomType.Lcz173, new Vector3(16.68f, 11.6f, 8.11f));
     var rotation = room.Rotation;
     var rot = new Vector3(0f, 1f, 0.0f);
     var quaternion = Quaternion.Euler(rot.x, rotation.eulerAngles.y + rot.y, rot.z);
@@ -58,14 +60,20 @@ public class Scp1162 : CustomItem {
 
   protected override void OnPickingUp(PickingUpItemEventArgs ev) {
     ev.IsAllowed = false;
-    var item = ev.Player.CurrentItem;
-    if (item == null) {
-      ev.Player.EnableEffect(EffectType.SeveredHands, byte.MaxValue);
+
+    try {
+      var item = ev.Player.CurrentItem;
+      if (item == null) {
+        ev.Player.EnableEffect(EffectType.SeveredHands, byte.MaxValue);
+      }
+      else {
+        ev.Player.RemoveItem(item);
+        item = ev.Player.AddItem(ItemTypes[_rng.Next(0, ItemTypes.Length)]);
+        ev.Player.CurrentItem = item;
+      }
     }
-    else {
-      ev.Player.RemoveItem(item);
-      item = ev.Player.AddItem(ItemTypes[Random.Range(0, ItemTypes.Length)]);
-      ev.Player.CurrentItem = item;
+    catch {
+      // ignored
     }
 
     base.OnPickingUp(ev);
