@@ -18,12 +18,14 @@ public class Scp1499 : CustomItem {
   public override string Name { get; set; } = "SCP-1499";
   public override string Description { get; set; } = "<i>A breath away from oblivion.</i>";
   public override float Weight { get; set; } = 5f;
+  private Vector3 Hcz106 = new Vector3(38,-989,145)
   
   [Description("Room to teleport player to after using SCP-1499.")]
-  public RoomType Room { get; set; } = RoomType.Hcz106;
+  public Vector3 Room { get; set; } = Hcz106; //set the positon to 106 containment room
 
-  [Description("Relative position of room mentioned above to teleport player to after using SCP-1499.")]
-  public Vector3 RelativePosition { get; set; } = new (5.75f, 10f, -10.75f);
+  //[Description("Relative position of room mentioned above to teleport player to after using SCP-1499.")] 
+  //public Vector3 RelativePosition { get; set; } = new (5.75f, 10f, -10.75f);
+  // Hopefuly should be obsolete 
   
   [Description("Time for player to wander in seconds.")]
   public float Duration { get; set; } = 15f;
