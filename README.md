@@ -1,6 +1,6 @@
 this repo contains code for the custom items used in the cactus patch.
 
-currently, there are 4 items available:
+currently, there are 5 items available:
 
 - Coin
   - Gives player effect bonuses if lands on heads, ~~**_[redacted]_**~~ if on tails.
