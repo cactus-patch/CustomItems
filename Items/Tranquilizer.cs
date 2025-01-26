@@ -13,6 +13,7 @@ using UnityEngine;
 using YamlDotNet.Serialization;
 using Random = System.Random;
 using Scp096Role = Exiled.API.Features.Roles.Scp096Role;
+using PlayerEvents = Exiled.Events.Handlers.Player;
 
 namespace CustomItems.Items;
 
@@ -52,6 +53,21 @@ public class Tranquilizer : CustomWeapon {
     ]
   };
 
+  protected override void SubscribeEvents() {
+    PlayerEvents.ChangingRole += OnChangingRole;
+    base.SubscribeEvents();
+  }
+
+  protected override void UnsubscribeEvents() {
+    PlayerEvents.ChangingRole -= OnChangingRole;
+    base.UnsubscribeEvents();
+  }
+
+  private void OnChangingRole(ChangingRoleEventArgs ev) {
+    if (!_resistances.ContainsKey(ev.Player.NetId)) return;
+    _resistances[ev.Player.NetId] = 0;
+  }
+
   protected override void OnShot(ShotEventArgs ev) {
     if (ev.Target == null) return;
     
@@ -89,6 +105,7 @@ public class Tranquilizer : CustomWeapon {
       ev.Target.Scale = Vector3.one;
       ragdoll?.Destroy();
     });
+    
 
     base.OnShot(ev);
   }
