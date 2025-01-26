@@ -19,7 +19,7 @@ public class Scp1162 : CustomItem {
   public override string Description { get; set; } = "Hold an item and pick it up to get another.";
   public override float Weight { get; set; } = 0f;
   public override Vector3 Scale { get; set; } = new(10f, 0.1f, 10f);
-  
+
   [Description("Chance from 0 to 1 that the item will be destroyed.")]
   public float LoseChance { get; set; } = 0.15f;
 
@@ -34,7 +34,7 @@ public class Scp1162 : CustomItem {
     ItemType.KeycardScientist,
     ItemType.KeycardZoneManager
   ];
-  
+
   private void OnRoundStarted() {
     var room = Room.Get(RoomType.Lcz173);
     var globalPos = Utils.GetGlobalCords(RoomType.Lcz173, new Vector3(16.68f, 11.6f, 8.11f));

@@ -37,7 +37,7 @@ public class Tranquilizer : CustomWeapon {
 
   [Description("The effectiveness of tranquilizer on humans in decimal percentage.")]
   public float HumanChance { get; set; } = 0.75f;
-  
+
   [Description("Resistance to remove from the chance after being shot.")]
   public float Resistance { get; set; } = 0.05f;
 
@@ -70,10 +70,10 @@ public class Tranquilizer : CustomWeapon {
 
   protected override void OnShot(ShotEventArgs ev) {
     if (ev.Target == null) return;
-    
+
     var rand = _rng.NextDouble();
     var tResistance = _resistances.GetValueOrDefault(ev.Target.NetId, 0);
-    var effective = ev.Target.IsScp ? rand < (ScpChance - tResistance) : rand < (HumanChance - tResistance);
+    var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
     if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective) {
       base.OnShot(ev);
       return;
@@ -86,26 +86,27 @@ public class Tranquilizer : CustomWeapon {
     ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
     ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
     Ragdoll? ragdoll = null;
-    if (ev.Target.Role != RoleTypeId.Scp106) ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname, new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
+    if (ev.Target.Role != RoleTypeId.Scp106)
+      ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname,
+        new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
     if (ev.Target.Role == RoleTypeId.Scp096) {
       var crybaby = (Scp096Role)ev.Target.Role;
-      if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed) crybaby.RageManager.ServerEndEnrage();
+      if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed)
+        crybaby.RageManager.ServerEndEnrage();
     }
 
     Timing.CallDelayed(5, () => {
       ev.Target.DisableEffect(EffectType.Ensnared);
       ev.Target.DisableEffect(EffectType.Flashed);
       ev.Target.DisableEffect(EffectType.Deafened);
-      if (lift != null) {
+      if (lift != null)
         ev.Target.Teleport(lift.Position + Vector3.up * 2f);
-      }
-      else {
+      else
         ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f);
-      }
       ev.Target.Scale = Vector3.one;
       ragdoll?.Destroy();
     });
-    
+
 
     base.OnShot(ev);
   }

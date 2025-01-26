@@ -13,7 +13,7 @@
             <HintPath>refs\Assembly-CSharp-firstpass.dll</HintPath>
         </Reference>
         <Reference Include="Mirror">
-          <HintPath>refs\Mirror.dll</HintPath>
+            <HintPath>refs\Mirror.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.CoreModule">
             <HintPath>refs\UnityEngine.CoreModule.dll</HintPath>
@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ExMod.Exiled" Version="9.5.0" />
+        <PackageReference Include="ExMod.Exiled" Version="9.5.0"/>
     </ItemGroup>
 
 </Project>

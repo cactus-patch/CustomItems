@@ -1,12 +1,8 @@
 using Exiled.API.Enums;
-using Exiled.API.Extensions;
-using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
-using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
-using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
 using YamlDotNet.Serialization;
 using ItemEvents = Exiled.Events.Handlers.Item;
@@ -22,7 +18,7 @@ public class Sniper : CustomWeapon {
     "A modified E-11 that fires 5.56 at supersonic velocity that deals significantly more damage";
 
   public override float Weight { get; set; } = 8f;
-  public override float Damage { get; set; } = 7f;
+  public override float Damage { get; set; } = 300f;
   public override byte ClipSize { get; set; } = 1;
 
   [YamlIgnore]
@@ -35,7 +31,7 @@ public class Sniper : CustomWeapon {
     AttachmentName.SoundSuppressor,
     AttachmentName.AmmoCounter
   ];
-  
+
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 0,
     RoomSpawnPoints = [
@@ -45,13 +41,13 @@ public class Sniper : CustomWeapon {
 
   protected override void SubscribeEvents() {
     ItemEvents.ChangingAttachments += OnChangingAttachments;
-    
+
     base.SubscribeEvents();
   }
 
   protected override void UnsubscribeEvents() {
     ItemEvents.ChangingAttachments -= OnChangingAttachments;
-    
+
     base.UnsubscribeEvents();
   }
 

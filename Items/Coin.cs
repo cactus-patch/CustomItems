@@ -22,7 +22,7 @@ public class Coin : CustomItem {
     RoomSpawnPoints = [
       new RoomSpawnPoint() { Room = RoomType.LczCafe, Chance = 50 },
       new RoomSpawnPoint() { Room = RoomType.LczToilets, Chance = 50 },
-      new RoomSpawnPoint() { Room = RoomType.HczArmory, Chance = 50 },
+      new RoomSpawnPoint() { Room = RoomType.HczArmory, Chance = 50 }
     ],
     DynamicSpawnPoints = [
       new DynamicSpawnPoint() { Location = SpawnLocationType.InsideEscapePrimary, Chance = 50 }
