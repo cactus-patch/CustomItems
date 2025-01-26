@@ -36,8 +36,12 @@ public class Tranquilizer : CustomWeapon {
 
   [Description("The effectiveness of tranquilizer on humans in decimal percentage.")]
   public float HumanChance { get; set; } = 0.75f;
+  
+  [Description("Resistance to remove from the chance after being shot.")]
+  public float Resistance { get; set; } = 0.05f;
 
   [YamlIgnore] private readonly Random _rng = new();
+  [YamlIgnore] private readonly Dictionary<uint, float> _resistances = new();
 
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
     Limit = 1,
@@ -52,7 +56,8 @@ public class Tranquilizer : CustomWeapon {
     if (ev.Target == null) return;
     
     var rand = _rng.NextDouble();
-    var effective = ev.Target.IsScp ? rand < ScpChance : rand < HumanChance;
+    var tResistance = _resistances.GetValueOrDefault(ev.Target.NetId, 0);
+    var effective = ev.Target.IsScp ? rand < (ScpChance - tResistance) : rand < (HumanChance - tResistance);
     if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective) {
       base.OnShot(ev);
       return;
@@ -60,6 +65,7 @@ public class Tranquilizer : CustomWeapon {
 
     var lift = ev.Player.Lift;
     ev.Target.Scale = Vector3.zero;
+    _resistances[ev.Target.NetId] = tResistance + Resistance;
     ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
     ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
     ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
