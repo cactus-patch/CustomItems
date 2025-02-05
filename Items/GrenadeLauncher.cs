@@ -17,7 +17,7 @@ public class GrenadeLauncher : CustomWeapon {
   public override float Weight { get; set; } = 10f;
   public override SpawnProperties? SpawnProperties { get; set; } = new () {
     RoomSpawnPoints = [
-      new RoomSpawnPoint() { Room = RoomType.HczHid, Chance = 100 }
+      new RoomSpawnPoint() { Room = RoomType.Outside, Chance = 100 }
     ]
   };
   public override float Damage { get; set; } = 0f;
