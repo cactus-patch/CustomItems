@@ -18,7 +18,7 @@ public class Sniper : CustomWeapon {
     "A modified E-11 that fires 5.56 at supersonic velocity that deals significantly more damage";
 
   public override float Weight { get; set; } = 8f;
-  public override float Damage { get; set; } = 300f;
+  public override float Damage { get; set; } = 112f;
   public override byte ClipSize { get; set; } = 1;
 
   [YamlIgnore]
@@ -28,8 +28,7 @@ public class Sniper : CustomWeapon {
     AttachmentName.ScopeSight,
     AttachmentName.RecoilReducingStock,
     AttachmentName.RifleBody,
-    AttachmentName.SoundSuppressor,
-    AttachmentName.AmmoCounter
+    AttachmentName.SoundSuppressor
   ];
 
   public override SpawnProperties? SpawnProperties { get; set; } = new() {
