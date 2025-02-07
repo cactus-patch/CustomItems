@@ -11,7 +11,7 @@ namespace CustomItems.Items;
 
 [CustomItem(ItemType.GunE11SR)]
 public class Sniper : CustomWeapon {
-  public override uint Id { get; set; } = 1291;
+  public override uint Id { get; set; } = 801;
   public override string Name { get; set; } = "SR-119";
 
   public override string Description { get; set; } =
