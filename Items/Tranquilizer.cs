@@ -20,7 +20,7 @@ namespace CustomItems.Items;
 [CustomItem(ItemType.GunCOM15)]
 public class Tranquilizer : CustomWeapon {
   public override string Name { get; set; } = "Tranquilizer";
-  public override uint Id { get; set; } = 1290;
+  public override uint Id { get; set; } = 801;
 
   public override string Description { get; set; } =
     "A gun that temporarily tranquilizes entities; might be unreliable.";
@@ -72,7 +72,7 @@ public class Tranquilizer : CustomWeapon {
     if (ev.Target == null) return;
 
     var rand = _rng.NextDouble();
-    var tResistance = _resistances.GetValueOrDefault(ev.Target.NetId, 0);
+    _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
     var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
     if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective) {
       base.OnShot(ev);
