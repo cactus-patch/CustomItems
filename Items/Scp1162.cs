@@ -14,7 +14,7 @@ namespace CustomItems.Items;
 
 [CustomItem(ItemType.SCP500)]
 public class Scp1162 : CustomItem {
-  	public override string Name { get; set; } = "SCP-1162";
+	public override string Name { get; set; } = "SCP-1162";
   	public override uint Id { get; set; } = 7825;
   	public override string Description { get; set; } = "Hold an item and pick it up to get another.";
   	public override float Weight { get; set; } = 0f;
