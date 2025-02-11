@@ -18,4 +18,5 @@ Build version  1
 	- Any amount of bullets overloaded into the Grenade Launcher will now be refunded after you shoot it
    	- Removed the Ammo Counter
 
-
+## 4. Tranquilizer
+	- Fixed an error that was present in the code so resistance might work
