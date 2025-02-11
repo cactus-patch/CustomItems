@@ -1,7 +1,5 @@
 # Update v3.1.1 "Heavy Reinforcements Update pt.1" 
 
-(For the staff team: the Id's of all Custom Items have been unified (ranging from 801 -> 805 excluding SCP-1162)
-
 ## 1. For Staff
 	-  The Id's of all Custom Items have been unified (ranging from 801 -> 805 excluding SCP-1162)
 
