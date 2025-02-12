@@ -28,4 +28,3 @@
 
 >## What to expect from the coming updates
 >> - Next update "3.1 "*Heavy ***[Redacted]****" will bring some changes to SCP-1162 and the possable intoduction of a new weapon into the facility 
-  
