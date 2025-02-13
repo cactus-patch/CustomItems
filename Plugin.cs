@@ -8,7 +8,7 @@ public class Plugin : Plugin<Config> {
     public override string Name => "Custom Items";
     public override string Author => "Noobest1001";
     public override Version Version => new(9, 0, 0);
-    public override Version RequiredExiledVersion => new(3, 1, 1);
+    public override Version RequiredExiledVersion => new(3, 0, 1);
     public static Plugin? Instance;
 
     public override void OnEnabled() {
