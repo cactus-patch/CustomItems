@@ -9,8 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Commands\**" />
+      <EmbeddedResource Remove="Commands\**" />
+      <None Remove="Commands\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Reference Include="Assembly-CSharp-firstpass">
-          <HintPath>..\..\OneDrive\Documents\ExiledDependencies\Assembly-CSharp-firstpass.dll</HintPath>
+          <HintPath>..\..\..\OneDrive\Documents\ExiledDependencies\Assembly-CSharp-firstpass.dll</HintPath>
         </Reference>
         <Reference Include="Exiled.API">
           <HintPath>..\..\..\AppData\Roaming\SCP Secret Laboratory\PluginAPI\plugins\global\dependencies\Exiled.API.dll</HintPath>
@@ -32,25 +38,21 @@
         </Reference>
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="Mirror">
-          <HintPath>..\..\OneDrive\Documents\ExiledDependencies\Mirror.dll</HintPath>
+          <HintPath>..\..\..\OneDrive\Documents\ExiledDependencies\Mirror.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine">
-          <HintPath>..\..\OneDrive\Documents\ExiledDependencies\UnityEngine.dll</HintPath>
+          <HintPath>..\..\..\OneDrive\Documents\ExiledDependencies\UnityEngine.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.CoreModule">
-          <HintPath>..\..\OneDrive\Documents\ExiledDependencies\UnityEngine.CoreModule.dll</HintPath>
+          <HintPath>..\..\..\OneDrive\Documents\ExiledDependencies\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.PhysicsModule">
-          <HintPath>..\..\OneDrive\Documents\ExiledDependencies\UnityEngine.PhysicsModule.dll</HintPath>
+          <HintPath>..\..\..\OneDrive\Documents\ExiledDependencies\UnityEngine.PhysicsModule.dll</HintPath>
         </Reference>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="ExMod.Exiled" Version="9.5.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Commands\" />
     </ItemGroup>
 
 </Project>
