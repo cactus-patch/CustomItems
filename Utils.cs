@@ -19,4 +19,29 @@ public static class Utils {
       return new Vector3(roomPos.x - localPos.z, roomPos.y + localPos.y, roomPos.z + localPos.x);
     return Vector3.zero;
   }
+
+    public static bool TryRemoveItem(Player player, ItemType item)
+    {
+        if (player.CountItem(item) > 0)
+        {
+            player.RemoveItem(player.Items.First(it => it.Type == item)); 
+            return true;
+        }
+        return false;
+    }
+
+    public static ushort Subtrat(ushort inp)
+    {
+        int temp = inp;
+        int m = 1;
+
+        while (!((temp & m) > 0))
+        {
+            temp = temp ^ m;
+            m <<= 1;
+        }
+
+        temp = temp ^ m;
+        return (ushort)temp;
+    }
 }
