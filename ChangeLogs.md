@@ -15,13 +15,13 @@
 >>- Changed Penatration to the Sniper (92.75 => 95) 
 >>- Removed the Ammo Counter as I deamed it useless and was a relic from when the ammo glitch was a thing 
 
->>## 3. Grenade Launcher
+>## 3. Grenade Launcher
 >>
 >>- You can no longer full auto the Grenade Launcher
 >>- Any ammount of bullets overloaded into the Grenade Launcher will now be refunded after you shoot it
 >>- Removed the Ammo Counter for the same reason as above
->
-## 4. Coin
+
+>## 4. Coin
 >>
 >>- Changed the name of the Coin ('Coin' => 'SCP-1289')
 >>- Changed nothing else but I feel like only having one line is wrong :shrug:
