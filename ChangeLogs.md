@@ -6,15 +6,16 @@
 >>- Tranquilizer Id now 801 (from 1290)
 >>- Sniper Id now 802 (from 1291)
 >>- SCP-1499 Id now 803 (from 420)
->>- Grenade Launcher Id now 804 (from 32233)
+>>- SCP-1289 (Formerly 'Coin') Id now 804 (from 393)
+>>- Grenade Launcher Id now 805 (from 32233)
 >>- SCP-1162 Id now 7825 (from 432) but mods shouldn't spawn this in
 
 >## 2. Sniper
 >>
 >>- Changed damage to reflect the proper amount decided by the mod team (118 => 112)  
 >>- Changed Penatration to the Sniper (92.75 => 95) 
->>- Removed the Ammo Counter as I deamed it useless and was a relic from when the ammo glitch was a thing 
-
+>>- Removed the Ammo Counter as I deamed it useless and was a relic from when the ammo glitch was a thing  
+ 
 >## 3. Grenade Launcher
 >>
 >>- You can no longer full auto the Grenade Launcher

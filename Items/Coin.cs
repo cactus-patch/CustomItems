@@ -53,10 +53,10 @@ public class Coin : CustomItem {
         if (!Check(ev.Item)) return;
         Timing.CallDelayed(2f, () => {
             if (ev.IsTails && !ev.Player.IsDead) {
-            ev.Player.IsGodModeEnabled = false;
-            ev.Player.Explode();
-            ev.Player.Kill("You lost.");
-            return;
+                ev.Player.IsGodModeEnabled = false;
+                ev.Player.Explode();
+                ev.Player.Kill("You lost.");
+                return;
             }
 
             ev.Player.ShowHint("You won -- you feel the adrenaline rushing in your veins.");
