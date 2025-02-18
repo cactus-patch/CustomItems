@@ -1,6 +1,9 @@
-this repo contains code for the custom items used in the cactus patch.
+This repo contains code for the custom items used in the Cactus Patch.
 
-currently, there are 6 items available:
+Inquiries should be directed to Noobest1001 in the Cactus Patch at discord.gg/cactuspatch
+If you wish to contribute, please inquire with Noobest1001 and Cactusman at discord.gg/cactuspatch
+
+Currently, there are 6 items available:
 
 - Coin
     - Gives player effect bonuses if lands on heads, ~~**_[redacted]_**~~ if on tails.
