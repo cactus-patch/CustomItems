@@ -1,7 +1,7 @@
 This repo contains code for the custom items used in the Cactus Patch.
 
 Inquiries should be directed to Noobest1001 in the Cactus Patch at discord.gg/cactuspatch
-If you wish to contribute, please inquire with Noobest1001 and Cactusman at discord.gg/cactuspatch
+Also :P -Cactusman
 
 Currently, there are 6 items available:
 
