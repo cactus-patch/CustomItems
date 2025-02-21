@@ -41,7 +41,7 @@ public class Sniper : CustomWeapon
       ]
     };
 
-    protected override void OnShooting(ShootingEventArgs ev)
+    protected override void OnShot(ShotEventArgs ev)
     {
         ev.Firearm.MagazineAmmo = 0;
         ev.Firearm.BarrelAmmo = 0;
