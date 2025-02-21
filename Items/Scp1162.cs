@@ -68,12 +68,20 @@ public class Scp1162 : CustomItem {
             if (item == null) 
             {
                 ev.Player.EnableEffect(EffectType.SeveredHands, byte.MaxValue);
+                return;
             }
             else {
+                if(item.Type == ItemType.SCP330)
+                {
+                    ev.Player.CurrentItem = null;
+                    ev.Player.ShowHint("You can't trade SCP-330 with SCP-1162.", 5);
+                    return;
+                }
                 ev.Player.RemoveItem(item);
                 if (_rng.NextDouble() < LoseChance) return;
                 item = ev.Player.AddItem(ItemTypes[_rng.Next(0, ItemTypes.Length)]);
                 ev.Player.CurrentItem = item;
+                return;
             }
         }
         catch {
