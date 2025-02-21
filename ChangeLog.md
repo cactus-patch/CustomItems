@@ -1,5 +1,5 @@
 ># Update v3.0.3
-
+>
 >> ## 1. SCP-1162
 >>
 >>> Removed the ability for players to gamble SCP-330 instances
