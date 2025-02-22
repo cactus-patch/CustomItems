@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Xml.Serialization;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
@@ -11,77 +10,100 @@ using UnityEngine;
 using YamlDotNet.Serialization;
 using PlayerEvents = Exiled.Events.Handlers.Player;
 
-namespace CustomItems.Items;
+namespace CustomItems.Items
+{
+    [CustomItem(ItemType.SCP268)]
+    public class Scp1499 : CustomItem {
+    	public override uint Id { get; set; } = 803;
+    	public override string Name { get; set; } = "SCP-1499";
+    	public override string Description { get; set; } = "<i>A breath away from oblivion.</i>";
+    	public override float Weight { get; set; } = 5f;
 
-[CustomItem(ItemType.SCP268)]
-public class Scp1499 : CustomItem {
-	public override uint Id { get; set; } = 803;
-	public override string Name { get; set; } = "SCP-1499";
-	public override string Description { get; set; } = "<i>A breath away from oblivion.</i>";
-	public override float Weight { get; set; } = 5f;
+    	[Description("Room to teleport player to after using SCP-1499.")]
+    	public RoomType Room { get; set; } = RoomType.Hcz106;
 
-	[Description("Room to teleport player to after using SCP-1499.")]
-	public RoomType Room { get; set; } = RoomType.Hcz106;
+    	[Description("Relative position of room mentioned above to teleport player to after using SCP-1499.")]
+    	public Vector3 RelativePosition { get; set; } = new(5.75f, 10f, -10.75f);
 
-	[Description("Relative position of room mentioned above to teleport player to after using SCP-1499.")]
-	public Vector3 RelativePosition { get; set; } = new(5.75f, 10f, -10.75f);
+    	[Description("Time for player to wander in seconds.")]
+    	public float Duration { get; set; } = 15f;
 
-	[Description("Time for player to wander in seconds.")]
-	public float Duration { get; set; } = 15f;
+    	[YamlIgnore] private readonly Dictionary<uint, (Vector3, Lift?, CoroutineHandle)> _lastPositions = [];
 
-	[YamlIgnore] private readonly Dictionary<uint, (Vector3, Lift?, CoroutineHandle)> _lastPositions = [];
+    	public override SpawnProperties? SpawnProperties { get; set; } = new() 
+        {
+    		Limit = 1,
+    		RoomSpawnPoints = 
+            [
+    			new RoomSpawnPoint() { Room = RoomType.EzGateB, Chance = 100 }
+    		]
+    	};
 
-	public override SpawnProperties? SpawnProperties { get; set; } = new() {
-		Limit = 1,
-		RoomSpawnPoints = [
-			new RoomSpawnPoint() { Room = RoomType.EzGateB, Chance = 100 }
-		]
-	};
+        private void OnUsingItem(UsingItemEventArgs ev)
+        { 
+            if(!Check(ev.Item)) return;
+            if(ev.Player.IsInPocketDimension)
+            {
+                ev.Player.ShowHint("You put on the gas mask but nothing happens.\nIt seems that this SCP item has its limits.");
+                ev.IsAllowed = false;
+                ev.Cooldown = 0f;
+            }
+        }
 
-	private void OnUsedItem(UsedItemEventArgs ev) {
-		if (!Check(ev.Item)) return;
-		ev.Player.DisableEffect(EffectType.Invisible);
-		ev.Player.EnableEffect(EffectType.DamageReduction, byte.MaxValue, Duration);
 
-		var handle = Timing.CallDelayed(Duration, () => TeleportPrevious(ev.Player.NetId));
-		_lastPositions.Add(ev.Player.NetId, (ev.Player.Position, ev.Player.Lift, handle));
-		ev.Player.Teleport(Utils.GetGlobalCords(Room, RelativePosition));
-	}
+        private void OnUsedItem(UsedItemEventArgs ev) 
+        {
+    		if (!Check(ev.Item)) return;
+            
+    		ev.Player.DisableEffect(EffectType.Invisible);
+    		ev.Player.EnableEffect(EffectType.DamageReduction, byte.MaxValue, Duration);
 
-	private void TeleportPrevious(uint netId) {
-		if (!Player.TryGet(netId, out var player)) return;
-		if (!_lastPositions.TryGetValue(netId, out var lastPos)) return;
+    		var handle = Timing.CallDelayed(Duration, () => TeleportPrevious(ev.Player.NetId));
+    		_lastPositions.Add(ev.Player.NetId, (ev.Player.Position, ev.Player.Lift, handle));
+    		ev.Player.Teleport(Utils.GetGlobalCords(Room, RelativePosition));
+    	}
 
-		if (lastPos.Item2 != null)
-			player.Teleport(lastPos.Item2.Position + Vector3.up * 2f);
-		else
-			player.Teleport(lastPos.Item1);
+    	private void TeleportPrevious(uint netId) 
+        {
+    		if (!Player.TryGet(netId, out var player)) return;
+    		if (!_lastPositions.TryGetValue(netId, out var lastPos)) return;
 
-		_lastPositions.Remove(netId);
-		Timing.KillCoroutines(lastPos.Item3);
-	}
+    		if (lastPos.Item2 != null)
+    			player.Teleport(lastPos.Item2.Position + Vector3.up * 2f);
+    		else
+    			player.Teleport(lastPos.Item1);
 
-	protected override void SubscribeEvents() {
-		PlayerEvents.UsedItem += OnUsedItem;
+    		_lastPositions.Remove(netId);
+    		Timing.KillCoroutines(lastPos.Item3);
+    	}
 
-		base.SubscribeEvents();
-	}
+    	protected override void SubscribeEvents() 
+        {
+    		PlayerEvents.UsedItem += OnUsedItem;
+            PlayerEvents.UsingItem += OnUsingItem;
 
-	protected override void UnsubscribeEvents() {
-		PlayerEvents.UsedItem -= OnUsedItem;
+            base.SubscribeEvents();
+    	}
 
-		base.UnsubscribeEvents();
-	}
+    	protected override void UnsubscribeEvents() 
+        {
+    		PlayerEvents.UsedItem -= OnUsedItem;
+            PlayerEvents.UsingItem -= OnUsingItem;
 
-	protected override void OnDroppingItem(DroppingItemEventArgs ev) {
-		if (!Check(ev.Item)) return;
-		if (!_lastPositions.ContainsKey(ev.Player.NetId)) return;
-		ev.IsAllowed = false;
-		TeleportPrevious(ev.Player.NetId);
+            base.UnsubscribeEvents();
+    	}
 
-		base.OnDroppingItem(ev);
-	}
+    	protected override void OnDroppingItem(DroppingItemEventArgs ev) 
+        {
+    		if (!Check(ev.Item)) return;
+    		if (!_lastPositions.ContainsKey(ev.Player.NetId)) return;
+    		ev.IsAllowed = false;
+    		TeleportPrevious(ev.Player.NetId);
+
+    		base.OnDroppingItem(ev);
+    	}
 
 	
 
+    }
 }

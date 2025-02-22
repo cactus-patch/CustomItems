@@ -1,19 +1,15 @@
-﻿using System.Numerics;
-using Exiled.API.Enums;
+﻿using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Components;
 using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
-using Exiled.Events.EventArgs.Interfaces;
-using PlayerEvent = Exiled.Events.EventArgs.Player;
-using InventorySystem;
-using InventorySystem.Items;
 using Exiled.Events.EventArgs.Player;
 
 
-namespace CustomItems.Items{
+namespace CustomItems.Items
+{
 
     [CustomItem(ItemType.GunLogicer)]
     public class GrenadeLauncher : CustomWeapon {
@@ -33,7 +29,8 @@ namespace CustomItems.Items{
             ] 
         };
 
-        protected override void OnShooting(ShootingEventArgs ev) {
+        protected override void OnShooting(ShootingEventArgs ev) 
+        {
             var throwable = ev.Player.ThrowGrenade(ProjectileType.FragGrenade);
             ushort ammo = Utils.Subtrat((ushort)ev.Firearm.MagazineAmmo);
             throwable.Projectile.GameObject.AddComponent<CollisionHandler>().Init(ev.Player.GameObject, throwable.Projectile.Base);
@@ -44,7 +41,8 @@ namespace CustomItems.Items{
             base.OnShooting(ev);
         }
 
-        protected override void OnReloading(ReloadingWeaponEventArgs ev) {
+        protected override void OnReloading(ReloadingWeaponEventArgs ev) 
+        {
             if (Utils.TryRemoveItem(ev.Player, ItemType.GrenadeHE))
             {
                 ev.IsAllowed = true;
@@ -58,7 +56,8 @@ namespace CustomItems.Items{
             }
         }
 
-        private static IEnumerator<float> Detonate(Throwable throwable) {
+        private static IEnumerator<float> Detonate(Throwable throwable) 
+        {
             for (;;) {
                 float comp = -2;
                 var yVelocity = throwable.Projectile.Rigidbody.velocity.y - comp;
