@@ -1,4 +1,4 @@
-># Update v3.0.3
+># Update v3.0.4
 >
 >> ## 1. SCP-1162
 >>
@@ -10,3 +10,5 @@
 >
 >> ## 3. SCP-1499
 >>> Prevented Players from being able to use SCP-1499 in the Pocket dimension
+
+>> ## 4. Cleaned up code, made DLL smaller.
