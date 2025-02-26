@@ -6,6 +6,7 @@ using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
 using YamlDotNet.Serialization;
+using UnityEngine;
 using ItemEvents = Exiled.Events.Handlers.Item;
 
 namespace CustomItems.Items
@@ -27,7 +28,7 @@ namespace CustomItems.Items
         [
             AttachmentName.LowcapMagAP,
             AttachmentName.Foregrip,
-            AttachmentName.ScopeSight,
+            AttachmentName.DotSight,
             AttachmentName.RecoilReducingStock,
             AttachmentName.RifleBody,
             AttachmentName.SoundSuppressor

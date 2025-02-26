@@ -20,9 +20,15 @@ namespace CustomItems
             return Vector3.zero;
         }
 
-        public static bool TryRemoveItem(Player player, ItemType item)
+        /// <summary>
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="item"></param>
+        /// <param name="minimum"></param>
+        /// <returns></returns>
+        public static bool TryRemoveItem(Player player, ItemType item, short minimum = 0)
         {
-            if (player.CountItem(item) > 0)
+            if (player.CountItem(item) > minimum)
             {
                 player.RemoveItem(player.Items.First(it => it.Type == item)); 
                 return true;
