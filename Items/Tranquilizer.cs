@@ -15,7 +15,7 @@ using Random = System.Random;
 using Scp096Role = Exiled.API.Features.Roles.Scp096Role;
 using PlayerEvents = Exiled.Events.Handlers.Player;
 
-namespace CustomItems.Items
+namespace ExtendedItems.Items
 {
     [CustomItem(ItemType.GunCOM15)]
     public class Tranquilizer : CustomWeapon {

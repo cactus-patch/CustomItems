@@ -9,7 +9,7 @@ using YamlDotNet.Serialization;
 using UnityEngine;
 using ItemEvents = Exiled.Events.Handlers.Item;
 
-namespace CustomItems.Items
+namespace ExtendedItems.Items
 {
     [CustomItem(ItemType.GunE11SR)]
     public class Sniper : CustomWeapon

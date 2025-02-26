@@ -2,7 +2,7 @@
 using Exiled.API.Features;
 using UnityEngine;
 
-namespace CustomItems
+namespace ExtendedItems
 {
     public static class Utils {
         public static Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos) {
