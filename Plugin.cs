@@ -6,7 +6,7 @@ namespace ExtendedItems
     public class Plugin : Plugin<Config> 
     {
         public override string Prefix => "Cactus Patch";
-        public override string Name => "Custom Items";
+        public override string Name => "Extended Items";
         public override string Author => "Noobest1001";
         public override Version Version => new(3, 0, 4);
         public override Version RequiredExiledVersion => new(9, 5, 0);
