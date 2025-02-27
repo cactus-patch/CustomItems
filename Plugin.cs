@@ -1,7 +1,7 @@
 ﻿using Exiled.API.Features;
 using Exiled.CustomItems.API.Features;
 
-namespace CustomItems
+namespace ExtendedItems
 {
     public class Plugin : Plugin<Config> 
     {

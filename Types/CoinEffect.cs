@@ -1,6 +1,6 @@
 using Exiled.API.Enums;
 
-namespace CustomItems.Types
+namespace ExtendedItems.Types
 {
     public class CoinEffect {
         public EffectType Type { get; set; }

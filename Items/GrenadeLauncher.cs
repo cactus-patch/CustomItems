@@ -8,10 +8,10 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
 
-using E = CustomItems.Utils;
+using E = ExtendedItems.Utils;
 
 
-namespace CustomItems.Items
+namespace ExtendedItems.Items
 {
 
     [CustomItem(ItemType.GunLogicer)]

@@ -1,14 +1,17 @@
 using System.ComponentModel;
-using CustomItems.Types;
+using ExtendedItems.Types;
 using Exiled.API.Enums;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
-using PlayerEvents = Exiled.Events.Handlers.Player;
 using MEC;
+using YamlDotNet.Serialization;
+using PlayerEvents = Exiled.Events.Handlers.Player;
+using Random = System.Random;
+using Exiled.API.Extensions;
 
-namespace CustomItems.Items
+namespace ExtendedItems.Items
 {
     [CustomItem(ItemType.Coin)]
     public class Coin : CustomItem {
@@ -16,6 +19,28 @@ namespace CustomItems.Items
         public override uint Id { get; set; } = 804;
         public override string Description { get; set; } = "<i>\"What's the most you ever lost on a coin toss?\"</i>";
         public override float Weight { get; set; } = 1f;
+        [YamlIgnore] private readonly Random _rng = new();
+        private string[] WinHints { get; set; } = 
+        [
+            "Long Live the King",
+            "Use Force",
+            "Utilize Might",
+            "Life to the Ruler",
+            "Be Brave",
+            "The Savior is here",
+            "The end is never near"
+        ];
+
+        private string[] LoseCauses {get; set;} = 
+        [
+            "Silence",
+            "Quiet",
+            "Don't Look",
+            "Look Away",
+            "Death to the King",
+            "Death to the Ruler",
+            "The End",
+        ];
 
         public override SpawnProperties? SpawnProperties { get; set; } = new() {
             Limit = 3,
@@ -57,16 +82,17 @@ namespace CustomItems.Items
 
         private void OnFlippingCoin(FlippingCoinEventArgs ev) 
         {
+            
             if (!Check(ev.Item)) return;
             Timing.CallDelayed(2f, () => {
                 if (ev.IsTails && !ev.Player.IsDead) {
                     ev.Player.IsGodModeEnabled = false;
                     ev.Player.Explode();
-                    ev.Player.Kill("You lost.");
+                    ev.Player.Kill($"{LoseCauses.GetRandomValue}");
                     return;
                 }
 
-                ev.Player.ShowHint("You won -- you feel the adrenaline rushing in your veins.");
+                ev.Player.ShowHint($"{WinHints.GetRandomValue}");
                 Effects.ForEach((effect) => { ev.Player.EnableEffect(effect.Type, effect.Intensity, effect.Duration, true); });
             });
         }

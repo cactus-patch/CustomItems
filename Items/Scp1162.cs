@@ -10,7 +10,7 @@ using YamlDotNet.Serialization;
 using Random = System.Random;
 using ServerEvents = Exiled.Events.Handlers.Server;
 
-namespace CustomItems.Items
+namespace ExtendedItems.Items
 {
     [CustomItem(ItemType.SCP500)]
     public class Scp1162 : CustomItem {

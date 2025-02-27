@@ -1,0 +1,36 @@
+using Exiled.API.Enums;
+using Exiled.API.Features.Attributes;
+using Exiled.API.Features.Spawn;
+using Exiled.CustomItems.API.Features;
+using Exiled.Events.EventArgs.Item;
+using Exiled.Events.EventArgs.Player;
+using InventorySystem.Items.Firearms.Attachments;
+using YamlDotNet.Serialization;
+using UnityEngine;
+using ItemEvents = Exiled.Events.Handlers.Item;
+
+namespace ExtendedItems.Items
+{
+    [CustomWeapon(ItemType.Guncom45)]
+    public class Admin : CustomWeapon
+    {
+        public override uint Id {get; set; } = 806;
+        public override string Name { get; set; } = "Admin Funny Gun";
+        public override string Description { get; set; } = "The God Gun";
+        public override float Weight { get; set; } = 0.5f;
+        public override byte ClipSize { get; set; } = 255;
+        public override float Damage { get; set; } = 0f;
+
+        protected override void OnShooting(ShootingEventArgs ev)
+        {
+            var throwable = ev.Player.ThrowGrenade(ProjectileType.FragGrenade);
+            ushort ammo = E.Subtrat((ushort)ev.Firearm.MagazineAmmo);
+            throwable.Projectile.GameObject.AddComponent<CollisionHandler>().Init(ev.Player.GameObject, throwable.Projectile.Base);
+
+            base.OnShooting(ev);
+        }
+
+        
+
+    }
+}

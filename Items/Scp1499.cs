@@ -10,7 +10,7 @@ using UnityEngine;
 using YamlDotNet.Serialization;
 using PlayerEvents = Exiled.Events.Handlers.Player;
 
-namespace CustomItems.Items
+namespace ExtendedItems.Items
 {
     [CustomItem(ItemType.SCP268)]
     public class Scp1499 : CustomItem {

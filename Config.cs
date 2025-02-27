@@ -1,7 +1,7 @@
-using CustomItems.Items;
+using ExtendedItems.Items;
 using Exiled.API.Interfaces;
 
-namespace CustomItems
+namespace ExtendedItems
 {
     public class Config : IConfig 
     {
