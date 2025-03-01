@@ -72,49 +72,62 @@ namespace ExtendedItems.Items
 
         protected override void OnShot(ShotEventArgs ev) 
         {
+            var Attacker = ev.Player;
             if (ev.Target == null) return;
-
-            var rand = _rng.NextDouble();
-            _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
-            var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
-            if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective)
+            if(ev.Target.Role == RoleTypeId.Tutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
+            if (ev.Player.IsNTF && ev.Target.Role == RoleTypeId.NtfCaptain || ev.Target.Role == RoleTypeId.NtfPrivate || ev.Target.Role == RoleTypeId.NtfSergeant || ev.Target.Role == RoleTypeId.NtfSpecialist)
             {
-                base.OnShot(ev);
+                ev.Player.ShowHint("You can't tranquilize your own team.", 5);
                 return;
             }
-            var lift = ev.Player.Lift;
-            ev.Target.Scale = Vector3.zero;
-            _resistances[ev.Target.NetId] = tResistance + Resistance;
-            ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
-            ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
-            ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
-            Ragdoll? ragdoll = null;
-            if (ev.Target.Role != RoleTypeId.Scp106)
+            else if (ev.Player.IsCHI && ev.Target.Role == RoleTypeId.ChaosConscript || ev.Target.Role == RoleTypeId.ChaosMarauder || ev.Target.Role == RoleTypeId.ChaosRifleman || ev.Target.Role == RoleTypeId.ChaosRepressor)
             {
-                ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname,
-                new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
+                ev.Player.ShowHint("You can't tranquilize your own team.", 5);
+                return;
             }
-            if (ev.Target.Role == RoleTypeId.Scp096)
-            {
-                var crybaby = (Scp096Role)ev.Target.Role;
-                if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed)
+            else {
+                var rand = _rng.NextDouble();
+                _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
+                var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
+                if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective)
                 {
-                    crybaby.RageManager.ServerEndEnrage();
+                    base.OnShot(ev);
+                    return;
                 }
-            }
+                var lift = ev.Player.Lift;
+                ev.Target.Scale = Vector3.zero;
+                _resistances[ev.Target.NetId] = tResistance + Resistance;
+                ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
+                ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
+                ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
+                Ragdoll? ragdoll = null;
+                if (ev.Target.Role != RoleTypeId.Scp106)
+                {
+                    ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname,
+                    new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
+                }
+                if (ev.Target.Role == RoleTypeId.Scp096)
+                {
+                    var crybaby = (Scp096Role)ev.Target.Role;
+                    if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed)
+                    {
+                        crybaby.RageManager.ServerEndEnrage();
+                    }
+                }
 
-            Timing.CallDelayed(5, () =>
-            {
-                ev.Target.DisableEffect(EffectType.Ensnared);
-                ev.Target.DisableEffect(EffectType.Flashed);
-                ev.Target.DisableEffect(EffectType.Deafened);
-                if (lift != null)
-                    ev.Target.Teleport(lift.Position + Vector3.up * 2f);
-                else
-                    ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f);
-                ev.Target.Scale = Vector3.one;
-                ragdoll?.Destroy();
-            });
+                Timing.CallDelayed(5, () =>
+                {
+                    ev.Target.DisableEffect(EffectType.Ensnared);
+                    ev.Target.DisableEffect(EffectType.Flashed);
+                    ev.Target.DisableEffect(EffectType.Deafened);
+                    if (lift != null)
+                        ev.Target.Teleport(lift.Position + Vector3.up * 2f);
+                    else
+                        ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f);
+                    ev.Target.Scale = Vector3.one;
+                    ragdoll?.Destroy();
+                });
+            }
 
 
             base.OnShot(ev);
