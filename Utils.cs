@@ -6,7 +6,7 @@ namespace ExtendedItems
 {
     public static class Utils {
         /// <summary>
-        /// only god know what this does atp
+        /// Calculates the global coords of a point inside a room based on the room type and the location
         /// </summary>
         /// <param name="roomType"></param>
         /// <param name="localPos"></param>
