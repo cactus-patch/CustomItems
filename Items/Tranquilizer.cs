@@ -41,7 +41,8 @@ namespace ExtendedItems.Items
         public float Resistance { get; set; } = 0.05f;
 
         [YamlIgnore] private readonly Random _rng = new();
-        [YamlIgnore] private readonly Dictionary<uint, float> _resistances = new();
+        [YamlIgnore] private readonly Dictionary<uint, float> _resistances = [];
+        public ItemType[] Inventory { get; set; } = { };
 
         public override SpawnProperties? SpawnProperties { get; set; } = new() {
         Limit = 1,
@@ -72,20 +73,10 @@ namespace ExtendedItems.Items
 
         protected override void OnShot(ShotEventArgs ev) 
         {
-            var Attacker = ev.Player;
+            
             if (ev.Target == null) return;
-            if(ev.Target.Role == RoleTypeId.Tutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
-            if (ev.Player.IsNTF && ev.Target.Role == RoleTypeId.NtfCaptain || ev.Target.Role == RoleTypeId.NtfPrivate || ev.Target.Role == RoleTypeId.NtfSergeant || ev.Target.Role == RoleTypeId.NtfSpecialist)
+            if(ev.Target.IsTutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
             {
-                ev.Player.ShowHint("You can't tranquilize your own team.", 5);
-                return;
-            }
-            else if (ev.Player.IsCHI && ev.Target.Role == RoleTypeId.ChaosConscript || ev.Target.Role == RoleTypeId.ChaosMarauder || ev.Target.Role == RoleTypeId.ChaosRifleman || ev.Target.Role == RoleTypeId.ChaosRepressor)
-            {
-                ev.Player.ShowHint("You can't tranquilize your own team.", 5);
-                return;
-            }
-            else {
                 var rand = _rng.NextDouble();
                 _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
                 var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
@@ -94,29 +85,43 @@ namespace ExtendedItems.Items
                     base.OnShot(ev);
                     return;
                 }
+                
                 var lift = ev.Player.Lift;
                 ev.Target.Scale = Vector3.zero;
                 _resistances[ev.Target.NetId] = tResistance + Resistance;
                 ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
                 ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
                 ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
+                ev.Target.IsGodModeEnabled = true;
                 Ragdoll? ragdoll = null;
-                if (ev.Target.Role != RoleTypeId.Scp106)
+                if (ev.Target.IsHuman)
                 {
-                    ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname,
-                    new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
+                    ev.Player.CurrentItem = null;
+                    ev.Target.Inventory.enabled = false;
+                    
+                    ev.Target.EnableEffect(EffectType.AmnesiaItems, byte.MaxValue);
                 }
-                if (ev.Target.Role == RoleTypeId.Scp096)
+                else
                 {
-                    var crybaby = (Scp096Role)ev.Target.Role;
-                    if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed)
+                    if (ev.Target.Role != RoleTypeId.Scp106)
                     {
-                        crybaby.RageManager.ServerEndEnrage();
+                        ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname,
+                        new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
+                    }
+                    if (ev.Target.Role == RoleTypeId.Scp096)
+                    {
+                        var crybaby = (Scp096Role)ev.Target.Role;
+                        if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed)
+                        {
+                            crybaby.RageManager.ServerEndEnrage();
+                        }
                     }
                 }
+                
 
                 Timing.CallDelayed(5, () =>
                 {
+                    ev.Target.IsGodModeEnabled = false;
                     ev.Target.DisableEffect(EffectType.Ensnared);
                     ev.Target.DisableEffect(EffectType.Flashed);
                     ev.Target.DisableEffect(EffectType.Deafened);
@@ -131,6 +136,21 @@ namespace ExtendedItems.Items
 
 
             base.OnShot(ev);
+        }
+
+        protected override void OnShooting(ShootingEventArgs ev)
+        {
+            if(!Check(ev.Item)) return;
+            if(ev.Firearm.MagazineAmmo >= 4)
+            {
+                ev.Firearm.MagazineAmmo = 2;
+                return;
+            }
+            else
+            {
+                Log.Debug("Hi Cactus");
+                return;
+            }
         }
     }
 }

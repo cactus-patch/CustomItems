@@ -78,7 +78,7 @@ namespace ExtendedItems.Items
                 else {
                     if(item.Type == ItemType.SCP330)
                     {
-                        ev.Player.CurrentItem = null;
+                        ev.IsAllowed = false;
                         ev.Player.ShowHint("You can't trade SCP-330 with SCP-1162.", 5);
                         return;
                     }

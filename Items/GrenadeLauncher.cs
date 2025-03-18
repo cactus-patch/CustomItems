@@ -5,9 +5,12 @@ using Exiled.API.Features.Components;
 using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
+using Exiled.Events.EventArgs.Interfaces;
+using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
 
+using ItemEvents = Exiled.Events.Handlers.Item;
 using E = ExtendedItems.Utils;
 
 
@@ -25,9 +28,8 @@ namespace ExtendedItems.Items
         public override float Damage { get; set; } = 0f;
         public override byte ClipSize { get; set; } = 1;
         public override AttachmentName[] Attachments { get; set; } = [AttachmentName.Laser, AttachmentName.IronSights, AttachmentName.ShortBarrel];
-#pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
-        public override SpawnProperties SpawnProperties { get; set; } = new()
-#pragma warning restore CS8765 
+        public override SpawnProperties? SpawnProperties { get; set; } = new()
+
         {
             Limit = 1,
             DynamicSpawnPoints =
@@ -62,10 +64,39 @@ namespace ExtendedItems.Items
             }
             else 
             {
-                ev.IsAllowed = false;
-                ev.Player.ShowHint("You need a HE Grenade to reload this weapon", 5);
-                base.OnReloading(ev);
+                if(ev.Player.GetAmmo(AmmoType.Nato762) == 0)
+                {
+                    ev.IsAllowed = false;
+                    ev.Player.ShowHint("You need 1 7.62 to fire.", 5);
+                    base.OnReloading(ev);
+                }
+                else
+                {
+                    ev.IsAllowed = false;
+                    ev.Player.ShowHint("You need a HE Grenade to reload this weapon", 5);
+                    base.OnReloading(ev);
+                }
             }
+        }
+
+        protected override void SubscribeEvents()
+        {
+            ItemEvents.ChangingAttachments += OnChangingAttachments;
+
+            base.SubscribeEvents();
+        }
+
+        protected override void UnsubscribeEvents()
+        {
+            ItemEvents.ChangingAttachments -= OnChangingAttachments;
+
+            base.UnsubscribeEvents();
+        }
+
+        private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
+        {
+            ev.Player.Broadcast(5, "You can't change the attachments on this weapon");
+            ev.IsAllowed = false;
         }
 
         private static IEnumerator<float> Detonate(Throwable throwable)

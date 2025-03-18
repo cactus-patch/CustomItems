@@ -10,6 +10,28 @@ namespace ExtendedItems
         public bool Debug { get; set; } = false;
         [Description("Weather the Tranq is effective on Tutorials")]
         public bool EffectiveOnTutorials = false;
+        [Description("The possable hints shown when you Win")]
+        public string[] WinHints { get; set; } =
+        [
+            "Long Live the King",
+            "Use Force",
+            "Utilize Might",
+            "Life to the Ruler",
+            "Be Brave",
+            "The Savior is here",
+            "The end is never near"
+        ];
+        [Description("List of possible causes of death when the coin lands on tails")]
+        public string[] LoseCauses { get; set; } =
+        [
+            "Silence",
+            "Quiet",
+            "Don't Look",
+            "Look Away",
+            "Death to the King",
+            "Death to the Ruler",
+            "The End",
+        ];
 
         public Coin Coin { get; set; } = new();
         public Scp1162 Scp1162 { get; set; } = new();

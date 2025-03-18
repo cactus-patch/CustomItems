@@ -20,27 +20,6 @@ namespace ExtendedItems.Items
         public override uint Id { get; set; } = 804;
         public override string Description { get; set; } = "<i>\"What's the most you ever lost on a coin toss?\"</i>";
         public override float Weight { get; set; } = 1f;
-        [YamlIgnore] private readonly Random _rng = new();
-        private string[] WinHints { get; set; } =
-        [
-            "Long Live the King",
-            "Use Force",
-            "Utilize Might",
-            "Life to the Ruler",
-            "Be Brave",
-            "The Savior is here",
-            "The end is never near"
-        ];
-        private string[] LoseCauses { get; set; } =
-        [
-            "Silence",
-            "Quiet",
-            "Don't Look",
-            "Look Away",
-            "Death to the King",
-            "Death to the Ruler",
-            "The End",
-        ];
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
@@ -90,11 +69,11 @@ namespace ExtendedItems.Items
                 {
                     ev.Player.IsGodModeEnabled = false;
                     ev.Player.Explode();
-                    ev.Player.Kill($"{LoseCauses.RandomItem()}");
+                    ev.Player.Kill($"{Plugin.Instance?.Config.LoseCauses.RandomItem()}");
                     return;
                 }
 
-                ev.Player.ShowHint($"{WinHints.RandomItem()}");
+                ev.Player.ShowHint($"{Plugin.Instance?.Config.WinHints.RandomItem()}");
                 Effects.ForEach((effect) => { ev.Player.EnableEffect(effect.Type, effect.Intensity, effect.Duration, true); });
             });
         }

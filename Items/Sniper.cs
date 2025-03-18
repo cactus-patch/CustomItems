@@ -6,7 +6,6 @@ using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
 using YamlDotNet.Serialization;
-using UnityEngine;
 using ItemEvents = Exiled.Events.Handlers.Item;
 
 namespace ExtendedItems.Items

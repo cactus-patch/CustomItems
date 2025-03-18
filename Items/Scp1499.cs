@@ -28,6 +28,7 @@ namespace ExtendedItems.Items
     	[Description("Time for player to wander in seconds.")]
     	public float Duration { get; set; } = 15f;
 
+
     	[YamlIgnore] private readonly Dictionary<uint, (Vector3, Lift?, CoroutineHandle)> _lastPositions = [];
 
     	public override SpawnProperties? SpawnProperties { get; set; } = new() 

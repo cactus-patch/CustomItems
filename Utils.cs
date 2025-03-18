@@ -5,6 +5,12 @@ using UnityEngine;
 namespace ExtendedItems
 {
     public static class Utils {
+        /// <summary>
+        /// only god know what this does atp
+        /// </summary>
+        /// <param name="roomType"></param>
+        /// <param name="localPos"></param>
+        /// <returns>Vector3</returns>
         public static Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos) {
             var room = Room.Get(roomType);
             var rotation = room.Rotation;
@@ -21,11 +27,17 @@ namespace ExtendedItems
         }
 
         /// <summary>
+        /// Trys to remove an item from a players inventory
+        /// returns true if the item was removed
         /// </summary>
         /// <param name="player"></param>
         /// <param name="item"></param>
         /// <param name="minimum"></param>
-        /// <returns></returns>
+        /// <example> 
+        /// if(Utils.TryRemoveItem(ev.Player, ItemType.GrenadeHE))
+        /// </example>
+        /// <returns>bool</returns>
+
         public static bool TryRemoveItem(Player player, ItemType item, short minimum = 0)
         {
             if (player.CountItem(item) > minimum)
@@ -36,6 +48,11 @@ namespace ExtendedItems
             return false;
         }
 
+        /// <summary>
+        /// Removes 1 from a ushort (I hate this language sometimes
+        /// </summary>
+        /// <param name="inp"></param>
+        /// <returns>input - 1</returns>
         public static ushort Subtrat(ushort inp)
         {
             int temp = inp;
