@@ -1,14 +1,12 @@
-># Update v3.0.4
+># Update 3.1.0
 >
->> ## 1. SCP-1162
+>>## SCP-1289 (formerly <i>'Coin'</i>)
+>>> #### Renamed the coin
+>>> #### Added death and winning notes
+>>>> Due to a limitation of Exiled only the player who gets killed by the coin can see the new effects added by yours truly
 >>
->>> Removed the ability for players to gamble SCP-330 instances
+>>## Tranq
+>>> Made the player who got tranqed invulnerable but unable to use any items (humans)
 >>
->> ## 2. Sniper
->>
->>> Fixed the sniper not working (mf, mb)
->
->> ## 3. SCP-1499
->>> Prevented Players from being able to use SCP-1499 in the Pocket dimension
-
->> ## 4. Cleaned up code, made DLL smaller.
+>>## Genaral code
+>>> Added some notes in the 'Util.cs' file for those who want to add on to this
