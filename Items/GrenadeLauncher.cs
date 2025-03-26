@@ -37,7 +37,7 @@ namespace ExtendedItems.Items
                 new()
                 {
                     Chance = 100,
-                    Location = SpawnLocationType.InsideHidChamber,
+                    Location = SpawnLocationType.Inside049Armory,
                 },
              ],
         };
