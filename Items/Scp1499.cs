@@ -17,7 +17,7 @@ namespace ExtendedItems.Items
     	public override uint Id { get; set; } = 803;
     	public override string Name { get; set; } = "SCP-1499";
     	public override string Description { get; set; } = "<i>A breath away from oblivion.</i>";
-    	public override float Weight { get; set; } = 5f;
+    	public override float Weight { get; set; } = 0.3f;
 
     	[Description("Room to teleport player to after using SCP-1499.")]
     	public RoomType Room { get; set; } = RoomType.Hcz106;
