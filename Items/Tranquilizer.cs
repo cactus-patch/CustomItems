@@ -76,7 +76,9 @@ namespace ExtendedItems.Items
             
             if (ev.Target == null) return;
             if(ev.Target.IsTutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
-            {
+            }
+                var Item = ev.Target.CurrentItem;
+
                 var rand = _rng.NextDouble();
                 _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
                 var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
@@ -96,7 +98,7 @@ namespace ExtendedItems.Items
                 Ragdoll? ragdoll = null;
                 if (ev.Target.IsHuman)
                 {
-                    ev.Player.CurrentItem = null;
+                    ev.Targer.CurrentItem = null;
                     ev.Target.Inventory.enabled = false;
                     
                     ev.Target.EnableEffect(EffectType.AmnesiaItems, byte.MaxValue);
@@ -121,10 +123,12 @@ namespace ExtendedItems.Items
 
                 Timing.CallDelayed(5, () =>
                 {
+ev.Target.Inventory.enabled = true;
                     ev.Target.IsGodModeEnabled = false;
                     ev.Target.DisableEffect(EffectType.Ensnared);
                     ev.Target.DisableEffect(EffectType.Flashed);
                     ev.Target.DisableEffect(EffectType.Deafened);
+ev.Target.DisableEffect(EfectType.AmnesiaItems);
                     if (lift != null)
                         ev.Target.Teleport(lift.Position + Vector3.up * 2f);
                     else
