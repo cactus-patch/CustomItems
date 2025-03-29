@@ -8,6 +8,8 @@ namespace ExtendedItems
     {
         public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
+        [Description("Weather a tranqed target hold the item they had when they were tranqed")]
+        public bool? ReholdItems = false;
         [Description("Weather the Tranq is effective on Tutorials")]
         public bool EffectiveOnTutorials = false;
         [Description("The possable hints shown when you Win")]

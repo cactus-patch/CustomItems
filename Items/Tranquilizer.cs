@@ -45,39 +45,48 @@ namespace ExtendedItems.Items
         public ItemType[] Inventory { get; set; } = { };
 
         public override SpawnProperties? SpawnProperties { get; set; } = new() {
-        Limit = 1,
-        RoomSpawnPoints = [
+            Limit = 1,
+            RoomSpawnPoints = [
             new RoomSpawnPoint() { Room = RoomType.LczCafe, Chance = 25 },
             new RoomSpawnPoint() { Room = RoomType.LczGlassBox, Chance = 25 },
             new RoomSpawnPoint() { Room = RoomType.LczPlants, Chance = 75 }
         ]
         };
 
-        protected override void SubscribeEvents() 
+        protected override void SubscribeEvents()
         {
-        PlayerEvents.ChangingRole += OnChangingRole;
-        base.SubscribeEvents();
+            PlayerEvents.ChangingRole += OnChangingRole;
+            base.SubscribeEvents();
         }
 
-        protected override void UnsubscribeEvents() 
+        protected override void UnsubscribeEvents()
         {
-        PlayerEvents.ChangingRole -= OnChangingRole;
-        base.UnsubscribeEvents();
+            PlayerEvents.ChangingRole -= OnChangingRole;
+            base.UnsubscribeEvents();
         }
 
-        private void OnChangingRole(ChangingRoleEventArgs ev) 
+        private void OnChangingRole(ChangingRoleEventArgs ev)
         {
-        if (!_resistances.ContainsKey(ev.Player.NetId)) return;
-        _resistances[ev.Player.NetId] = 0;
+            if (!_resistances.ContainsKey(ev.Player.NetId)) return;
+            _resistances[ev.Player.NetId] = 0;
         }
 
-        protected override void OnShot(ShotEventArgs ev) 
+        protected override void OnShot(ShotEventArgs ev)
         {
-            
+
             if (ev.Target == null) return;
-            if(ev.Target.IsTutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
-            }
-                var Item = ev.Target.CurrentItem;
+            if (ev.Target.IsTutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
+            { 
+                Exiled.API.Features.Items.Item? item;
+
+                if((bool)(Plugin.Instance?.Config.ReholdItems))
+                {
+                    item = ev.Target.CurrentItem;
+                }
+                else
+                {
+                    item = null;
+                }
 
                 var rand = _rng.NextDouble();
                 _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
@@ -87,7 +96,7 @@ namespace ExtendedItems.Items
                     base.OnShot(ev);
                     return;
                 }
-                
+
                 var lift = ev.Player.Lift;
                 ev.Target.Scale = Vector3.zero;
                 _resistances[ev.Target.NetId] = tResistance + Resistance;
@@ -98,9 +107,9 @@ namespace ExtendedItems.Items
                 Ragdoll? ragdoll = null;
                 if (ev.Target.IsHuman)
                 {
-                    ev.Targer.CurrentItem = null;
+                    ev.Target.CurrentItem = null;
                     ev.Target.Inventory.enabled = false;
-                    
+
                     ev.Target.EnableEffect(EffectType.AmnesiaItems, byte.MaxValue);
                 }
                 else
@@ -119,16 +128,17 @@ namespace ExtendedItems.Items
                         }
                     }
                 }
-                
+
 
                 Timing.CallDelayed(5, () =>
                 {
-ev.Target.Inventory.enabled = true;
+                    ev.Target.Inventory.enabled = true;
                     ev.Target.IsGodModeEnabled = false;
                     ev.Target.DisableEffect(EffectType.Ensnared);
                     ev.Target.DisableEffect(EffectType.Flashed);
                     ev.Target.DisableEffect(EffectType.Deafened);
-ev.Target.DisableEffect(EfectType.AmnesiaItems);
+                    ev.Target.DisableEffect(EffectType.AmnesiaItems);
+                    ev.Target.CurrentItem = item;
                     if (lift != null)
                         ev.Target.Teleport(lift.Position + Vector3.up * 2f);
                     else
@@ -137,7 +147,6 @@ ev.Target.DisableEffect(EfectType.AmnesiaItems);
                     ragdoll?.Destroy();
                 });
             }
-
 
             base.OnShot(ev);
         }
