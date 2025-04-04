@@ -1,5 +1,7 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.Events.EventArgs.Player;
+using PlayerStatsSystem;
 using UnityEngine;
 
 namespace ExtendedItems
@@ -66,6 +68,16 @@ namespace ExtendedItems
 
             temp ^= m;
             return (ushort)temp;
+        }
+
+        /// <summary>
+        /// Creates a custom death message
+        /// </summary>
+        /// <param name="deathmessage"></param>
+        /// <returns>CustomReasonDamageHandler</returns>
+        public static CustomReasonDamageHandler CustomDeath(string deathmessage)
+        {
+            return new CustomReasonDamageHandler(deathmessage);
         }
     }
 }

@@ -95,6 +95,7 @@ namespace ExtendedItems.Items
 
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
+            if(!Check(ev.Item)) { ev.IsAllowed = true; return; }
             ev.Player.Broadcast(5, "You can't change the attachments on this weapon");
             ev.IsAllowed = false;
         }
