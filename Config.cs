@@ -41,5 +41,6 @@ namespace ExtendedItems
         public GrenadeLauncher GrenadeLauncher { get; set; } = new();
         public Sniper Sniper { get; set; } = new();
         public Tranquilizer Tranquilizer { get; set; } = new();
+        public Plastic Plastic { get; set; } = new();
     }
 }
