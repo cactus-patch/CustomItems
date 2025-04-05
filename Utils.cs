@@ -19,20 +19,16 @@ namespace ExtendedItems
             var rotation = room.Rotation;
             var roomPos = room.Position;
             
-            float offsetY = Math.Abs(rotation.eulerAngles.y / 90f);
-            Log.Info(rotation.eulerAngles.y);
-            Log.Info(offsetY);
-            
-            
-            if (Math.Abs(rotation.eulerAngles.y) < 1.0)
-                return new Vector3(roomPos.x + localPos.x, roomPos.y + localPos.y, roomPos.z + localPos.z);
-            if (Math.Abs(rotation.eulerAngles.y - 90f) < 1.0)
-                return new Vector3(roomPos.x + localPos.z, roomPos.y + localPos.y, roomPos.z - localPos.x);
-            if (Math.Abs(rotation.eulerAngles.y - 180f) < 1.0)
-                return new Vector3(roomPos.x - localPos.x, roomPos.y + localPos.y, roomPos.z - localPos.z);
-            if (Math.Abs(rotation.eulerAngles.y - 270f) < 1.0)
-                return new Vector3(roomPos.x - localPos.z, roomPos.y + localPos.y, roomPos.z + localPos.x);
-            return Vector3.zero;
+            double offsetY = Math.Round(Math.Abs(rotation.eulerAngles.y / 90f));
+
+            return offsetY switch
+            {
+                0 => new Vector3(roomPos.x + localPos.x, roomPos.y + localPos.y, roomPos.z + localPos.z),
+                1 => new Vector3(roomPos.x + localPos.z, roomPos.y + localPos.y, roomPos.z - localPos.x),
+                2 => new Vector3(roomPos.x - localPos.x, roomPos.y + localPos.y, roomPos.z - localPos.z),
+                3 => new Vector3(roomPos.x - localPos.z, roomPos.y + localPos.y, roomPos.z + localPos.x),
+                _ => Vector3.zero
+            };
         }
 
         /// <summary>
