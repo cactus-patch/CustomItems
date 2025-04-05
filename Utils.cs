@@ -15,16 +15,23 @@ namespace ExtendedItems
         /// <returns>Vector3</returns>
         public static Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos) {
             var room = Room.Get(roomType);
+            
             var rotation = room.Rotation;
             var roomPos = room.Position;
+            
+            float offsetY = Math.Abs(rotation.eulerAngles.y / 90f);
+            Log.Info(rotation.eulerAngles.y);
+            Log.Info(offsetY);
+            
+            
             if (Math.Abs(rotation.eulerAngles.y) < 1.0)
-            return new Vector3(roomPos.x + localPos.x, roomPos.y + localPos.y, roomPos.z + localPos.z);
+                return new Vector3(roomPos.x + localPos.x, roomPos.y + localPos.y, roomPos.z + localPos.z);
             if (Math.Abs(rotation.eulerAngles.y - 90f) < 1.0)
-            return new Vector3(roomPos.x + localPos.z, roomPos.y + localPos.y, roomPos.z - localPos.x);
+                return new Vector3(roomPos.x + localPos.z, roomPos.y + localPos.y, roomPos.z - localPos.x);
             if (Math.Abs(rotation.eulerAngles.y - 180f) < 1.0)
-            return new Vector3(roomPos.x - localPos.x, roomPos.y + localPos.y, roomPos.z - localPos.z);
+                return new Vector3(roomPos.x - localPos.x, roomPos.y + localPos.y, roomPos.z - localPos.z);
             if (Math.Abs(rotation.eulerAngles.y - 270f) < 1.0)
-            return new Vector3(roomPos.x - localPos.z, roomPos.y + localPos.y, roomPos.z + localPos.x);
+                return new Vector3(roomPos.x - localPos.z, roomPos.y + localPos.y, roomPos.z + localPos.x);
             return Vector3.zero;
         }
 
@@ -39,23 +46,20 @@ namespace ExtendedItems
         /// if(Utils.TryRemoveItem(ev.Player, ItemType.GrenadeHE))
         /// </example>
         /// <returns>bool</returns>
-
         public static bool TryRemoveItem(Player player, ItemType item, short minimum = 0)
         {
-            if (player.CountItem(item) > minimum)
-            {
-                player.RemoveItem(player.Items.First(it => it.Type == item)); 
-                return true;
-            }
-            return false;
+            if (player.CountItem(item) <= minimum) return false;
+            
+            player.RemoveItem(player.Items.First(it => it.Type == item)); 
+            return true;
         }
 
         /// <summary>
-        /// Removes 1 from a ushort (I hate this language sometimes
+        /// Removes 1 from a ushort (I hate this language sometimes)
         /// </summary>
         /// <param name="inp"></param>
         /// <returns>input - 1</returns>
-        public static ushort Subtrat(ushort inp)
+        public static ushort Subtract(ushort inp)
         {
             int temp = inp;
             int m = 1;
@@ -73,11 +77,11 @@ namespace ExtendedItems
         /// <summary>
         /// Creates a custom death message
         /// </summary>
-        /// <param name="deathmessage"></param>
+        /// <param name="deathMessage"></param>
         /// <returns>CustomReasonDamageHandler</returns>
-        public static CustomReasonDamageHandler CustomDeath(string deathmessage)
+        public static CustomReasonDamageHandler CustomDeath(string deathMessage)
         {
-            return new CustomReasonDamageHandler(deathmessage);
+            return new CustomReasonDamageHandler(deathMessage);
         }
     }
 }

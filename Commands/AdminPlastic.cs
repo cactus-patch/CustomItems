@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using CommandSystem;
+﻿using CommandSystem;
 using Exiled.API.Features;
-using UnityEngine;
-using YamlDotNet.Core.Tokens;
 
 namespace ExtendedItems.Commands
 {
@@ -33,17 +29,13 @@ namespace ExtendedItems.Commands
 
             foreach (var charge in Items.Plastic.PlacedCharges.ToList())
             {
-                float posy = charge.Key.Position.y;
-                if (charge.Value != ply)
-                    continue;
+                if (charge.Value != ply) continue;
 
                 Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate);
-
                 i++;
             }
 
-            response = i == 1 ? $"\n<color=green>{i} C4 charge has been detonated!</color>" : $"\n<color=green>{i} C4 charges have been deonated!</color>";
-
+            response = i == 1 ? $"\n<color=green>{i} C4 charge has been detonated!</color>" : $"\n<color=green>{i} C4 charges have been detonated!</color>";
             return true;
         }
     }
