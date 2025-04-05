@@ -14,15 +14,19 @@ namespace ExtendedItems
 
         public override void OnEnabled() {
             Instance = this;
+            
             Log.Info("Registering items");
             CustomItem.RegisterItems(overrideClass: Config);
+            
             base.OnEnabled();
         }
 
         public override void OnDisabled() {
             Instance = null;
+            
             Log.Info("Unregistering items");
             CustomItem.UnregisterItems();
+            
             base.OnDisabled();
         }
     }

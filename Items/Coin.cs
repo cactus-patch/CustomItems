@@ -6,10 +6,8 @@ using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
 using MEC;
-using YamlDotNet.Serialization;
+
 using PlayerEvents = Exiled.Events.Handlers.Player;
-using Random = System.Random;
-using Exiled.API.Extensions;
 
 namespace ExtendedItems.Items
 {
@@ -50,7 +48,6 @@ namespace ExtendedItems.Items
             PlayerEvents.FlippingCoin += OnFlippingCoin;
 
             base.SubscribeEvents();
-
         }
 
         protected override void UnsubscribeEvents()
@@ -62,8 +59,8 @@ namespace ExtendedItems.Items
 
         private void OnFlippingCoin(FlippingCoinEventArgs ev)
         {
-
             if (!Check(ev.Item)) return;
+            
             Timing.CallDelayed(2f, () => {
                 if (ev.IsTails && !ev.Player.IsDead)
                 {

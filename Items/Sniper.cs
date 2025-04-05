@@ -65,6 +65,7 @@ namespace ExtendedItems.Items
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
             if (!Check(ev.Item) || ev.Player.NetId < 2) return;
+            
             ev.IsAllowed = false;
             ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
         }

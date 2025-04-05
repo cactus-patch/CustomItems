@@ -42,7 +42,7 @@ namespace ExtendedItems.Items
 
         [YamlIgnore] private readonly Random _rng = new();
         [YamlIgnore] private readonly Dictionary<uint, float> _resistances = [];
-        public ItemType[] Inventory { get; set; } = { };
+        public ItemType[] Inventory { get; set; } = [];
 
         public override SpawnProperties? SpawnProperties { get; set; } = new() {
             Limit = 1,
@@ -74,23 +74,21 @@ namespace ExtendedItems.Items
         protected override void OnShot(ShotEventArgs ev)
         {
 
-            if (ev.Target == null) return;
+            if (ev.Target == null || Plugin.Instance == null) return;
             if (ev.Target.IsTutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
             { 
-                Exiled.API.Features.Items.Item? item;
-
-                if((bool)(Plugin.Instance?.Config.ReholdItems))
+                Exiled.API.Features.Items.Item? item = null;
+                
+                if((bool)(Plugin.Instance.Config.ReholdItems))
                 {
                     item = ev.Target.CurrentItem;
                 }
-                else
-                {
-                    item = null;
-                }
-
+                
                 var rand = _rng.NextDouble();
                 _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
+                
                 var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
+                
                 if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective)
                 {
                     base.OnShot(ev);
@@ -98,13 +96,17 @@ namespace ExtendedItems.Items
                 }
 
                 var lift = ev.Player.Lift;
+                
                 ev.Target.Scale = Vector3.zero;
                 _resistances[ev.Target.NetId] = tResistance + Resistance;
+                
                 ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
                 ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
                 ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
+                
                 ev.Target.IsGodModeEnabled = true;
                 Ragdoll? ragdoll = null;
+                
                 if (ev.Target.IsHuman)
                 {
                     ev.Target.CurrentItem = null;
@@ -134,20 +136,22 @@ namespace ExtendedItems.Items
                 {
                     ev.Target.Inventory.enabled = true;
                     ev.Target.IsGodModeEnabled = false;
+                    
                     ev.Target.DisableEffect(EffectType.Ensnared);
                     ev.Target.DisableEffect(EffectType.Flashed);
                     ev.Target.DisableEffect(EffectType.Deafened);
                     ev.Target.DisableEffect(EffectType.AmnesiaItems);
+                    
                     ev.Target.CurrentItem = item;
                     if (lift != null)
                         ev.Target.Teleport(lift.Position + Vector3.up * 2f);
                     else
                         ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f);
+                    
                     ev.Target.Scale = Vector3.one;
                     ragdoll?.Destroy();
                 });
             }
-
             base.OnShot(ev);
         }
 
@@ -157,12 +161,10 @@ namespace ExtendedItems.Items
             if(ev.Firearm.MagazineAmmo >= 4)
             {
                 ev.Firearm.MagazineAmmo = 2;
-                return;
             }
             else
             {
                 Log.Debug("Hi Cactus");
-                return;
             }
         }
     }
