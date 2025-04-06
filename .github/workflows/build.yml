@@ -21,4 +21,4 @@ jobs:
       - run: dotnet build ExtendedItems.csproj
       - uses: actions/upload-artifact@v4.5.0
         with:
-          path: bin/Debug/net48/CustomItems.dll
+          path: bin/Debug/net48/ExtendedItems.dll
