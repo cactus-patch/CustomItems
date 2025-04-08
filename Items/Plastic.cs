@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using Exiled.API.Enums;
+﻿using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Items;
@@ -13,14 +9,11 @@ using Exiled.Events.EventArgs.Map;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Server;
 
-using InventorySystem.Items.Pickups;
 using InventorySystem.Items.ThrowableProjectiles;
 using MEC;
-using Mirror;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
-using Object = UnityEngine.Object;
 using PlayerEvent = Exiled.Events.Handlers.Player;
 
 
@@ -46,7 +39,7 @@ namespace ExtendedItems.Items
             ],
             DynamicSpawnPoints =
             [
-                new()
+                new DynamicSpawnPoint()
                 {
                     Chance = 100,
                     Location = SpawnLocationType.InsideSurfaceNuke,
@@ -59,37 +52,33 @@ namespace ExtendedItems.Items
             Detonate = 1,
             Drop = 2,
         }
-        public C4RemoveMethod RemoveMethod = C4RemoveMethod.Drop;
+        
 
         [YamlIgnore]
         public override ItemType Type { get; set; } = ItemType.GrenadeHE;
 
         public void Handler(Pickup? charge, C4RemoveMethod method = C4RemoveMethod.Drop)
         {
-            if (charge?.Position is null)
-                return;
+            if (charge?.Position is null) return;
+            
             switch (method)
             {
-                case C4RemoveMethod.Remove:
-                    {
-                        break;
-                    }
-
                 case C4RemoveMethod.Detonate:
-                    {
-                        ExplosiveGrenade grenade = (ExplosiveGrenade)Item.Create(Type);
-                        grenade.FuseTime = 0.1f;
-                        grenade.SpawnActive(charge.Position);
-                        break;
-                    }
+                { 
+                    ExplosiveGrenade grenade = (ExplosiveGrenade)Item.Create(Type);
+                    grenade.FuseTime = 0.1f;
+                    
+                    grenade.SpawnActive(charge.Position); 
+                    break;
+                }
 
                 case C4RemoveMethod.Drop:
-                    {
-                        TrySpawn(Id, charge.Position, out _);
-                        break;
-                    }
+                {
+                    TrySpawn(Id, charge.Position, out _);
+                    break;
+                }
             }
-
+            
             PlacedCharges.Remove(charge);
             charge.Destroy();
         }
@@ -132,27 +121,25 @@ namespace ExtendedItems.Items
         protected override void OnExploding(ExplodingGrenadeEventArgs ev)
         {
             Vector3 pos = ev.Position;
+
             foreach (Player pl in Player.List)
             {
-                if (Vector3.Distance(pl.Position, pos) <= 100)
+                if (Vector3.Distance(pl.Position, pos) > 100) return;
+                if (pl.Role.Team != ev.Player.Role.Team && !pl.IsCuffed) return;
+                
+                float maxArtificialHealth = 300;
+                float currentArtificialHealth = pl.ArtificialHealth;
+                float newArtificialHealth = currentArtificialHealth + maxArtificialHealth;
+                
+                pl.ArtificialHealth = newArtificialHealth;
+                
+                Timing.CallDelayed(0.1f, () =>
                 {
-                    if (pl.Role.Team == ev.Player.Role.Team || pl.IsCuffed)
+                    if (pl.ArtificialHealth > maxArtificialHealth)
                     {
-                        float maxArtificialHealth = 300;
-                        float currentArtificialHealth = pl.ArtificialHealth;
-                        float newArtificialHealth = currentArtificialHealth + maxArtificialHealth;
-
-                        pl.ArtificialHealth = newArtificialHealth;
-
-                        Timing.CallDelayed(0.1f, () =>
-                        {
-                            if (pl.ArtificialHealth > maxArtificialHealth)
-                            {
-                                pl.ArtificialHealth = maxArtificialHealth;
-                            }
-                        });
+                        pl.ArtificialHealth = maxArtificialHealth;
                     }
-                }
+                });
             }
             PlacedCharges.Remove(Pickup.Get(ev.Projectile.Base));
         }
@@ -171,27 +158,24 @@ namespace ExtendedItems.Items
             {
                 if (charge.Value == ev.Player)
                 {
-                    Handler(charge.Key, RemoveMethod);
+                    Handler(charge.Key, C4RemoveMethod.Drop);
                 }
             }
         }
 
         private void OnShooting(ShootingEventArgs ev)
         {
-            
             Vector3 forward = ev.Player.CameraTransform.forward;
-            if (Physics.Raycast(ev.Player.CameraTransform.position + forward, forward, out var hit, 500))
-            {
-                EffectGrenade grenade = hit.collider.gameObject.GetComponentInParent<EffectGrenade>();
-                if (grenade == null)
-                {
-                    return;
-                }
 
-                if (PlacedCharges.ContainsKey(Pickup.Get(grenade)))
-                {
-                    Handler(Pickup.Get(grenade), Plastic.C4RemoveMethod.Remove);
-                }
+            if (!Physics.Raycast(ev.Player.CameraTransform.position + forward, forward, out var hit, 500)) 
+                return;
+            
+            EffectGrenade grenade = hit.collider.gameObject.GetComponentInParent<EffectGrenade>();
+            
+            if (grenade == null) return;
+            if (PlacedCharges.ContainsKey(Pickup.Get(grenade))) 
+            {
+                Handler(Pickup.Get(grenade), Plastic.C4RemoveMethod.Remove);
             }
         }
 

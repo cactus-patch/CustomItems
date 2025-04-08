@@ -5,7 +5,6 @@ using Exiled.API.Features.Components;
 using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
-using Exiled.Events.EventArgs.Interfaces;
 using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
@@ -34,7 +33,7 @@ namespace ExtendedItems.Items
             Limit = 1,
             DynamicSpawnPoints =
             [
-                new()
+                new DynamicSpawnPoint()
                 {
                     Chance = 100,
                     Location = SpawnLocationType.InsideHidChamber,
@@ -45,10 +44,13 @@ namespace ExtendedItems.Items
         protected override void OnShooting(ShootingEventArgs ev)
         {
             var throwable = ev.Player.ThrowGrenade(ProjectileType.FragGrenade);
-            ushort ammo = E.Subtrat((ushort)ev.Firearm.MagazineAmmo);
+            ushort ammo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
+            
             throwable.Projectile.GameObject.AddComponent<CollisionHandler>().Init(ev.Player.GameObject, throwable.Projectile.Base);
+            
             ev.Firearm.MagazineAmmo = 0;
             ev.Firearm.BarrelAmmo = 0;
+            
             ev.Player.AddAmmo(AmmoType.Nato762, ammo);
 
             base.OnShooting(ev);
@@ -64,18 +66,12 @@ namespace ExtendedItems.Items
             }
             else 
             {
-                if(ev.Player.GetAmmo(AmmoType.Nato762) == 0)
-                {
-                    ev.IsAllowed = false;
-                    ev.Player.ShowHint("You need 1 7.62 to fire.", 5);
-                    base.OnReloading(ev);
-                }
-                else
-                {
-                    ev.IsAllowed = false;
-                    ev.Player.ShowHint("You need a HE Grenade to reload this weapon", 5);
-                    base.OnReloading(ev);
-                }
+                ev.IsAllowed = false;
+                ev.Player.ShowHint(
+                    ev.Player.GetAmmo(AmmoType.Nato762) == 0
+                        ? "You need 1 7.62 to fire."
+                        : "You need a HE Grenade to reload this weapon", 5);
+                base.OnReloading(ev);
             }
         }
 
@@ -96,6 +92,7 @@ namespace ExtendedItems.Items
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
             if(!Check(ev.Item)) { ev.IsAllowed = true; return; }
+            
             ev.Player.Broadcast(5, "You can't change the attachments on this weapon");
             ev.IsAllowed = false;
         }
@@ -106,6 +103,7 @@ namespace ExtendedItems.Items
             {
                 float comp = -2;
                 var yVelocity = throwable.Projectile.Rigidbody.velocity.y - comp;
+                
                 Log.Info(yVelocity);
             }
         }

@@ -40,11 +40,13 @@ namespace ExtendedItems.Items
         {
             var room = Room.Get(RoomType.Lcz173);
             var globalPos = Utils.GetGlobalCords(RoomType.Lcz173, new Vector3(16.68f, 11.6f, 8.11f));
+            
             var rotation = room.Rotation;
             var rot = new Vector3(0f, 1f, 0.0f);
             var quaternion = Quaternion.Euler(rot.x, rotation.eulerAngles.y + rot.y, rot.z);
 
             var item = Spawn(globalPos)!;
+            
             item.Rotation = quaternion;
             item.Rigidbody.useGravity = false;
             item.Rigidbody.detectCollisions = false;
@@ -70,11 +72,10 @@ namespace ExtendedItems.Items
 
             try {
                 var item = ev.Player.CurrentItem;
-                if (item == null) 
+                if (item == null)
                 {
                     ev.Player.EnableEffect(EffectType.SeveredHands, byte.MaxValue);
-                    return;
-                }
+                } 
                 else {
                     if(item.Type == ItemType.SCP330)
                     {
@@ -86,14 +87,14 @@ namespace ExtendedItems.Items
                     if (_rng.NextDouble() < LoseChance) return;
                     item = ev.Player.AddItem(ItemTypes[_rng.Next(0, ItemTypes.Length)]);
                     ev.Player.CurrentItem = item;
-                    return;
                 }
+                return;
             }
             catch {
                 // ignored
             }
 
-        base.OnPickingUp(ev);
+            base.OnPickingUp(ev);
         }
     }
 }
