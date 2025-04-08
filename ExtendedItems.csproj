@@ -47,6 +47,8 @@
 
     <ItemGroup>
         <PackageReference Include="ExMod.Exiled" Version="9.5.0" />
+        <PackageReference Include="Unity" Version="5.11.10" />
+        <PackageReference Include="Unity.Container" Version="5.11.11" />
     </ItemGroup>
 
 </Project>
