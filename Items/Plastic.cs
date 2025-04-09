@@ -39,10 +39,10 @@ namespace ExtendedItems.Items
             ],
             DynamicSpawnPoints =
             [
-                new DynamicSpawnPoint()
+                new DynamicSpawnPoint
                 {
                     Chance = 100,
-                    Location = SpawnLocationType.InsideSurfaceNuke,
+                    Location = SpawnLocationType.InsideEscapePrimary,
                 },
             ],
         };
