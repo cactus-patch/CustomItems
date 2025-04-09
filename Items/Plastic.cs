@@ -120,25 +120,22 @@ namespace ExtendedItems.Items
 
         protected override void OnExploding(ExplodingGrenadeEventArgs ev)
         {
-            Vector3 pos = ev.Position;
+            Player[] players = ev.TargetsToAffect.ToArray();
+            float maxArtificialHealth = 0;
 
             foreach (Player pl in Player.List)
             {
-                if (Vector3.Distance(pl.Position, pos) > 100) return;
-                if (pl.Role.Team != ev.Player.Role.Team && !pl.IsCuffed) return;
-                
-                float maxArtificialHealth = 300;
-                float currentArtificialHealth = pl.ArtificialHealth;
-                float newArtificialHealth = currentArtificialHealth + maxArtificialHealth;
-                
-                pl.ArtificialHealth = newArtificialHealth;
-                
-                Timing.CallDelayed(0.1f, () =>
+                float damage = 0;
+                if(pl.Role.Team == ev.Player.Role.Team && ev.Player.Role.Team != PlayerRoles.Team.SCPs)
                 {
-                    if (pl.ArtificialHealth > maxArtificialHealth)
-                    {
-                        pl.ArtificialHealth = maxArtificialHealth;
-                    }
+                    maxArtificialHealth = pl.MaxArtificialHealth;
+                }
+                
+                Timing.CallDelayed(0.2f, () =>
+                {
+                    if(pl.ArtificialHealth < 300) damage = 300 - pl.ArtificialHealth;
+                    pl.AddAhp(-300);
+                    pl.Hurt(damage, ev.Player, DamageType.Firearm);
                 });
             }
             PlacedCharges.Remove(Pickup.Get(ev.Projectile.Base));
