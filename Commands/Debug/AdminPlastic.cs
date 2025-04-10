@@ -1,19 +1,17 @@
 ﻿using CommandSystem;
 using Exiled.API.Features;
 
-namespace ExtendedItems.Commands
+namespace ExtendedItems.Commands.Debug
 {
     [CommandHandler(typeof(ClientCommandHandler))]
     class PlasticDebug : ICommand
     {
+        
         public string Command => "Ddetonate";
 
         public string[] Aliases => ["Ddet", "Dd", "Dboom"];
 
         public string Description => "Detonate command for C4 charges that you have placed";
-
-        public enum Zone { Surface = 1000, Lcz = 0, Hcz = -1000 }
-        private const string RequiredPermission = "ExtendedItems.Debug";
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
