@@ -46,5 +46,6 @@ namespace ExtendedItems
         public Sniper Sniper { get; set; } = new();
         public Tranquilizer Tranquilizer { get; set; } = new();
         public Plastic Plastic { get; set; } = new();
+        public AdminAbuse AdminAbuse { get; set; } = new();
     }
 }
