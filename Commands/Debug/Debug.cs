@@ -1,6 +1,7 @@
 using CommandSystem;
+using Exiled.API.Features;
 
-namespace ExtendedItems.Commands.Debug;
+namespace ExtendedItems.Commands.Debug
 {
     [CommandHandler(typeof(ClientCommandHandler))]
     internal sealed class Debug : ParentCommand
@@ -13,11 +14,11 @@ namespace ExtendedItems.Commands.Debug;
 
         public override void LoadGeneratedCommands()
         {
-            RegisterCommand(Debug.Locate.Instance);
+            RegisterCommand(Locate.Instance);
         }
         protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            if(!sender.CheckPermission("extendeditems.debug"))
+            if(!sender.CheckPermission(ExtendedItems.Plugin.Instance!.Config.DebugPermissions))
             {
                 response = "<color=red>Permission Denied.</color>";
                 Log.Error($"{sender} tried to access admin commands!");

@@ -79,7 +79,7 @@ namespace ExtendedItems.Items
             { 
                 Exiled.API.Features.Items.Item? item = null;
                 
-                if((bool)(Plugin.Instance.Config.ReholdItems))
+                if((bool)(Plugin.Instance.Config.ReholdItems!))
                 {
                     item = ev.Target.CurrentItem;
                 }

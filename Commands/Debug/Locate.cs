@@ -1,7 +1,8 @@
 using CommandSystem;
-using Exiled.CustomItems.API.Features;
+/*using Exiled.CustomItems.API.Features;*/
 
-namespace ExtendedItems.Commands.Debug{
+namespace ExtendedItems.Commands.Debug
+{
     internal sealed class Locate : ICommand
     {
         public static Locate Instance { get; } = new();
@@ -12,17 +13,20 @@ namespace ExtendedItems.Commands.Debug{
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            if(!sender.CheckPermission("extendeditems.debug"))
+            if (!sender.CheckPermission(ExtendedItems.Plugin.Instance!.Config.DebugPermissions))
             {
                 response = "Permission Denied";
                 return false;
             }
 
-            if(arguments.Count <= 1)
+            response = "Not Implemented Yet.";
+            
+            if (arguments.Count <= 1)
             {
-
+                return false;
             }
-        }
 
+            return false;
+        }
     }
 }

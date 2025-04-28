@@ -14,6 +14,9 @@ namespace ExtendedItems
         
         [Description("Weather the Tranq is effective on Tutorials")]
         public bool EffectiveOnTutorials = false;
+
+        [Description("Permissions required to access Debug Commands")]
+        public PlayerPermissions DebugPermissions = PlayerPermissions.ServerConsoleCommands;
         
         [Description("The possable hints shown when you Win")]
         public string[] WinHints { get; set; } =

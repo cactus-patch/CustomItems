@@ -17,8 +17,8 @@ jobs:
           dotnet-version: 9
           cache: true
       - run: curl -sSL https://ftp.lunarware.tech/randomrefs/refs.tar.gz | tar xvzf -
-      - run: dotnet restore ExtendedItems.csproj --locked-mode
-      - run: dotnet build ExtendedItems.csproj
+      - run: dotnet restore CustomItems.sln --locked-mode
+      - run: dotnet build CustomItems.sln
       - uses: actions/upload-artifact@v4.5.0
         with:
           path: bin/Debug/net48/ExtendedItems.dll
