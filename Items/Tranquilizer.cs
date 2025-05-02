@@ -117,14 +117,40 @@ namespace ExtendedItems.Items
             Ragdoll? ragdoll = null;
             
             if (ev.Target.IsHuman)
-            { ev.Target.CurrentItem = null; ev.Target.Inventory.enabled = false; ev.Target.EnableEffect(EffectType.AmnesiaItems, byte.MaxValue);
+            { 
+                ev.Target.CurrentItem = null; 
+                ev.Target.Inventory.enabled = false; 
+                ev.Target.EnableEffect(EffectType.AmnesiaItems, byte.MaxValue);
             }
             else
-            { if (ev.Target.Role != RoleTypeId.Scp106) { ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname, new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target); } if (ev.Target.Role == RoleTypeId.Scp096) { var crybaby = (Scp096Role)ev.Target.Role; if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed) { crybaby.RageManager.ServerEndEnrage(); } }
+            {
+                if (ev.Target.Role != RoleTypeId.Scp106)
+                {
+                    ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname, new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
+                } 
+                if (ev.Target.Role == RoleTypeId.Scp096) 
+                { 
+                    var crybaby = (Scp096Role)ev.Target.Role;
+                    if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed)
+                    {
+                        crybaby.RageManager.ServerEndEnrage();
+                    } 
+                }
             }
             Timing.CallDelayed(5, () =>
-            { ev.Target.Inventory.enabled = true; ev.Target.IsGodModeEnabled = false; ev.Target.DisableEffect(EffectType.Ensnared); ev.Target.DisableEffect(EffectType.Flashed); ev.Target.DisableEffect(EffectType.Deafened); ev.Target.DisableEffect(EffectType.AmnesiaItems); ev.Target.CurrentItem = item; if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 2f); else ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f); ev.Target.Scale = Vector3.one; ragdoll?.Destroy();
+            { 
+                ev.Target.Inventory.enabled = true; 
+                ev.Target.IsGodModeEnabled = false; 
+                ev.Target.DisableEffect(EffectType.Ensnared); 
+                ev.Target.DisableEffect(EffectType.Flashed); 
+                ev.Target.DisableEffect(EffectType.Deafened); 
+                ev.Target.DisableEffect(EffectType.AmnesiaItems); 
+                ev.Target.CurrentItem = item; 
+                if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 2f); 
+                else ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f); ev.Target.Scale = Vector3.one; 
+                ragdoll?.Destroy();
             });
+            
             base.OnShot(ev);
         }
 
