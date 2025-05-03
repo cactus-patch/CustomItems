@@ -41,7 +41,9 @@ namespace ExtendedItems.Items
         public float Resistance { get; set; } = 0.05f;
 
         [Description("Whether tranquilizer should not effect those with AHP.")]
-        public bool AhpBuff { get; set; } = true;
+        public bool AdrenalineBuff { get; set; } = true;
+        private bool Affected { get; set; } = true;
+
 
         [YamlIgnore] private readonly Random _rng = new();
         [YamlIgnore] private readonly Dictionary<uint, float> _resistances = [];
@@ -76,15 +78,16 @@ namespace ExtendedItems.Items
 
         protected override void OnShot(ShotEventArgs ev)
         {
+            Affected = true;
 
             if (ev.Target == null || Plugin.Instance == null) return;
             if (ev.Target.IsTutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
-            
-            if (AhpBuff && ev.Target.ArtificialHealth >= 1) // AHP cancel, buffs anti-cola and blue candy
+
+            foreach (var targetActiveEffect in ev.Target.ActiveEffects)
             {
-                base.OnShot(ev);
-                return;
-            };
+                if (AdrenalineBuff && targetActiveEffect.name == "Invigorated") Affected = false;
+            }
+            if (!Affected) return;
             
             Exiled.API.Features.Items.Item? item = null;
                 
