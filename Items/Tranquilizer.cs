@@ -40,7 +40,7 @@ namespace ExtendedItems.Items
         [Description("Resistance to remove from the chance after being shot.")]
         public float Resistance { get; set; } = 0.05f;
 
-        [Description("Whether tranquilizer should not effect those with AHP.")]
+        [Description("Whether tranquilizer should not effect those with Adrenaline.")]
         public bool AdrenalineBuff { get; set; } = true;
         private bool Affected { get; set; } = true;
 
