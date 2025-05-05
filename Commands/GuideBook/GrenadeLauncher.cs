@@ -11,7 +11,7 @@ namespace ExtendedItems.Commands.GuideBook
         public string Description => "Information on the Grenade Launcher ";
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            response = "A modified Logister that takes one (1) 7.62 bullet and one (1) High Explosive Grenade. ";
+            response = "A modified Logister that takes one (1) 7.62 bullet and one (1) High Explosive Grenade.\nStand away from walls when fireing this as it is known to randomly explode and kill the shooter. ";
             return true;
         }
     }

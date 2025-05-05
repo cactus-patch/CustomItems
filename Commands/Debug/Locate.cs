@@ -13,14 +13,15 @@ namespace ExtendedItems.Commands.Debug
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            if (!sender.CheckPermission(ExtendedItems.Plugin.Instance!.Config.DebugPermissions))
+            if (!sender.CheckPermission(Plugin.Instance!.Config.DebugPermissions))
             {
                 response = "Permission Denied";
                 return false;
             }
 
             response = "Not Implemented Yet.";
-            
+            // how tf do we implement this?
+
             if (arguments.Count <= 1)
             {
                 return false;
