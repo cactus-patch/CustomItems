@@ -10,7 +10,7 @@ namespace ExtendedItems
         public bool Debug { get; set; } = false;
         
         [Description("Weather a tranqed target hold the item they had when they were tranqed")]
-        public bool? ReholdItems = false;
+        public bool ReholdItems = false;
         
         [Description("Weather the Tranq is effective on Tutorials")]
         public bool EffectiveOnTutorials = false;
