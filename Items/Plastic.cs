@@ -22,8 +22,9 @@ namespace ExtendedItems.Items
     [CustomItem(ItemType.GrenadeHE)]
     public class Plastic : CustomGrenade
     {
-        public override string Name { get; set; } = "Hexahydro-1,3,5-trinitro-1,3,5-triazine";
-        public override string Description { get; set; } = "A Remote Explosive that can be detonated when you are within 100m (11.2359550562 Big macs)";
+        // Former Name: Hexahydro-1,3,5-trinitro-1,3,5-triazine
+        public override string Name { get; set; } = "C4 Explosive Charge";
+        public override string Description { get; set; } = "A Remote Explosive that can be detonated when you are within 100m (about 1049.866 Big macs)";
         public override uint Id { get; set; } = 806;
         public override float Weight { get; set; } = 1.5f;
         public override bool ExplodeOnCollision { get; set; } = false;
