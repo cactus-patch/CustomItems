@@ -29,7 +29,7 @@ namespace ExtendedItems.Items
         [YamlIgnore] private readonly Random _rng = new();
 
         [Description("Types of items that can be traded from SCP-1162.")]
-        public ItemType[] ItemTypes { get; set; } = 
+        public ItemType[] ItemTypes { get; set; } =
         [
             ItemType.KeycardJanitor,
             ItemType.KeycardZoneManager,
@@ -54,7 +54,8 @@ namespace ExtendedItems.Items
             ItemType.GrenadeFlash,
             ItemType.Coin,
             ItemType.Flashlight,
-            ItemType.Radio
+            ItemType.Radio,
+            
         ];
 
         private void OnRoundStarted() 
