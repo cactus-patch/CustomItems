@@ -53,19 +53,13 @@ namespace ExtendedItems
         /// <summary>
         /// Removes 1 from a ushort (I hate this language sometimes)
         /// </summary>
-        /// <param name="inp"></param>
+        /// <param name="input"></param>
         /// <returns>input - 1</returns>
-        public static ushort Subtract(ushort inp)
+        public static ushort Subtract(ushort input)
         {
-            int temp = inp;
+            int temp = input;
             int m = 1;
-
-            while (!((temp & m) > 0))
-            {
-                temp ^= m;
-                m <<= 1;
-            }
-
+            while (!((temp & m) > 0)) { temp ^= m; m <<= 1; }
             temp ^= m;
             return (ushort)temp;
         }

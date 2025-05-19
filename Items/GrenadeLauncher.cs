@@ -64,7 +64,8 @@ namespace ExtendedItems.Items
                 ev.Player.RemoveItem(ev.Player.Items.First(it => it.Type == ItemType.GrenadeHE));
                 base.OnReloading(ev);
             }
-            else 
+            
+            else
             {
                 ev.IsAllowed = false;
                 ev.Player.ShowHint(
