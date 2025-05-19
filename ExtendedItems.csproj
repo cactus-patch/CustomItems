@@ -9,15 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-<<<<<<< HEAD
-        <PackageReference Include="ExMod.Exiled" Version="9.6.0" />
-=======
         <PackageReference Include="ExMod.Exiled" Version="9.6.0" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
->>>>>>> f51407b18e385cf07c69e5c23fb15598a66194e7
     </ItemGroup>
 
     <ItemGroup>

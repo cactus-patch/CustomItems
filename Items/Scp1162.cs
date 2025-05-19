@@ -42,6 +42,7 @@ namespace ExtendedItems.Items
             ItemType.KeycardFacilityManager,
             ItemType.KeycardChaosInsurgency,
             ItemType.KeycardO5,
+            ItemType.SurfaceAccessPass,
             ItemType.GunCOM15,
             ItemType.GunCOM18,
             ItemType.Painkillers,
@@ -112,6 +113,7 @@ namespace ExtendedItems.Items
                     
 
                     ev.Player.CurrentItem = item;
+                    
                 }
                 return;
             }
