@@ -10,10 +10,13 @@ namespace ExtendedItems
         public bool Debug { get; set; } = false;
         
         [Description("Weather a tranqed target hold the item they had when they were tranqed")]
-        public bool? ReholdItems = false;
+        public bool ReholdItems = false;
         
         [Description("Weather the Tranq is effective on Tutorials")]
         public bool EffectiveOnTutorials = false;
+
+        [Description("Permissions required to access Debug Commands")]
+        public PlayerPermissions DebugPermissions = PlayerPermissions.ServerConsoleCommands;
         
         [Description("The possable hints shown when you Win")]
         public string[] WinHints { get; set; } =
@@ -46,5 +49,6 @@ namespace ExtendedItems
         public Sniper Sniper { get; set; } = new();
         public Tranquilizer Tranquilizer { get; set; } = new();
         public Plastic Plastic { get; set; } = new();
+        public AdminAbuse AdminAbuse { get; set; } = new();
     }
 }

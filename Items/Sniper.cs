@@ -14,7 +14,7 @@ namespace ExtendedItems.Items
     public class Sniper : CustomWeapon
     {
         public override uint Id { get; set; } = 802;
-        public override string Name { get; set; } = "SR-119";
+        public override string Name { get; set; } = "SR-118";
 
         public override string Description { get; set; } = "A modified E-11 that fires 5.56 at supersonic velocity that deals significantly more damage";
 

@@ -12,8 +12,6 @@ namespace ExtendedItems.Commands
 
         public string Description => "Detonate command for C4 charges that you have placed";
 
-        public enum Zone { Surface = 1000, Lcz = 0, Hcz = -1000}
-
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             Player ply = Player.Get(sender);

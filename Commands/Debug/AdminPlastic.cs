@@ -16,25 +16,29 @@ namespace ExtendedItems.Commands.Debug
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             Player ply = Player.Get(sender);
-
-            if (!Items.Plastic.PlacedCharges.ContainsValue(ply))
+            if (!sender.CheckPermission(Plugin.Instance!.Config.DebugPermissions))
             {
-                response = "\n<color=red>You've haven't placed any C4 charges!</color>";
-                return false;
+                if (!Items.Plastic.PlacedCharges.ContainsValue(ply))
+                {
+                    response = "\n<color=red>You've haven't placed any C4 charges!</color>";
+                    return false;
+                }
+
+                int i = 0;
+
+                foreach (var charge in Items.Plastic.PlacedCharges.ToList())
+                {
+                    if (charge.Value != ply) continue;
+
+                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate);
+                    i++;
+                }
+
+                response = i == 1 ? $"\n<color=green>{i} C4 charge has been detonated!</color>" : $"\n<color=green>{i} C4 charges have been detonated!</color>";
+                return true;
             }
-
-            int i = 0;
-
-            foreach (var charge in Items.Plastic.PlacedCharges.ToList())
-            {
-                if (charge.Value != ply) continue;
-
-                Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate);
-                i++;
-            }
-
-            response = i == 1 ? $"\n<color=green>{i} C4 charge has been detonated!</color>" : $"\n<color=green>{i} C4 charges have been detonated!</color>";
-            return true;
+            response = "<color=red>Permission Denied.</color>";
+            return false;
         }
     }
 }

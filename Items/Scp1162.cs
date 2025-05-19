@@ -1,10 +1,12 @@
-using System.ComponentModel;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
+using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
+using InventorySystem.Items.Usables;
+using System.ComponentModel;
 using UnityEngine;
 using YamlDotNet.Serialization;
 using Random = System.Random;
@@ -29,11 +31,30 @@ namespace ExtendedItems.Items
         [Description("Types of items that can be traded from SCP-1162.")]
         public ItemType[] ItemTypes { get; set; } = 
         [
+            ItemType.KeycardJanitor,
+            ItemType.KeycardZoneManager,
+            ItemType.KeycardScientist,
+            ItemType.KeycardContainmentEngineer,
+            ItemType.KeycardResearchCoordinator,
+            ItemType.KeycardMTFPrivate,
+            ItemType.KeycardMTFOperative,
+            ItemType.KeycardMTFCaptain,
+            ItemType.KeycardFacilityManager,
+            ItemType.KeycardChaosInsurgency,
+            ItemType.KeycardO5,
+            ItemType.GunCOM15,
+            ItemType.GunCOM18,
+            ItemType.Painkillers,
             ItemType.Medkit,
             ItemType.Adrenaline,
-            ItemType.KeycardGuard,
-            ItemType.KeycardScientist,
-            ItemType.KeycardZoneManager
+            ItemType.SCP500,
+            ItemType.SCP207,
+            ItemType.AntiSCP207,
+            ItemType.GrenadeHE,
+            ItemType.GrenadeFlash,
+            ItemType.Coin,
+            ItemType.Flashlight,
+            ItemType.Radio
         ];
 
         private void OnRoundStarted() 
@@ -86,6 +107,9 @@ namespace ExtendedItems.Items
                     ev.Player.RemoveItem(item);
                     if (_rng.NextDouble() < LoseChance) return;
                     item = ev.Player.AddItem(ItemTypes[_rng.Next(0, ItemTypes.Length)]);
+
+                    
+
                     ev.Player.CurrentItem = item;
                 }
                 return;

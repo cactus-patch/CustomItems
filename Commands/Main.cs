@@ -19,6 +19,7 @@ namespace ExtendedItems.Commands
         public override void LoadGeneratedCommands()
         {
             RegisterCommand(GuideBook.Help.Instance);
+            RegisterCommand(Debug.Debug.Instance);
         }
         protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {

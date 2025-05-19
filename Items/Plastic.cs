@@ -22,8 +22,9 @@ namespace ExtendedItems.Items
     [CustomItem(ItemType.GrenadeHE)]
     public class Plastic : CustomGrenade
     {
-        public override string Name { get; set; } = "Hexahydro-1,3,5-trinitro-1,3,5-triazine";
-        public override string Description { get; set; } = "A Remote Explosive that can be detonated when you are within 100m (11.2359550562 Big macs)";
+        // Former Name: Hexahydro-1,3,5-trinitro-1,3,5-triazine
+        public override string Name { get; set; } = "C4 Explosive Charge";
+        public override string Description { get; set; } = "A Remote Explosive that can be detonated when you are within 100m (about 1049.866 Big macs)";
         public override uint Id { get; set; } = 806;
         public override float Weight { get; set; } = 1.5f;
         public override bool ExplodeOnCollision { get; set; } = false;
@@ -120,22 +121,22 @@ namespace ExtendedItems.Items
 
         protected override void OnExploding(ExplodingGrenadeEventArgs ev)
         {
-            Player[] players = ev.TargetsToAffect.ToArray();
-            float maxArtificialHealth = 0;
+            /*Player[] players = ev.TargetsToAffect.ToArray();*/
+            /*float maxArtificialHealth = 0;*/
 
             foreach (Player pl in Player.List)
             {
                 float damage = 0;
-                if(pl.Role.Team == ev.Player.Role.Team && ev.Player.Role.Team != PlayerRoles.Team.SCPs)
+                /*if(pl.Role.Team == ev.Player.Role.Team && ev.Player.Role.Team != PlayerRoles.Team.SCPs)
                 {
                     maxArtificialHealth = pl.MaxArtificialHealth;
-                }
+                }*/
                 
                 Timing.CallDelayed(0.2f, () =>
                 {
                     if(pl.ArtificialHealth < 300) damage = 300 - pl.ArtificialHealth;
                     pl.AddAhp(-300);
-                    pl.Hurt(damage, ev.Player, DamageType.Firearm);
+                    pl.Hurt(ev.Player, damage, DamageType.Firearm, null);
                 });
             }
             PlacedCharges.Remove(Pickup.Get(ev.Projectile.Base));
@@ -145,7 +146,7 @@ namespace ExtendedItems.Items
         {
             foreach (var charge in PlacedCharges.ToList())
             {
-                if (charge.Value == ev.Player) Handler(charge.Key, Plastic.C4RemoveMethod.Remove);
+                if (charge.Value == ev.Player) Handler(charge.Key, C4RemoveMethod.Remove);
             }
         }
 
@@ -155,7 +156,7 @@ namespace ExtendedItems.Items
             {
                 if (charge.Value == ev.Player)
                 {
-                    Handler(charge.Key, C4RemoveMethod.Drop);
+                    Handler(charge.Key);
                 }
             }
         }
@@ -172,7 +173,7 @@ namespace ExtendedItems.Items
             if (grenade == null) return;
             if (PlacedCharges.ContainsKey(Pickup.Get(grenade))) 
             {
-                Handler(Pickup.Get(grenade), Plastic.C4RemoveMethod.Remove);
+                Handler(Pickup.Get(grenade), C4RemoveMethod.Remove);
             }
         }
 
