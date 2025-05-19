@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ExMod.Exiled" Version="9.5.1" />
+        <PackageReference Include="ExMod.Exiled" Version="9.6.0" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -52,9 +52,6 @@
       </Reference>
       <Reference Include="NorthwoodLib">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\NorthwoodLib.dll</HintPath>
-      </Reference>
-      <Reference Include="PluginAPI">
-        <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\PluginAPI.dll</HintPath>
       </Reference>
       <Reference Include="Pooling">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Pooling.dll</HintPath>
@@ -133,9 +130,6 @@
       </Reference>
       <Reference Include="Unity.TextMeshPro">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Unity.TextMeshPro.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Timeline">
-        <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Unity.Timeline.dll</HintPath>
       </Reference>
       <Reference Include="Unity.VisualEffectGraph.Runtime">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Unity.VisualEffectGraph.Runtime.dll</HintPath>
@@ -227,9 +221,6 @@
       <Reference Include="UnityEngine.PhysicsModule">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
       </Reference>
-      <Reference Include="UnityEngine.ProfilerModule">
-        <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.ProfilerModule.dll</HintPath>
-      </Reference>
       <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
       </Reference>
@@ -281,17 +272,11 @@
       <Reference Include="UnityEngine.UIElementsModule">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
       </Reference>
-      <Reference Include="UnityEngine.UIElementsNativeModule">
-        <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.UIElementsNativeModule.dll</HintPath>
-      </Reference>
       <Reference Include="UnityEngine.UIModule">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.UIModule.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.UmbraModule">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.UmbraModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UNETModule">
-        <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.UNETModule.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.UnityAnalyticsCommonModule">
         <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.UnityAnalyticsCommonModule.dll</HintPath>
