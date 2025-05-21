@@ -1,4 +1,5 @@
 using ExtendedItems.Items;
+using ExtendedItems.Keycards;
 using Exiled.API.Interfaces;
 using System.ComponentModel;
 
@@ -50,5 +51,6 @@ namespace ExtendedItems
         public Tranquilizer Tranquilizer { get; set; } = new();
         public Plastic Plastic { get; set; } = new();
         public AdminAbuse AdminAbuse { get; set; } = new();
+        public Site02Card Site02Card { get; set; } = new();
     }
 }

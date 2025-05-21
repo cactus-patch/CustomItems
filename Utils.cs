@@ -1,8 +1,10 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
+using Org.BouncyCastle.Utilities.Encoders;
 using PlayerStatsSystem;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 
 namespace ExtendedItems
 {
@@ -72,6 +74,91 @@ namespace ExtendedItems
         public static CustomReasonDamageHandler CustomDeath(string deathMessage)
         {
             return new CustomReasonDamageHandler(deathMessage);
+        }
+
+        /// <summary>
+        /// Converts a hexadecimal color string to a <see cref="Color32"/> object.
+        /// </summary>
+        /// <remarks>This method attempts to parse the hexadecimal string into a <see cref="Color32"/>
+        /// object. If the input is invalid or cannot be parsed, a default black color with full opacity is
+        /// returned.</remarks>
+        /// <param name="hex">A string representing the color in hexadecimal format. The string may optionally start with a '#' character
+        /// and can be 2, 4, 6, or 8 characters long, representing different color components: <list type="bullet">
+        /// <item><description>2 characters: Red component only (e.g., "FF").</description></item> <item><description>4
+        /// characters: Red and Green components (e.g., "FF00").</description></item> <item><description>6 characters:
+        /// Red, Green, and Blue components (e.g., "FF00FF").</description></item> <item><description>8 characters: Red,
+        /// Green, Blue, and Alpha components (e.g., "FF00FF80").</description></item> </list></param>
+        /// <returns>A <see cref="Color32"/> object representing the parsed color. If the input is null, empty, or invalid, the
+        /// method returns a default black color with full opacity (<c>Color32(0, 0, 0, 255)</c>).</returns>
+        public static Color32? Color(string hex)
+        {
+            if (string.IsNullOrWhiteSpace(hex))
+                return new Color32(0,0,0,255);
+
+            hex = hex.TrimStart('#');
+
+            if (hex.Length == 2)
+            {
+                try
+                {
+                    byte r = Convert.ToByte(hex.Substring(0, 2), 16);
+                    return new Color32(r, 0, 0, 255);
+                }
+                catch
+                {
+                    return new Color32(0, 0, 0, 255);
+                }
+            }
+            else if (hex.Length == 4)
+            {
+                try
+                {
+                    byte r = Convert.ToByte(hex.Substring(0, 2), 16);
+                    byte g = Convert.ToByte(hex.Substring(2, 2), 16);
+                    return new Color32(r, g, 0, 255);
+                }
+                catch
+                {
+                    return new Color32(0, 0, 0, 255);
+                }
+            }
+            else if (hex.Length == 6)
+
+                try
+                {
+                    byte r = Convert.ToByte(hex.Substring(0, 2), 16);
+                    byte g = Convert.ToByte(hex.Substring(2, 2), 16);
+                    byte b = Convert.ToByte(hex.Substring(4, 2), 16);
+                    byte a = 255;
+
+                    if (hex.Length == 8)
+                        a = Convert.ToByte(hex.Substring(6, 2), 16);
+
+                    return new Color32(r, g, b, a);
+                }
+                catch
+                {
+                    return new Color32(0, 0, 0, 255);
+                }
+            else if (hex.Length == 8)
+            {
+                try
+                {
+                    byte r = Convert.ToByte(hex.Substring(0, 2), 16);
+                    byte g = Convert.ToByte(hex.Substring(2, 2), 16);
+                    byte b = Convert.ToByte(hex.Substring(4, 2), 16);
+                    byte a = Convert.ToByte(hex.Substring(6, 2), 16);
+                    return new Color32(r, g, b, a);
+                }
+                catch
+                {
+                    return new Color32(0, 0, 0, 255);
+                }
+            }
+            else
+            {
+                return new Color32(0, 0, 0, 255);
+            }
         }
     }
 }
