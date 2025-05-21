@@ -23,7 +23,7 @@ namespace ExtendedItems.Commands
         }
         protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            response = "Invalid subcommand! Available: help";
+            response = "Invalid subcommand! Available: help and CustomKeycardColor";
             return false;
         }
     }

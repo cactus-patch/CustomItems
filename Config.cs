@@ -5,20 +5,22 @@ using System.ComponentModel;
 
 namespace ExtendedItems
 {
-    public class Config : IConfig 
+    public class Config : IConfig
     {
         public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
-        
+
+        #region Config Settings
+
         [Description("Weather a tranqed target hold the item they had when they were tranqed")]
         public bool ReholdItems = false;
-        
+
         [Description("Weather the Tranq is effective on Tutorials")]
         public bool EffectiveOnTutorials = false;
 
         [Description("Permissions required to access Debug Commands")]
         public PlayerPermissions DebugPermissions = PlayerPermissions.ServerConsoleCommands;
-        
+
         [Description("The possable hints shown when you Win")]
         public string[] WinHints { get; set; } =
         [
@@ -30,7 +32,7 @@ namespace ExtendedItems
             "The Savior is here",
             "The end is never near"
         ];
-        
+
         [Description("List of possible causes of death when the coin lands on tails")]
         public string[] LoseCauses { get; set; } =
         [
@@ -43,6 +45,9 @@ namespace ExtendedItems
             "The End",
         ];
 
+        #endregion
+        #region Custom Items setup
+
         public Coin Coin { get; set; } = new();
         public Scp1162 Scp1162 { get; set; } = new();
         public Scp1499 Scp1499 { get; set; } = new();
@@ -52,5 +57,10 @@ namespace ExtendedItems
         public Plastic Plastic { get; set; } = new();
         public AdminAbuse AdminAbuse { get; set; } = new();
         public Site02Card Site02Card { get; set; } = new();
+        public TaskForceCard TaskForceCard { get; set; } = new();
+
+
+        #endregion
     }
+
 }

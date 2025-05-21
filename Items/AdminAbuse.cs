@@ -25,7 +25,6 @@ namespace ExtendedItems.Items
         public override float Weight { get; set; } = 0f;
         public override float Damage { get; set; } = 0;
         public override SpawnProperties? SpawnProperties { get; set; } = new()
-
         {
             Limit = 0,
         };
@@ -35,22 +34,20 @@ namespace ExtendedItems.Items
             AttachmentName.ExtendedBarrel,
             AttachmentName.StandardStock,
         ];
+
+        // I personally like having all the OnEvent before the SubscribeEvents but in the future you can do what you like
         protected override void OnShot(ShotEventArgs ev)
         {
             var throwable = ev.Player.ThrowGrenade(ProjectileType.FragGrenade);
-            ushort ammo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
+            // defining ammo by itsself will not change the ammo count
+            // so you need to call ev.Firearm.MagazineAmmo :)
+            ev.Firearm.MagazineAmmo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
 
             throwable.Projectile.GameObject.AddComponent<CollisionHandler>().Init(ev.Player.GameObject, throwable.Projectile.Base);
 
             base.OnShot(ev);
         }
-        [Description("can be removed if not necesarry")]
-        protected override void SubscribeEvents()
-        {
-            ItemEvents.ChangingAttachments += OnChangingAttachments;
 
-            base.SubscribeEvents();
-        }
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
             if (!Check(ev.Item) || ev.Player.NetId < 2) return;
@@ -58,6 +55,15 @@ namespace ExtendedItems.Items
             ev.IsAllowed = false;
             ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
         }
+
+        [Description("can be removed if not necesarry")]
+        protected override void SubscribeEvents()
+        {
+            ItemEvents.ChangingAttachments += OnChangingAttachments;
+
+            base.SubscribeEvents();
+        }
+        
         protected override void UnsubscribeEvents()
         {
             ItemEvents.ChangingAttachments -= OnChangingAttachments;

@@ -1,26 +1,32 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
-using Org.BouncyCastle.Utilities.Encoders;
 using PlayerStatsSystem;
 using UnityEngine;
-using UnityEngine.ProBuilder.MeshOperations;
+using Lab = LabApi.Features.Wrappers;
+using EP = Exiled.API.Features.Player;
+using ExItem = Exiled.API.Features.Items; // Exiled.API.Features.Items not ExtededItems
+using CK = Exiled.CustomItems.API.Features;
+using Exiled.API.Extensions;
+using Exiled.CustomItems.API.Features;
 
 namespace ExtendedItems
 {
-    public static class Utils {
+    public static class Utils
+    {
         /// <summary>
         /// Calculates the global coords of a point inside a room based on the room type and the location
         /// </summary>
         /// <param name="roomType"></param>
         /// <param name="localPos"></param>
         /// <returns>Vector3</returns>
-        public static Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos) {
+        public static Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos)
+        {
             var room = Room.Get(roomType);
-            
+
             var rotation = room.Rotation;
             var roomPos = room.Position;
-            
+
             double offsetY = Math.Round(Math.Abs(rotation.eulerAngles.y / 90f));
 
             return offsetY switch
@@ -44,11 +50,11 @@ namespace ExtendedItems
         /// if(Utils.TryRemoveItem(ev.Player, ItemType.GrenadeHE))
         /// </example>
         /// <returns>bool</returns>
-        public static bool TryRemoveItem(Player player, ItemType item, short minimum = 0)
+        public static bool TryRemoveItem(EP player, ItemType item, short minimum = 0)
         {
             if (player.CountItem(item) <= minimum) return false;
-            
-            player.RemoveItem(player.Items.First(it => it.Type == item)); 
+
+            player.RemoveItem(player.Items.First(it => it.Type == item));
             return true;
         }
 
@@ -57,12 +63,13 @@ namespace ExtendedItems
         /// </summary>
         /// <param name="input"></param>
         /// <returns>input - 1</returns>
-        public static ushort Subtract(ushort input)
+        // I want someone to double check this before it goes into full prod
+        public static ushort Subtract(ushort input, int m = 1)
         {
             int temp = input;
-            int m = 1;
-            while (!((temp & m) > 0)) { temp ^= m; m <<= 1; }
-            temp ^= m;
+            int mask = m;
+            while (!((temp & mask) > 0)) { temp ^= mask; mask <<= 1; }
+            temp ^= mask;
             return (ushort)temp;
         }
 
@@ -90,75 +97,73 @@ namespace ExtendedItems
         /// Green, Blue, and Alpha components (e.g., "FF00FF80").</description></item> </list></param>
         /// <returns>A <see cref="Color32"/> object representing the parsed color. If the input is null, empty, or invalid, the
         /// method returns a default black color with full opacity (<c>Color32(0, 0, 0, 255)</c>).</returns>
-        public static Color32? Color(string hex)
+        public static Color32 Hex2Color(string hex)
         {
             if (string.IsNullOrWhiteSpace(hex))
-                return new Color32(0,0,0,255);
+                return new Color32(0, 0, 0, 255);
 
             hex = hex.TrimStart('#');
+            byte r = 0, g = 0, b = 0, a = 255;
 
-            if (hex.Length == 2)
+            try
             {
-                try
+                switch (hex.Length)
                 {
-                    byte r = Convert.ToByte(hex.Substring(0, 2), 16);
-                    return new Color32(r, 0, 0, 255);
-                }
-                catch
-                {
-                    return new Color32(0, 0, 0, 255);
-                }
-            }
-            else if (hex.Length == 4)
-            {
-                try
-                {
-                    byte r = Convert.ToByte(hex.Substring(0, 2), 16);
-                    byte g = Convert.ToByte(hex.Substring(2, 2), 16);
-                    return new Color32(r, g, 0, 255);
-                }
-                catch
-                {
-                    return new Color32(0, 0, 0, 255);
-                }
-            }
-            else if (hex.Length == 6)
-
-                try
-                {
-                    byte r = Convert.ToByte(hex.Substring(0, 2), 16);
-                    byte g = Convert.ToByte(hex.Substring(2, 2), 16);
-                    byte b = Convert.ToByte(hex.Substring(4, 2), 16);
-                    byte a = 255;
-
-                    if (hex.Length == 8)
+                    case 2:
+                        r = Convert.ToByte(hex.Substring(0, 2), 16);
+                        break;
+                    case 4:
+                        r = Convert.ToByte(hex.Substring(0, 2), 16);
+                        g = Convert.ToByte(hex.Substring(2, 2), 16);
+                        break;
+                    case 6:
+                        r = Convert.ToByte(hex.Substring(0, 2), 16);
+                        g = Convert.ToByte(hex.Substring(2, 2), 16);
+                        b = Convert.ToByte(hex.Substring(4, 2), 16);
+                        break;
+                    case 8:
+                        r = Convert.ToByte(hex.Substring(0, 2), 16);
+                        g = Convert.ToByte(hex.Substring(2, 2), 16);
+                        b = Convert.ToByte(hex.Substring(4, 2), 16);
                         a = Convert.ToByte(hex.Substring(6, 2), 16);
-
-                    return new Color32(r, g, b, a);
-                }
-                catch
-                {
-                    return new Color32(0, 0, 0, 255);
-                }
-            else if (hex.Length == 8)
-            {
-                try
-                {
-                    byte r = Convert.ToByte(hex.Substring(0, 2), 16);
-                    byte g = Convert.ToByte(hex.Substring(2, 2), 16);
-                    byte b = Convert.ToByte(hex.Substring(4, 2), 16);
-                    byte a = Convert.ToByte(hex.Substring(6, 2), 16);
-                    return new Color32(r, g, b, a);
-                }
-                catch
-                {
-                    return new Color32(0, 0, 0, 255);
+                        break;
+                    default:
+                        return new Color32(0, 0, 0, 255);
                 }
             }
-            else
+            catch
             {
                 return new Color32(0, 0, 0, 255);
             }
+
+            return new Color32(r, g, b, a);
         }
+
+        //I finally got to use the ternary operator ٩( ๑╹ ꇴ╹)۶
+        // I swear to god if this gets removed I will find you and beat you with a hammer
+        // You can also see where I said fuck it and started naming methods like Microsoft
+        public static ExItem.Item GetHeldOrFirst(EP player, ExItem.Item item) =>
+            item = player.CurrentItem.Type.ToString().ToLower().Contains("keycard")
+                ? player.CurrentItem
+                : player.Items.FirstOrDefault(i => i.Type.ToString().ToLower().Contains("keycard"));
+
+        public static void CustomKeycardSetup(CK.CustomKeycard keycard, string name, string label, string labelColor, string permissionsColor, string tintColor)
+        {
+            keycard.KeycardName = name;
+            keycard.KeycardLabel = label;
+            keycard.KeycardLabelColor = Hex2Color(labelColor);
+            keycard.KeycardPermissionsColor = Hex2Color(permissionsColor);
+            keycard.TintColor = Hex2Color(tintColor);
+        }
+
+        public static List<string> GetProperties(EP player)
+        {
+            List<string> response = [];
+            var helditem = GetHeldOrFirst(player, player.Items.FirstOrDefault(i => i.Type == ItemType.KeycardFacilityManager));
+            helditem.CopyProperties(response);
+            return response;
+        }
+
+        
     }
 }

@@ -9,7 +9,7 @@ namespace ExtendedItems
         public override string Name => "Extended Items";
         public override string Author => "Noobest1001";
         public override Version Version => new(3, 1, 0);
-        public override Version RequiredExiledVersion => new(9, 5, 0);
+        public override Version RequiredExiledVersion => new(9, 6, 0);
         public static Plugin? Instance;
 
         public override void OnEnabled() {
@@ -17,6 +17,7 @@ namespace ExtendedItems
             
             Log.Info("Registering items");
             CustomItem.RegisterItems(overrideClass: Config);
+            CustomKeycard.RegisterItems(overrideClass: Config);
             
             
             base.OnEnabled();
@@ -27,6 +28,7 @@ namespace ExtendedItems
             
             Log.Info("Unregistering items");
             CustomItem.UnregisterItems();
+            CustomKeycard.UnregisterItems();
             
             base.OnDisabled();
         }
