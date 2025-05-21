@@ -18,6 +18,7 @@ namespace ExtendedItems
             Log.Info("Registering items");
             CustomItem.RegisterItems(overrideClass: Config);
             
+            
             base.OnEnabled();
         }
 
