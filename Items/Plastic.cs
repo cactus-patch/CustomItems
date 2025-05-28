@@ -1,4 +1,5 @@
-﻿using Exiled.API.Enums;
+﻿// Exiled imports
+using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Items;
@@ -8,19 +9,25 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Map;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Server;
+using Exiled.API.Features.Roles;
 
+// Non-System or Exiled imports
 using InventorySystem.Items.ThrowableProjectiles;
 using MEC;
 using UnityEngine;
 using YamlDotNet.Serialization;
+using PlayerRoles;
 
+// System imports
+using System.Runtime.InteropServices;
+using System.Linq;
+
+// shortcuted imports
 using PlayerEvent = Exiled.Events.Handlers.Player;
 using ServerEvent = Exiled.Events.Handlers.Server;
 using MapEvent = Exiled.Events.Handlers.Map;
-using System.Runtime.InteropServices;
-using System.Linq;
-using Exiled.API.Features.Roles;
-using PlayerRoles;
+
+
 
 
 namespace ExtendedItems.Items
@@ -71,7 +78,7 @@ namespace ExtendedItems.Items
         {
             if (charge?.Position is null) return;
 
-            if (method == C4RemoveMethod.Detonate && detonator == null && charge != null) { method = C4RemoveMethod.Drop; }
+            if (detonator == null && charge != null) { method = C4RemoveMethod.Drop; }
             else { detonator = Charges.TryGetValue(charge.Serial, out var foundPlayer) ? foundPlayer : null; }
                 
 
@@ -79,9 +86,9 @@ namespace ExtendedItems.Items
             {
                 case C4RemoveMethod.Detonate:
                     {
-                        ExplosiveGrenade grenade = (ExplosiveGrenade)Item.Create(Type, detonator);
+                        ExplosiveGrenade grenade = (ExplosiveGrenade)Item.Create(Type);
                         grenade.FuseTime = 0.1f;
-                        grenade.SpawnActive(charge.Position);
+                        grenade.SpawnActive(charge.Position,detonator);
                         break;
                     }
                 case C4RemoveMethod.Drop:
@@ -133,52 +140,33 @@ namespace ExtendedItems.Items
 
         protected override void OnThrownProjectile(ThrownProjectileEventArgs ev)
         {
+            Log.Debug("Executing OnThrownProjectile method.");
             if (!PlacedCharges.ContainsKey(ev.Projectile))
             {
                 PlacedCharges.Add(ev.Pickup, ev.Player);
                 Charges.Add(ev.Projectile.Serial, ev.Player);
             }
 
-
             base.OnThrownProjectile(ev);
         }
 
         protected override void OnExploding(ExplodingGrenadeEventArgs ev)
         {
-            // There is a more efficient way to do this, but I could not give two shits.
-            // If you find a better solution AND IT WORKS, you can add it :)
-            Vector3 Origin = ev.Projectile.Position;
-            ushort sn = ev.Projectile.Serial;
-            Player detonator = Plastic.Charges[sn];
-            Player[] affected = [.. ev.TargetsToAffect.Where(x => Utils.GlobalDet == null || x.Role.Team != Utils.GlobalDet.Role.Team)];
-            ev.TargetsToAffect.Clear();
-
-            foreach (Player player in affected)
-            {
-                    ev.TargetsToAffect.Add(player);
-            }
-
-            var keysToRemove = PlacedCharges.Where(k => k.Value == detonator).Select(k => k.Key)
-                .ToList();
-
-            foreach (var player in keysToRemove)
-            {
-                Plastic.PlacedCharges.Remove(player);
-            }
-            Charges.Remove(sn);
-
-            PlacedCharges.Remove(Pickup.Get(ev.Projectile.Base));
+            Log.Debug("Executing OnExploding method.");
+            PlacedCharges.Remove(ev.Projectile);
+ 
         }
 
         private void OnDestroying(DestroyingEventArgs ev)
         {
+            Log.Debug("Executing OnDestoying method.");
             foreach (KeyValuePair<Pickup, Player> charge in PlacedCharges.ToList())
             {
                 if (charge.Value == ev.Player) Handler(charge.Key, C4RemoveMethod.Remove);
             }
         }
 
-        void OnDied(DiedEventArgs ev)
+        private void OnDied(DiedEventArgs ev)
         {
             foreach (KeyValuePair<Pickup, Player> charge in PlacedCharges.ToList())
             {

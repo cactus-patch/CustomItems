@@ -12,9 +12,6 @@ namespace ExtendedItems
 {
     public static class Utils
     {
-
-        public static Player? GlobalDet { get; set; } = null;
-
         /// <summary>
         /// Calculates the global coords of a point inside a room based on the room type and the location
         /// </summary>

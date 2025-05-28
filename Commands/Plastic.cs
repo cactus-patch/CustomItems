@@ -1,10 +1,10 @@
 ﻿using CommandSystem;
 using Exiled.API.Features;
-using Utf8Json.Resolvers.Internal;
 
 namespace ExtendedItems.Commands
 {
     [CommandHandler(typeof(ClientCommandHandler))]
+    
     class Plastic : ICommand
     {
         public string Command => "detonate";
@@ -16,6 +16,7 @@ namespace ExtendedItems.Commands
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             Player ply = Player.Get(sender);
+            Log.Debug($"Player: {ply.Nickname} executed the detonate command.");
             if (!Items.Plastic.PlacedCharges.ContainsValue(ply))
             {
                 response = "\n<color=red>You've haven't placed any C4 charges!</color>";
@@ -30,8 +31,7 @@ namespace ExtendedItems.Commands
                 
                 if (ply.Position.y >= posy - 100 && ply.Position.y <= posy + 100 )
                 {
-                    Utils.GlobalDet = Player.Get(sender);
-                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate, Player.Get(sender));
+                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate,ply);
                     i++;
                 }
                 else
