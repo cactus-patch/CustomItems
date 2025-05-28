@@ -103,7 +103,7 @@ namespace ExtendedItems.Items
             for (; ; )
             {
                 float comp = -2;
-                var yVelocity = throwable.Projectile.Rigidbody.velocity.y - comp;
+                var yVelocity = throwable.Projectile.Rigidbody.linearVelocity.y - comp;
                 
                 Log.Info(yVelocity);
             }

@@ -1,5 +1,6 @@
 ﻿using CommandSystem;
 using Exiled.API.Features;
+using Utf8Json.Resolvers.Internal;
 
 namespace ExtendedItems.Commands
 {
@@ -29,7 +30,8 @@ namespace ExtendedItems.Commands
                 
                 if (ply.Position.y >= posy - 100 && ply.Position.y <= posy + 100 )
                 {
-                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate);
+                    Utils.GlobalDet = Player.Get(sender);
+                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate, Player.Get(sender));
                     i++;
                 }
                 else

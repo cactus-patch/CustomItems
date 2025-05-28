@@ -1,6 +1,7 @@
-using ExtendedItems.Items;
-using ExtendedItems.Keycards;
+using Exiled.API.Enums;
 using Exiled.API.Interfaces;
+using ExtendedItems.Items;
+using UnityEngine;
 using System.ComponentModel;
 
 namespace ExtendedItems
@@ -11,6 +12,12 @@ namespace ExtendedItems
         public bool Debug { get; set; } = false;
 
         #region Config Settings
+
+        [Description("Where SCP-1162 spawns")]
+        public RoomType Scp1162Room { get; set; } = RoomType.Lcz173;
+
+        [Description("The offset from Scp1162Room Origin point")]
+        public Vector3 SpawnOffset = new(16.68f, 11.6f, 8.11f);
 
         [Description("Weather a tranqed target hold the item they had when they were tranqed")]
         public bool ReholdItems = false;
@@ -56,8 +63,6 @@ namespace ExtendedItems
         public Tranquilizer Tranquilizer { get; set; } = new();
         public Plastic Plastic { get; set; } = new();
         public AdminAbuse AdminAbuse { get; set; } = new();
-        public Site02Card Site02Card { get; set; } = new();
-        public TaskForceCard TaskForceCard { get; set; } = new();
 
 
         #endregion

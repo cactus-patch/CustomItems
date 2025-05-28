@@ -1,19 +1,20 @@
 ﻿using Exiled.API.Enums;
+using Exiled.API.Extensions;
 using Exiled.API.Features;
-using Exiled.Events.EventArgs.Player;
+using Exiled.CustomItems;
 using PlayerStatsSystem;
 using UnityEngine;
-using Lab = LabApi.Features.Wrappers;
+using CK = Exiled.CustomItems.API.Features;
 using EP = Exiled.API.Features.Player;
 using ExItem = Exiled.API.Features.Items; // Exiled.API.Features.Items not ExtededItems
-using CK = Exiled.CustomItems.API.Features;
-using Exiled.API.Extensions;
-using Exiled.CustomItems.API.Features;
 
 namespace ExtendedItems
 {
     public static class Utils
     {
+
+        public static Player? GlobalDet { get; set; } = null;
+
         /// <summary>
         /// Calculates the global coords of a point inside a room based on the room type and the location
         /// </summary>
@@ -22,10 +23,10 @@ namespace ExtendedItems
         /// <returns>Vector3</returns>
         public static Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos)
         {
-            var room = Room.Get(roomType);
+            Room room = Room.Get(roomType);
 
-            var rotation = room.Rotation;
-            var roomPos = room.Position;
+            Quaternion rotation = room.Rotation;
+            Vector3 roomPos = room.Position;
 
             double offsetY = Math.Round(Math.Abs(rotation.eulerAngles.y / 90f));
 
@@ -103,7 +104,8 @@ namespace ExtendedItems
                 return new Color32(0, 0, 0, 255);
 
             hex = hex.TrimStart('#');
-            byte r = 0, g = 0, b = 0, a = 255;
+            byte g = 0, b = 0, a = 255;
+            byte r;
 
             try
             {
@@ -139,14 +141,14 @@ namespace ExtendedItems
             return new Color32(r, g, b, a);
         }
 
-        //I finally got to use the ternary operator ٩( ๑╹ ꇴ╹)۶
+        // I finally got to use the ternary operator ٩( ๑╹ ꇴ╹)۶
         // I swear to god if this gets removed I will find you and beat you with a hammer
         // You can also see where I said fuck it and started naming methods like Microsoft
         public static ExItem.Item GetHeldOrFirst(EP player, ExItem.Item item) =>
             item = player.CurrentItem.Type.ToString().ToLower().Contains("keycard")
-                ? player.CurrentItem
-                : player.Items.FirstOrDefault(i => i.Type.ToString().ToLower().Contains("keycard"));
+                ? player.CurrentItem : player.Items.FirstOrDefault(i => i.Type.ToString().ToLower().Contains("keycard"));
 
+        [Obsolete("This isnt in use atm because NW fucked up Custom key cards")]
         public static void CustomKeycardSetup(CK.CustomKeycard keycard, string name, string label, string labelColor, string permissionsColor, string tintColor)
         {
             keycard.KeycardName = name;
@@ -156,14 +158,15 @@ namespace ExtendedItems
             keycard.TintColor = Hex2Color(tintColor);
         }
 
-        public static List<string> GetProperties(EP player)
+        public static List<string> GetPropertiesOfHeldOrFirst(EP player)
         {
             List<string> response = [];
-            var helditem = GetHeldOrFirst(player, player.Items.FirstOrDefault(i => i.Type == ItemType.KeycardFacilityManager));
+            ExItem.Item helditem = GetHeldOrFirst(player, player.Items.FirstOrDefault(i => i.Type == ItemType.KeycardFacilityManager));
             helditem.CopyProperties(response);
             return response;
         }
 
         
+
     }
 }
