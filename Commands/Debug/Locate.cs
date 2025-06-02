@@ -1,11 +1,7 @@
-using System.Text;
 using CommandSystem;
-
 using Exiled.API.Features;
-using Exiled.API.Features.Pools;
-using Exiled.CustomItems;
-using Exiled.CustomItems.API;
 using Exiled.CustomItems.API.Features;
+using System.Text;
 
 
 namespace ExtendedItems.Commands.Debug
@@ -13,7 +9,7 @@ namespace ExtendedItems.Commands.Debug
     internal sealed class Locate : ICommand
     {
         public static Locate Instance { get; } = new();
-        public Locate() {}
+        public Locate() { }
         public string Command => "Locate";
         public string[] Aliases => ["loc", "find"];
         public string Description => "Locates all (unless a valid ID is given) Custom Items";

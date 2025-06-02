@@ -8,9 +8,8 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
-
-using ItemEvents = Exiled.Events.Handlers.Item;
 using E = ExtendedItems.Utils;
+using ItemEvents = Exiled.Events.Handlers.Item;
 
 
 namespace ExtendedItems.Items
@@ -45,12 +44,12 @@ namespace ExtendedItems.Items
         {
             var throwable = ev.Player.ThrowGrenade(ProjectileType.FragGrenade);
             ushort ammo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
-            
+
             throwable.Projectile.GameObject.AddComponent<CollisionHandler>().Init(ev.Player.GameObject, throwable.Projectile.Base);
-            
+
             ev.Firearm.MagazineAmmo = 0;
             ev.Firearm.BarrelAmmo = 0;
-            
+
             ev.Player.AddAmmo(AmmoType.Nato762, ammo);
 
             base.OnShooting(ev);
@@ -64,7 +63,7 @@ namespace ExtendedItems.Items
                 ev.Player.RemoveItem(ev.Player.Items.First(it => it.Type == ItemType.GrenadeHE));
                 base.OnReloading(ev);
             }
-            
+
             else
             {
                 ev.IsAllowed = false;
@@ -92,8 +91,8 @@ namespace ExtendedItems.Items
 
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
-            if(!Check(ev.Item)) { ev.IsAllowed = true; return; }
-            
+            if (!Check(ev.Item) || ev.Player.NetId < 2) { ev.IsAllowed = false; return; }
+
             ev.Player.Broadcast(5, "You can't change the attachments on this weapon");
             ev.IsAllowed = false;
         }
@@ -104,7 +103,7 @@ namespace ExtendedItems.Items
             {
                 float comp = -2;
                 var yVelocity = throwable.Projectile.Rigidbody.linearVelocity.y - comp;
-                
+
                 Log.Info(yVelocity);
             }
         }

@@ -1,8 +1,8 @@
 using Exiled.API.Enums;
 using Exiled.API.Interfaces;
 using ExtendedItems.Items;
-using UnityEngine;
 using System.ComponentModel;
+using UnityEngine;
 
 namespace ExtendedItems
 {

@@ -157,7 +157,7 @@ namespace ExtendedItems.Items
             Quaternion quaternion = Quaternion.Euler(rot.x, rotation.eulerAngles.y + rot.y, rot.z);
 
             Exiled.API.Features.Pickups.Pickup item = Spawn(globalPos)!;
-            
+
 
             item.Rotation = quaternion;
             item.Rigidbody.useGravity = false;

@@ -9,23 +9,17 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Map;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Server;
-using Exiled.API.Features.Roles;
 
 // Non-System or Exiled imports
 using InventorySystem.Items.ThrowableProjectiles;
-using MEC;
 using UnityEngine;
 using YamlDotNet.Serialization;
-using PlayerRoles;
 
 // System imports
-using System.Runtime.InteropServices;
-using System.Linq;
 
 // shortcuted imports
 using PlayerEvent = Exiled.Events.Handlers.Player;
 using ServerEvent = Exiled.Events.Handlers.Server;
-using MapEvent = Exiled.Events.Handlers.Map;
 
 
 
@@ -80,7 +74,7 @@ namespace ExtendedItems.Items
 
             if (detonator == null && charge != null) { method = C4RemoveMethod.Drop; }
             else { detonator = Charges.TryGetValue(charge.Serial, out var foundPlayer) ? foundPlayer : null; }
-                
+
 
             switch (method)
             {
@@ -88,7 +82,7 @@ namespace ExtendedItems.Items
                     {
                         ExplosiveGrenade grenade = (ExplosiveGrenade)Item.Create(Type);
                         grenade.FuseTime = 0.1f;
-                        grenade.SpawnActive(charge.Position,detonator);
+                        grenade.SpawnActive(charge.Position, detonator);
                         break;
                     }
                 case C4RemoveMethod.Drop:
@@ -134,7 +128,6 @@ namespace ExtendedItems.Items
         protected override void OnWaitingForPlayers()
         {
             PlacedCharges.Clear();
-            Server.FriendlyFire = false;
             base.OnWaitingForPlayers();
         }
 
@@ -154,7 +147,7 @@ namespace ExtendedItems.Items
         {
             Log.Debug("Executing OnExploding method.");
             PlacedCharges.Remove(ev.Projectile);
- 
+
         }
 
         private void OnDestroying(DestroyingEventArgs ev)
@@ -172,7 +165,7 @@ namespace ExtendedItems.Items
             {
                 if (charge.Value == ev.Player)
                 {
-                    Handler(charge.Key,C4RemoveMethod.Drop);
+                    Handler(charge.Key, C4RemoveMethod.Drop);
                 }
             }
         }

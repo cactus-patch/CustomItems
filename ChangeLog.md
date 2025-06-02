@@ -1,12 +1,1 @@
-># Update 3.1.0
->
->>## SCP-1289 (formerly <i>'Coin'</i>)
->>> #### Renamed the coin
->>> #### Added death and winning notes
->>>> Due to a limitation of Exiled only the player who gets killed by the coin can see the new effects added by yours truly
->>
->>## Tranq
->>> Made the player who got tranqed invulnerable but unable to use any items (humans)
->>
->>## Genaral code
->>> Added some notes in the 'Util.cs' file for those who want to add on to this
+>#Update 3.2.1

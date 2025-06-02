@@ -23,7 +23,7 @@ namespace ExtendedItems.Items
         public override byte ClipSize { get; set; } = 1;
 
         [YamlIgnore]
-        public override AttachmentName[] Attachments { get; set; } = 
+        public override AttachmentName[] Attachments { get; set; } =
         [
             AttachmentName.LowcapMagAP,
             AttachmentName.Foregrip,
@@ -36,7 +36,7 @@ namespace ExtendedItems.Items
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
             Limit = 1,
-            RoomSpawnPoints = 
+            RoomSpawnPoints =
             [
                 new RoomSpawnPoint() { Room = RoomType.HczArmory, Chance = 100 }
             ]
@@ -65,7 +65,7 @@ namespace ExtendedItems.Items
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
             if (!Check(ev.Item) || ev.Player.NetId < 2) return;
-            
+
             ev.IsAllowed = false;
             ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
         }

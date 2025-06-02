@@ -1,8 +1,6 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
-using Exiled.CustomItems;
-using PlayerStatsSystem;
 using UnityEngine;
 using CK = Exiled.CustomItems.API.Features;
 using EP = Exiled.API.Features.Player;
@@ -72,16 +70,6 @@ namespace ExtendedItems
         }
 
         /// <summary>
-        /// Creates a custom death message
-        /// </summary>
-        /// <param name="deathMessage"></param>
-        /// <returns>CustomReasonDamageHandler</returns>
-        public static CustomReasonDamageHandler CustomDeath(string deathMessage)
-        {
-            return new CustomReasonDamageHandler(deathMessage);
-        }
-
-        /// <summary>
         /// Converts a hexadecimal color string to a <see cref="Color32"/> object.
         /// </summary>
         /// <remarks>This method attempts to parse the hexadecimal string into a <see cref="Color32"/>
@@ -95,6 +83,7 @@ namespace ExtendedItems
         /// Green, Blue, and Alpha components (e.g., "FF00FF80").</description></item> </list></param>
         /// <returns>A <see cref="Color32"/> object representing the parsed color. If the input is null, empty, or invalid, the
         /// method returns a default black color with full opacity (<c>Color32(0, 0, 0, 255)</c>).</returns>
+        [Obsolete("Until NW fixes their keycards this essentially dosnt work")]
         public static Color32 Hex2Color(string hex)
         {
             if (string.IsNullOrWhiteSpace(hex))
@@ -163,7 +152,7 @@ namespace ExtendedItems
             return response;
         }
 
-        
+
 
     }
 }

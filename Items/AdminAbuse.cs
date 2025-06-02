@@ -5,12 +5,12 @@ using Exiled.API.Features.Components;
 using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
-using Exiled.Events.EventArgs.Player;
-using E = ExtendedItems.Utils;
-using InventorySystem.Items.Firearms.Attachments;
-using ItemEvents = Exiled.Events.Handlers.Item;
 using Exiled.Events.EventArgs.Item;
+using Exiled.Events.EventArgs.Player;
+using InventorySystem.Items.Firearms.Attachments;
 using System.ComponentModel;
+using E = ExtendedItems.Utils;
+using ItemEvents = Exiled.Events.Handlers.Item;
 
 namespace ExtendedItems.Items
 {
@@ -63,7 +63,7 @@ namespace ExtendedItems.Items
 
             base.SubscribeEvents();
         }
-        
+
         protected override void UnsubscribeEvents()
         {
             ItemEvents.ChangingAttachments -= OnChangingAttachments;

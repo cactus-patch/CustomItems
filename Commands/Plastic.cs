@@ -4,7 +4,7 @@ using Exiled.API.Features;
 namespace ExtendedItems.Commands
 {
     [CommandHandler(typeof(ClientCommandHandler))]
-    
+
     class Plastic : ICommand
     {
         public string Command => "detonate";
@@ -26,12 +26,12 @@ namespace ExtendedItems.Commands
             int i = 0;
             foreach (var charge in Items.Plastic.PlacedCharges.ToList())
             {
-                float posy =  charge.Key.Position.y;
+                float posy = charge.Key.Position.y;
                 if (charge.Value != ply) continue;
-                
-                if (ply.Position.y >= posy - 100 && ply.Position.y <= posy + 100 )
+
+                if (ply.Position.y >= posy - 100 && ply.Position.y <= posy + 100)
                 {
-                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate,ply);
+                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate, ply);
                     i++;
                 }
                 else

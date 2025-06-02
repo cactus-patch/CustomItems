@@ -8,7 +8,7 @@ namespace ExtendedItems
         public override string Prefix => "Cactus Patch";
         public override string Name => "Extended Items";
         public override string Author => "Noobest1001";
-        public override Version Version => new(4, 0, 0);
+        public override Version Version => new(3, 0, 1);
         public override Version RequiredExiledVersion => new(9, 6, 0);
         public static Plugin? Instance;
 
