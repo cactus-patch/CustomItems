@@ -1,4 +1,5 @@
 using Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
@@ -71,6 +72,7 @@ namespace ExtendedItems.Items
                 }
 
                 ev.Player.ShowHint($"{Plugin.Instance?.Config.WinHints.RandomItem()}");
+                
                 Effects.ForEach((effect) => { ev.Player.EnableEffect(effect.Type, effect.Intensity, effect.Duration, true); });
             });
         }

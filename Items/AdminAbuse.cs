@@ -20,7 +20,7 @@ namespace ExtendedItems.Items
     {
         [Description("thanks to hayden for the idea on buckshot or else it wouldnt have worked")]
         public override uint Id { get; set; } = 799;
-        public override string Name { get; set; } = "Regert";
+        public override string Name { get; set; } = "Regert (dont use this because it crashes the server)";
         public override string Description { get; set; } = "you asked for it!";
         public override float Weight { get; set; } = 0f;
         public override float Damage { get; set; } = 0;

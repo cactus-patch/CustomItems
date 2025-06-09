@@ -1,6 +1,7 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
+using InventorySystem.Items.Usables.Scp330;
 using UnityEngine;
 using CK = Exiled.CustomItems.API.Features;
 using EP = Exiled.API.Features.Player;
@@ -151,8 +152,32 @@ namespace ExtendedItems
             helditem.CopyProperties(response);
             return response;
         }
-
-
+        public static CandyKindID AddCandy(int candy)
+        {
+            return candy switch
+            {
+                0 => CandyKindID.Pink,
+                1 => CandyKindID.Blue,
+                2 => CandyKindID.Green,
+                3 => CandyKindID.Yellow,
+                4 => CandyKindID.Purple,
+                5 => CandyKindID.Rainbow,
+                _ => CandyKindID.Red,
+            };
+        }
+        public static string CandytoString(int candy)
+        {
+            return candy switch
+            {
+                0 => "<color=#FFC0CB>Pink</color>",
+                1 => "<color=#0000FF>Blue</color>",
+                2 => "<color=#008000>Green</color>",
+                3 => "<color=#FFFF00>Yellow</color>",
+                4 => "<color=#800080>Purple</color>",
+                5 => "<color=#FF0000>R</color><color=#FF7F00>a</color><color=#FFFF00>i</color><color=#00FF00>n</color><color=#0000FF>b</color><color=#4B0082>o</color><color=#8A2BE2>w</color>",
+                _ => "<color=#FF0000>Red</color>",
+            };
+        }
 
     }
 }

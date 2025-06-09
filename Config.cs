@@ -9,7 +9,7 @@ namespace ExtendedItems
     public class Config : IConfig
     {
         public bool IsEnabled { get; set; } = true;
-        public bool Debug { get; set; } = false;
+        public bool Debug { get; set; } = true;
 
         #region Config Settings
 

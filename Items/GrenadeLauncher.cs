@@ -8,6 +8,7 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
+using YamlDotNet.Serialization;
 using E = ExtendedItems.Utils;
 using ItemEvents = Exiled.Events.Handlers.Item;
 
@@ -22,9 +23,9 @@ namespace ExtendedItems.Items
         public override string Name { get; set; } = "Grenade Launcher";
         public override string Description { get; set; } = "A modified Chaos Insergency LMG that fires High Explisove Grenades";
         public override float Weight { get; set; } = 10f;
-
         public override float Damage { get; set; } = 0f;
         public override byte ClipSize { get; set; } = 1;
+        [YamlIgnore]
         public override AttachmentName[] Attachments { get; set; } = [AttachmentName.Laser, AttachmentName.IronSights, AttachmentName.ShortBarrel];
         public override SpawnProperties? SpawnProperties { get; set; } = new()
 

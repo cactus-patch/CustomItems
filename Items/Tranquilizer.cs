@@ -3,8 +3,10 @@ using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
+using Exiled.CustomRoles.API;
 using Exiled.Events.EventArgs.Player;
 using MEC;
+using Mirror;
 using PlayerRoles;
 using PlayerRoles.PlayableScps.Scp096;
 using PlayerStatsSystem;
@@ -98,10 +100,10 @@ namespace ExtendedItems.Items
                 item = ev.Target.CurrentItem;
             }
 
-            var rand = _rng.NextDouble();
+            double rand = _rng.NextDouble();
             _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
 
-            var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
+            bool effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
 
             if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective)
             {
@@ -109,10 +111,10 @@ namespace ExtendedItems.Items
                 return;
             }
 
-            var lift = ev.Player.Lift;
+            Lift lift = ev.Player.Lift;
 
             ev.Target.Scale = Vector3.zero;
-            _resistances[ev.Target.NetId] = tResistance + Resistance;
+            _resistances[ev.Target.NetId] = tResistance + (_rng.Next(1,10)/100);
 
             ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
             ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);

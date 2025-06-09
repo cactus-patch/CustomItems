@@ -15,22 +15,15 @@ namespace ExtendedItems.Items
     {
         public override uint Id { get; set; } = 802;
         public override string Name { get; set; } = "SR-118";
-
         public override string Description { get; set; } = "A modified E-11 that fires 5.56 at supersonic velocity that deals significantly more damage";
-
-        public override float Weight { get; set; } = 8f;
+        public override float Weight { get; set; } = 5f;
         public override float Damage { get; set; } = 112f;
         public override byte ClipSize { get; set; } = 1;
 
         [YamlIgnore]
         public override AttachmentName[] Attachments { get; set; } =
         [
-            AttachmentName.LowcapMagAP,
-            AttachmentName.Foregrip,
-            AttachmentName.DotSight,
-            AttachmentName.RecoilReducingStock,
-            AttachmentName.RifleBody,
-            AttachmentName.SoundSuppressor
+            AttachmentName.LowcapMagAP, AttachmentName.Foregrip, AttachmentName.DotSight, AttachmentName.RecoilReducingStock, AttachmentName.CarbineBody, AttachmentName.MuzzleBrake
         ];
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
