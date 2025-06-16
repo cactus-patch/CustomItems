@@ -7,8 +7,6 @@ Currently, there are 6 items available:
 
 - Coin
     - Gives player effect bonuses if lands on heads, ~~**_[redacted]_**~~ if on tails.
-- SCP-1162
-    - Spawns in Lcz173, hold an item and interact to trade for another.
 - SCP-1499
     - A gas mask that temporarily teleports you to a location.
 - Sniper

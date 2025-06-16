@@ -6,7 +6,7 @@ namespace ExtendedItems.Commands.Debug
     [CommandHandler(typeof(ClientCommandHandler))]
     class PlasticDebug : ICommand
     {
-        
+
         public string Command => "Ddetonate";
 
         public string[] Aliases => ["Ddet", "Dd", "Dboom"];

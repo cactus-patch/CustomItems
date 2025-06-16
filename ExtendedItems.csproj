@@ -9,6 +9,10 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
 
+	<PropertyGroup>
+		<NoWarn>$(NoWarn);MSB3270</NoWarn>
+	</PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="ExMod.Exiled" Version="9.6.0" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">

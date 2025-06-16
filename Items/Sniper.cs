@@ -1,4 +1,5 @@
 using Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
@@ -15,28 +16,20 @@ namespace ExtendedItems.Items
     {
         public override uint Id { get; set; } = 802;
         public override string Name { get; set; } = "SR-118";
-
         public override string Description { get; set; } = "A modified E-11 that fires 5.56 at supersonic velocity that deals significantly more damage";
-
-        public override float Weight { get; set; } = 8f;
+        public override float Weight { get; set; } = 5f;
         public override float Damage { get; set; } = 112f;
         public override byte ClipSize { get; set; } = 1;
 
-        [YamlIgnore]
-        public override AttachmentName[] Attachments { get; set; } = 
+        public override AttachmentName[] Attachments { get; set; } =
         [
-            AttachmentName.LowcapMagAP,
-            AttachmentName.Foregrip,
-            AttachmentName.DotSight,
-            AttachmentName.RecoilReducingStock,
-            AttachmentName.RifleBody,
-            AttachmentName.SoundSuppressor
+            AttachmentName.LowcapMagAP, AttachmentName.Foregrip, AttachmentName.DotSight, AttachmentName.RecoilReducingStock, AttachmentName.CarbineBody, AttachmentName.MuzzleBrake
         ];
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
             Limit = 1,
-            RoomSpawnPoints = 
+            RoomSpawnPoints =
             [
                 new RoomSpawnPoint() { Room = RoomType.HczArmory, Chance = 100 }
             ]
@@ -65,7 +58,8 @@ namespace ExtendedItems.Items
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
             if (!Check(ev.Item) || ev.Player.NetId < 2) return;
-            
+
+            Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.IsAllowed = false;
             ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
         }

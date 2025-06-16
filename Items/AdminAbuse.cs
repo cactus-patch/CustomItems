@@ -5,12 +5,12 @@ using Exiled.API.Features.Components;
 using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
-using Exiled.Events.EventArgs.Player;
-using E = ExtendedItems.Utils;
-using InventorySystem.Items.Firearms.Attachments;
-using ItemEvents = Exiled.Events.Handlers.Item;
 using Exiled.Events.EventArgs.Item;
+using Exiled.Events.EventArgs.Player;
+using InventorySystem.Items.Firearms.Attachments;
 using System.ComponentModel;
+using E = ExtendedItems.Utils;
+using ItemEvents = Exiled.Events.Handlers.Item;
 
 namespace ExtendedItems.Items
 {
@@ -20,7 +20,7 @@ namespace ExtendedItems.Items
     {
         [Description("thanks to hayden for the idea on buckshot or else it wouldnt have worked")]
         public override uint Id { get; set; } = 799;
-        public override string Name { get; set; } = "Regert";
+        public override string Name { get; set; } = "Regert (dont use this because it crashes the server)";
         public override string Description { get; set; } = "you asked for it!";
         public override float Weight { get; set; } = 0f;
         public override float Damage { get; set; } = 0;
@@ -52,6 +52,7 @@ namespace ExtendedItems.Items
         {
             if (!Check(ev.Item) || ev.Player.NetId < 2) return;
 
+            Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.IsAllowed = false;
             ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
         }
@@ -63,7 +64,7 @@ namespace ExtendedItems.Items
 
             base.SubscribeEvents();
         }
-        
+
         protected override void UnsubscribeEvents()
         {
             ItemEvents.ChangingAttachments -= OnChangingAttachments;
@@ -75,7 +76,7 @@ namespace ExtendedItems.Items
             for (; ; )
             {
                 float comp = -2;
-                var yVelocity = throwable.Projectile.Rigidbody.velocity.y - comp;
+                var yVelocity = throwable.Projectile.Rigidbody.linearVelocity.y - comp;
 
                 Log.Info(yVelocity);
             }

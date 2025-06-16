@@ -1,24 +1,27 @@
-using System.ComponentModel;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
+using Exiled.CustomRoles.API;
 using Exiled.Events.EventArgs.Player;
 using MEC;
+using Mirror;
 using PlayerRoles;
 using PlayerRoles.PlayableScps.Scp096;
 using PlayerStatsSystem;
+using System.ComponentModel;
 using UnityEngine;
 using YamlDotNet.Serialization;
+using PlayerEvents = Exiled.Events.Handlers.Player;
 using Random = System.Random;
 using Scp096Role = Exiled.API.Features.Roles.Scp096Role;
-using PlayerEvents = Exiled.Events.Handlers.Player;
 
 namespace ExtendedItems.Items
 {
     [CustomItem(ItemType.GunCOM15)]
-    public class Tranquilizer : CustomWeapon {
+    public class Tranquilizer : CustomWeapon
+    {
         public override string Name { get; set; } = "Tranquilizer";
         public override uint Id { get; set; } = 801;
 
@@ -49,7 +52,8 @@ namespace ExtendedItems.Items
         [YamlIgnore] private readonly Dictionary<uint, float> _resistances = [];
         public ItemType[] Inventory { get; set; } = [];
 
-        public override SpawnProperties? SpawnProperties { get; set; } = new() {
+        public override SpawnProperties? SpawnProperties { get; set; } = new()
+        {
             Limit = 1,
             RoomSpawnPoints = [
             new RoomSpawnPoint() { Room = RoomType.LczCafe, Chance = 25 },
@@ -88,41 +92,41 @@ namespace ExtendedItems.Items
                 if (AdrenalineBuff && targetActiveEffect.name == "Invigorated") Affected = false;
             }
             if (!Affected) return;
-            
+
             Exiled.API.Features.Items.Item? item = null;
-                
-            if((bool)(Plugin.Instance.Config.ReholdItems!))
+
+            if ((bool)(Plugin.Instance.Config.ReholdItems!))
             {
                 item = ev.Target.CurrentItem;
             }
-            
-            var rand = _rng.NextDouble();
+
+            double rand = _rng.NextDouble();
             _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
-            
-            var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
-            
+
+            bool effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
+
             if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective)
-            { 
-                base.OnShot(ev); 
+            {
+                base.OnShot(ev);
                 return;
             }
 
-            var lift = ev.Player.Lift;
-                
+            Lift lift = ev.Player.Lift;
+
             ev.Target.Scale = Vector3.zero;
-            _resistances[ev.Target.NetId] = tResistance + Resistance;
-            
+            _resistances[ev.Target.NetId] = tResistance + (_rng.Next(1,10)/100);
+
             ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
             ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
             ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
-            
+
             ev.Target.IsGodModeEnabled = true;
             Ragdoll? ragdoll = null;
-            
+
             if (ev.Target.IsHuman)
-            { 
-                ev.Target.CurrentItem = null; 
-                ev.Target.Inventory.enabled = false; 
+            {
+                ev.Target.CurrentItem = null;
+                ev.Target.Inventory.enabled = false;
                 ev.Target.EnableEffect(EffectType.AmnesiaItems, byte.MaxValue);
             }
             else
@@ -130,37 +134,37 @@ namespace ExtendedItems.Items
                 if (ev.Target.Role != RoleTypeId.Scp106)
                 {
                     ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname, new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
-                } 
-                if (ev.Target.Role == RoleTypeId.Scp096) 
-                { 
+                }
+                if (ev.Target.Role == RoleTypeId.Scp096)
+                {
                     var crybaby = (Scp096Role)ev.Target.Role;
                     if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed)
                     {
                         crybaby.RageManager.ServerEndEnrage();
-                    } 
+                    }
                 }
             }
             Timing.CallDelayed(5, () =>
-            { 
-                ev.Target.Inventory.enabled = true; 
-                ev.Target.IsGodModeEnabled = false; 
-                ev.Target.DisableEffect(EffectType.Ensnared); 
-                ev.Target.DisableEffect(EffectType.Flashed); 
-                ev.Target.DisableEffect(EffectType.Deafened); 
-                ev.Target.DisableEffect(EffectType.AmnesiaItems); 
-                ev.Target.CurrentItem = item; 
-                if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 2f); 
-                else ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f); ev.Target.Scale = Vector3.one; 
+            {
+                ev.Target.Inventory.enabled = true;
+                ev.Target.IsGodModeEnabled = false;
+                ev.Target.DisableEffect(EffectType.Ensnared);
+                ev.Target.DisableEffect(EffectType.Flashed);
+                ev.Target.DisableEffect(EffectType.Deafened);
+                ev.Target.DisableEffect(EffectType.AmnesiaItems);
+                ev.Target.CurrentItem = item;
+                if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 2f);
+                else ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f); ev.Target.Scale = Vector3.one;
                 ragdoll?.Destroy();
             });
-            
+
             base.OnShot(ev);
         }
 
         protected override void OnShooting(ShootingEventArgs ev)
         {
-            if(!Check(ev.Item)) return;
-            if(ev.Firearm.MagazineAmmo >= 4)
+            if (!Check(ev.Item)) return;
+            if (ev.Firearm.MagazineAmmo >= 4)
             {
                 ev.Firearm.MagazineAmmo = 2;
             }
