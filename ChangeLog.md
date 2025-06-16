@@ -1,12 +1,22 @@
-># Update 3.1.0
+># Update 3.2.1
 >
->>## SCP-1289 (formerly <i>'Coin'</i>)
->>> #### Renamed the coin
->>> #### Added death and winning notes
->>>> Due to a limitation of Exiled only the player who gets killed by the coin can see the new effects added by yours truly
->>
->>## Tranq
->>> Made the player who got tranqed invulnerable but unable to use any items (humans)
->>
->>## Genaral code
->>> Added some notes in the 'Util.cs' file for those who want to add on to this
+>>## General
+>>> - Added new custom weapon: **AdminAbuse ("Regert")**. Fires a frag grenade on shot and prevents attachment changes.
+>>> - Introduced new debug/admin commands for C4 detonation and plugin debugging.
+>>> - Improved error handling and logging, including more detailed error messages with timestamps and time zone info.
+>
+>>## SCP-1162
+>>> - Removed the `SCP-1162` item from the game, as it was moved to a dedicated plugin.
+>
+>>## Sniper
+>>> - Prevented attachment changes on the Sniper (SR-118) and provided user feedback.
+>>> - Ensured the Sniper's magazine and barrel are emptied after each shot.
+>
+>>## Utils
+>>> - Added and improved utility methods for item handling, color conversion, and candy logic.
+>>> - Updated item name mappings and added new item types.
+>>> - Improved documentation and code comments for maintainability.
+>
+>>## Internal
+>>> - Refactored and organized command registration and permission checks for better maintainability.
+>>> - Improved event subscription management to prevent duplicate event handler calls.
