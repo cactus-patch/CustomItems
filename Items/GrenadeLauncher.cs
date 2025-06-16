@@ -92,8 +92,9 @@ namespace ExtendedItems.Items
 
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
-            if (!Check(ev.Item) || ev.Player.NetId < 2) { ev.IsAllowed = false; return; }
+            if (!Check(ev.Item) || ev.Player.NetId < 2)  return;
 
+            Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.Player.Broadcast(5, "You can't change the attachments on this weapon");
             ev.IsAllowed = false;
         }

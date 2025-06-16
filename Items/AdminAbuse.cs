@@ -52,6 +52,7 @@ namespace ExtendedItems.Items
         {
             if (!Check(ev.Item) || ev.Player.NetId < 2) return;
 
+            Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.IsAllowed = false;
             ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
         }

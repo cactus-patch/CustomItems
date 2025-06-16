@@ -1,4 +1,5 @@
 using Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
@@ -20,7 +21,6 @@ namespace ExtendedItems.Items
         public override float Damage { get; set; } = 112f;
         public override byte ClipSize { get; set; } = 1;
 
-        [YamlIgnore]
         public override AttachmentName[] Attachments { get; set; } =
         [
             AttachmentName.LowcapMagAP, AttachmentName.Foregrip, AttachmentName.DotSight, AttachmentName.RecoilReducingStock, AttachmentName.CarbineBody, AttachmentName.MuzzleBrake
@@ -59,6 +59,7 @@ namespace ExtendedItems.Items
         {
             if (!Check(ev.Item) || ev.Player.NetId < 2) return;
 
+            Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.IsAllowed = false;
             ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
         }

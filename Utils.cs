@@ -1,6 +1,8 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
+using Exiled.API.Features.Items;
+using Exiled.Events.Handlers;
 using InventorySystem.Items.Usables.Scp330;
 using UnityEngine;
 using CK = Exiled.CustomItems.API.Features;
@@ -145,13 +147,6 @@ namespace ExtendedItems
             keycard.TintColor = Hex2Color(tintColor);
         }
 
-        public static List<string> GetPropertiesOfHeldOrFirst(EP player)
-        {
-            List<string> response = [];
-            ExItem.Item helditem = GetHeldOrFirst(player, player.Items.FirstOrDefault(i => i.Type == ItemType.KeycardFacilityManager));
-            helditem.CopyProperties(response);
-            return response;
-        }
         public static CandyKindID AddCandy(int candy)
         {
             return candy switch
@@ -179,5 +174,150 @@ namespace ExtendedItems
             };
         }
 
+        /// <summary>
+        /// Gives and equips an item to a player
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="player"></param>
+        public static void GiveEquip(ExItem.Item item, EP player)
+        {
+            player.AddItem(item);
+            player.CurrentItem = item;
+        }
+
+        public static void GiveEquip(ItemType itemType, EP player)
+        {
+            ExItem.Item item = ExItem.Item.Create(itemType);
+            GiveEquip(item, player);
+        }
+
+        public static string GetItemName(ExItem.Item item)
+        {
+            return item.Type switch
+            {
+                ItemType.KeycardJanitor => "Janitor Keycard",
+                ItemType.KeycardScientist => "Scientist Keycard",
+                ItemType.KeycardResearchCoordinator => "Research Coordinator Keycard",
+                ItemType.KeycardZoneManager => "Zone Manager Keycard",
+                ItemType.KeycardGuard => "Guard Keycard",
+                ItemType.KeycardMTFPrivate => "MTF Private Keycard",
+                ItemType.KeycardContainmentEngineer => "Containment Engineer Keycard",
+                ItemType.KeycardMTFOperative => "MTF Operative Keycard",
+                ItemType.KeycardMTFCaptain => "MTF Captain Keycard",
+                ItemType.KeycardFacilityManager => "Facility Manager Keycard",
+                ItemType.KeycardChaosInsurgency => "Chaos Insurgency Keycard",
+                ItemType.KeycardO5 => "O5 Keycard",
+                ItemType.Radio => "Radio",
+                ItemType.GunCOM15 => "COM-15",
+                ItemType.Medkit => "Medkit",
+                ItemType.Flashlight => "Flashlight",
+                ItemType.MicroHID => "Micro HID",
+                ItemType.SCP500 => "SCP-500",
+                ItemType.SCP207 => "SCP-207",
+                ItemType.Ammo12gauge => "12-Gauge",
+                ItemType.GunE11SR => "E-11",
+                ItemType.GunCrossvec => "Crossvec",
+                ItemType.Ammo556x45 => "5.56mm",
+                ItemType.GunFSP9 => "FSP-9",
+                ItemType.GunLogicer => "Logicer",
+                ItemType.GrenadeHE => "Grenade",
+                ItemType.GrenadeFlash => "Flashbang",
+                ItemType.Ammo44cal => ".44mm",
+                ItemType.Ammo762x39 => "7.62mm",
+                ItemType.Ammo9x19 => "9mm Parabellum",
+                ItemType.GunCOM18 => "COM-18",
+                ItemType.SCP018 => "SCP-018",
+                ItemType.SCP268 => "SCP-268",
+                ItemType.Adrenaline => "Adrenaline",
+                ItemType.Painkillers => "Painkillers",
+                ItemType.Coin => "American Quarter",
+                ItemType.ArmorLight => "Light Armor",
+                ItemType.ArmorCombat => "Combat Armor",
+                ItemType.ArmorHeavy => "Heavy Armor",
+                ItemType.GunRevolver => "Revolver",
+                ItemType.GunAK => "AK-15",
+                ItemType.GunShotgun => "Shotgun",
+                ItemType.SCP2176 => "SCP-2176",
+                ItemType.SCP244a => "SCP-244-A",
+                ItemType.SCP244b => "SCP-244-B",
+                ItemType.SCP1853 => "SCP-1853",
+                ItemType.ParticleDisruptor => "Particle Disruptor",
+                ItemType.GunCom45 => "Glockinator",
+                ItemType.SCP1576 => "SCP-1576",
+                ItemType.Jailbird => "Jailbird",
+                ItemType.AntiSCP207 => "SCP-207?",
+                ItemType.GunFRMG0 => "Captains' gun",
+                ItemType.GunA7 => "AK74SU",
+                ItemType.Lantern => "Lantern",
+                ItemType.SCP1344 => "SCP-1344-6",
+                ItemType.SurfaceAccessPass => "Surface Access Pass",
+                ItemType.GunSCP127 => "SCP-127",
+                _ => throw new ArgumentException($"Unknown item type: {item.Type}"),
+            };
+        }
+            public static string GetItemName(ItemType item)
+            {
+            return item switch
+            {
+                ItemType.KeycardJanitor => "Janitor Keycard",
+                ItemType.KeycardScientist => "Scientist Keycard",
+                ItemType.KeycardResearchCoordinator => "Research Coordinator Keycard",
+                ItemType.KeycardZoneManager => "Zone Manager Keycard",
+                ItemType.KeycardGuard => "Guard Keycard",
+                ItemType.KeycardMTFPrivate => "MTF Private Keycard",
+                ItemType.KeycardContainmentEngineer => "Containment Engineer Keycard",
+                ItemType.KeycardMTFOperative => "MTF Operative Keycard",
+                ItemType.KeycardMTFCaptain => "MTF Captain Keycard",
+                ItemType.KeycardFacilityManager => "Facility Manager Keycard",
+                ItemType.KeycardChaosInsurgency => "Chaos Insurgency Keycard",
+                ItemType.KeycardO5 => "O5 Keycard",
+                ItemType.Radio => "Radio",
+                ItemType.GunCOM15 => "COM-15",
+                ItemType.Medkit => "Medkit",
+                ItemType.Flashlight => "Flashlight",
+                ItemType.MicroHID => "Micro HID",
+                ItemType.SCP500 => "SCP-500",
+                ItemType.SCP207 => "SCP-207",
+                ItemType.Ammo12gauge => "12-Gauge",
+                ItemType.GunE11SR => "E-11",
+                ItemType.GunCrossvec => "Crossvec",
+                ItemType.Ammo556x45 => "5.56mm",
+                ItemType.GunFSP9 => "FSP-9",
+                ItemType.GunLogicer => "Logicer",
+                ItemType.GrenadeHE => "Grenade",
+                ItemType.GrenadeFlash => "Flashbang",
+                ItemType.Ammo44cal => ".44mm",
+                ItemType.Ammo762x39 => "7.62mm",
+                ItemType.Ammo9x19 => "9mm Parabellum",
+                ItemType.GunCOM18 => "COM-18",
+                ItemType.SCP018 => "SCP-018",
+                ItemType.SCP268 => "SCP-268",
+                ItemType.Adrenaline => "Adrenaline",
+                ItemType.Painkillers => "Painkillers",
+                ItemType.Coin => "American Quarter",
+                ItemType.ArmorLight => "Light Armor",
+                ItemType.ArmorCombat => "Combat Armor",
+                ItemType.ArmorHeavy => "Heavy Armor",
+                ItemType.GunRevolver => "Revolver",
+                ItemType.GunAK => "AK-15",
+                ItemType.GunShotgun => "Shotgun",
+                ItemType.SCP2176 => "SCP-2176",
+                ItemType.SCP244a => "SCP-244-A",
+                ItemType.SCP244b => "SCP-244-B",
+                ItemType.SCP1853 => "SCP-1853",
+                ItemType.ParticleDisruptor => "Particle Disruptor",
+                ItemType.GunCom45 => "Glockinator",
+                ItemType.SCP1576 => "SCP-1576",
+                ItemType.Jailbird => "Jailbird",
+                ItemType.AntiSCP207 => "SCP-207?",
+                ItemType.GunFRMG0 => "Captains' gun",
+                ItemType.GunA7 => "AK74SU",
+                ItemType.Lantern => "Lantern",
+                ItemType.SCP1344 => "SCP-1344-6",
+                ItemType.SurfaceAccessPass => "Surface Access Pass",
+                ItemType.GunSCP127 => "SCP-127",
+                _ => throw new ArgumentException($"Unknown item type: {item}"),
+            };
+        }
     }
 }
