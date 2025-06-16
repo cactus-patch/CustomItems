@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommandSystem;
+﻿using CommandSystem;
 
 namespace ExtendedItems.Commands.GuideBook
 {
@@ -13,7 +8,7 @@ namespace ExtendedItems.Commands.GuideBook
 
         public static Coinc Instance { get; } = new();
         public string Command => "coin";
-        public string[] Aliases => [ "1289" ];
+        public string[] Aliases => ["1289"];
         public string Description => "Information on SCP-1289 (aka \"Coin\" or \"Colin\") ";
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {

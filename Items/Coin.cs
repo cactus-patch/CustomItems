@@ -1,12 +1,12 @@
-using System.ComponentModel;
-using ExtendedItems.Types;
 using Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
+using ExtendedItems.Types;
 using MEC;
-
+using System.ComponentModel;
 using PlayerEvents = Exiled.Events.Handlers.Player;
 
 namespace ExtendedItems.Items
@@ -60,8 +60,9 @@ namespace ExtendedItems.Items
         private void OnFlippingCoin(FlippingCoinEventArgs ev)
         {
             if (!Check(ev.Item)) return;
-            
-            Timing.CallDelayed(2f, () => {
+
+            Timing.CallDelayed(2f, () =>
+            {
                 if (ev.IsTails && !ev.Player.IsDead)
                 {
                     ev.Player.IsGodModeEnabled = false;
@@ -71,6 +72,7 @@ namespace ExtendedItems.Items
                 }
 
                 ev.Player.ShowHint($"{Plugin.Instance?.Config.WinHints.RandomItem()}");
+                
                 Effects.ForEach((effect) => { ev.Player.EnableEffect(effect.Type, effect.Intensity, effect.Duration, true); });
             });
         }

@@ -4,6 +4,7 @@ using Exiled.API.Features;
 namespace ExtendedItems.Commands
 {
     [CommandHandler(typeof(ClientCommandHandler))]
+
     class Plastic : ICommand
     {
         public string Command => "detonate";
@@ -15,6 +16,7 @@ namespace ExtendedItems.Commands
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             Player ply = Player.Get(sender);
+            Log.Debug($"Player: {ply.Nickname} executed the detonate command.");
             if (!Items.Plastic.PlacedCharges.ContainsValue(ply))
             {
                 response = "\n<color=red>You've haven't placed any C4 charges!</color>";
@@ -24,12 +26,12 @@ namespace ExtendedItems.Commands
             int i = 0;
             foreach (var charge in Items.Plastic.PlacedCharges.ToList())
             {
-                float posy =  charge.Key.Position.y;
+                float posy = charge.Key.Position.y;
                 if (charge.Value != ply) continue;
-                
-                if (ply.Position.y >= posy - 100 && ply.Position.y <= posy + 100 )
+
+                if (ply.Position.y >= posy - 100 && ply.Position.y <= posy + 100)
                 {
-                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate);
+                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate, ply);
                     i++;
                 }
                 else
