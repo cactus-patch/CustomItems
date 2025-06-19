@@ -11,7 +11,7 @@ body:
       - Tranq
       - SCP-1162
       - SCP-1499
-      - SCP-1289 aka Coin
+      - SCP-1289
    	required: true
 - type: checkboxes
   attributes:
