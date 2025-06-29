@@ -39,7 +39,7 @@ namespace ExtendedItems.Items
         protected override void OnShot(ShotEventArgs ev)
         {
             var throwable = ev.Player.ThrowGrenade(ProjectileType.FragGrenade);
-            // defining ammo by itsself will not change the ammo count
+            // defining ammo by itself will not change the ammo count
             // so you need to call ev.Firearm.MagazineAmmo :)
             ev.Firearm.MagazineAmmo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
 
