@@ -3,16 +3,15 @@ using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
-using Exiled.CustomRoles.API;
 using Exiled.Events.EventArgs.Player;
 using MEC;
-using Mirror;
 using PlayerRoles;
 using PlayerRoles.PlayableScps.Scp096;
 using PlayerStatsSystem;
 using System.ComponentModel;
 using UnityEngine;
 using YamlDotNet.Serialization;
+using Map = Exiled.Events.Handlers.Map;
 using PlayerEvents = Exiled.Events.Handlers.Player;
 using Random = System.Random;
 using Scp096Role = Exiled.API.Features.Roles.Scp096Role;
@@ -32,25 +31,25 @@ namespace ExtendedItems.Items
         public override byte ClipSize { get; set; } = 3;
 
         [Description("Whether the tranquilizer is effective on SCP-173.")]
-        public bool EffectiveOn173 { get; set; } = false;
+        private bool EffectiveOn173 { get; set; } = false;
 
         [Description("The effectiveness of tranquilizer on SCPs in decimal percentage.")]
-        public float ScpChance { get; set; } = 0.5f;
+        private double ScpChance { get; set; } = 0.5f;
 
         [Description("The effectiveness of tranquilizer on humans in decimal percentage.")]
-        public float HumanChance { get; set; } = 0.75f;
+        private double HumanChance { get; set; } = 0.75f;
 
         [Description("Resistance to remove from the chance after being shot.")]
         public float Resistance { get; set; } = 0.05f;
 
         [Description("Whether tranquilizer should not effect those with Adrenaline.")]
-        public bool AdrenalineBuff { get; set; } = true;
+        private bool AdrenalineBuff { get; set; } = true;
         private bool Affected { get; set; } = true;
 
 
         [YamlIgnore] private readonly Random _rng = new();
-        [YamlIgnore] private readonly Dictionary<uint, float> _resistances = [];
-        public ItemType[] Inventory { get; set; } = [];
+        [YamlIgnore] private readonly Dictionary<uint, double> _resistances = [];
+        
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
@@ -95,13 +94,13 @@ namespace ExtendedItems.Items
 
             Exiled.API.Features.Items.Item? item = null;
 
-            if ((bool)(Plugin.Instance.Config.ReholdItems!))
+            if ((Plugin.Instance.Config.ReholdItems))
             {
                 item = ev.Target.CurrentItem;
             }
 
             double rand = _rng.NextDouble();
-            _resistances.TryGetValue(ev.Target.NetId, out float tResistance);
+            _resistances.TryGetValue(ev.Target.NetId, out double tResistance);
 
             bool effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
 
@@ -114,13 +113,20 @@ namespace ExtendedItems.Items
             Lift lift = ev.Player.Lift;
 
             ev.Target.Scale = Vector3.zero;
-            _resistances[ev.Target.NetId] = tResistance + (_rng.Next(1,10)/100);
+            _resistances[ev.Target.NetId] = tResistance + (_rng.NextDouble());
 
             ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
             ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
             ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
 
-            ev.Target.IsGodModeEnabled = true;
+            
+            if (Warhead.DetonationTimer < 5f && ev.Player.Zone != ZoneType.Surface)
+            {
+                ev.Player.Kill("Tranquilized during warhead detonation.");
+                base.OnShot(ev);
+                return;
+            }
+            
             Ragdoll? ragdoll = null;
 
             if (ev.Target.IsHuman)
@@ -154,7 +160,8 @@ namespace ExtendedItems.Items
                 ev.Target.DisableEffect(EffectType.AmnesiaItems);
                 ev.Target.CurrentItem = item;
                 if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 2f);
-                else ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f); ev.Target.Scale = Vector3.one;
+                else ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f); 
+                ev.Target.Scale = Vector3.one;
                 ragdoll?.Destroy();
             });
 

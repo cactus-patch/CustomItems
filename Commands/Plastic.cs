@@ -9,7 +9,7 @@ namespace ExtendedItems.Commands
     {
         public string Command => "detonate";
 
-        public string[] Aliases => ["det", "d", "boom"];
+        public string[] Aliases => ["det", "d", "boom",];
 
         public string Description => "Detonate command for C4 charges that you have placed";
 
@@ -21,6 +21,7 @@ namespace ExtendedItems.Commands
             {
                 response = "\n<color=red>You've haven't placed any C4 charges!</color>";
                 return false;
+                
             }
 
             int i = 0;

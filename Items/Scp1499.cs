@@ -21,13 +21,13 @@ namespace ExtendedItems.Items
         public override float Weight { get; set; } = 5f;
 
         [Description("Room to teleport player to after using SCP-1499.")]
-        public RoomType TeleportRoom { get; set; } = RoomType.Hcz106;
+        private RoomType TeleportRoom { get; set; } = RoomType.Hcz106;
 
         [Description("Relative position of room mentioned above to teleport player to after using SCP-1499.")]
-        public Vector3 RelativePosition = new(5.75f, 10f, -10.75f);
+        private Vector3 RelativePosition = new(5.75f, 10f, -10.75f);
 
         [Description("Time for player to wander in seconds.")]
-        public float Duration { get; set; } = 15f;
+        private float Duration { get; set; } = 15f;
 
         [YamlIgnore]
         private readonly Dictionary<uint, (Vector3, Lift?, CoroutineHandle)> _lastPositions = [];

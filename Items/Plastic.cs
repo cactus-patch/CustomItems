@@ -22,8 +22,6 @@ using PlayerEvent = Exiled.Events.Handlers.Player;
 using ServerEvent = Exiled.Events.Handlers.Server;
 
 
-
-
 namespace ExtendedItems.Items
 {
     [CustomItem(ItemType.GrenadeHE)]
@@ -37,10 +35,9 @@ namespace ExtendedItems.Items
         public override bool ExplodeOnCollision { get; set; } = false;
         public override float FuseTime { get; set; } = 999f;
         public static Dictionary<Pickup, Player> PlacedCharges { get; } = [];
-        public static Dictionary<ushort, Player> Charges { get; } = [];
+        private static Dictionary<ushort, Player> Charges { get; } = [];
         public static Plastic Instance { get; private set; } = null!;
         public override SpawnProperties? SpawnProperties { get; set; } = new()
-
         {
             Limit = 2,
             RoomSpawnPoints =
@@ -63,9 +60,7 @@ namespace ExtendedItems.Items
             Detonate = 1,
             Drop = 2,
         }
-
-
-        [YamlIgnore]
+        
         public override ItemType Type { get; set; } = ItemType.GrenadeHE;
 
         public void Handler(Pickup? charge, C4RemoveMethod method = C4RemoveMethod.Drop, Player? detonator = null)
@@ -73,28 +68,28 @@ namespace ExtendedItems.Items
             if (charge?.Position is null) return;
 
             if (detonator == null && charge != null) { method = C4RemoveMethod.Drop; }
-            else { detonator = Charges.TryGetValue(charge.Serial, out var foundPlayer) ? foundPlayer : null; }
+            else { detonator = charge != null && Charges.TryGetValue(charge.Serial, out var foundPlayer) ? foundPlayer : null; }
 
 
             switch (method)
             {
                 case C4RemoveMethod.Detonate:
-                    {
-                        ExplosiveGrenade grenade = (ExplosiveGrenade)Item.Create(Type);
-                        grenade.FuseTime = 0.1f;
-                        grenade.SpawnActive(charge.Position, detonator);
-                        break;
-                    }
-                case C4RemoveMethod.Drop:
-                    {
-                        TrySpawn(Id, charge.Position, out _);
-                        break;
-                    }
+                {
+                    var grenade = (ExplosiveGrenade) Item.Create(Type);
+                    grenade.FuseTime = 0.1f;
+                    grenade.SpawnActive(charge.Position, detonator);
+                    break;
+                }
                 case C4RemoveMethod.Remove:
-                    {
-                        charge.Destroy();
-                        break;
-                    }
+                {
+                    charge.Destroy();
+                    break;
+                }
+                default:
+                {
+                    TrySpawn(Id, charge.Position, out _);
+                    break;
+                }
             }
 
             PlacedCharges.Remove(charge);
@@ -113,8 +108,7 @@ namespace ExtendedItems.Items
 
             base.SubscribeEvents();
         }
-
-        /// <inheritdoc/>
+        
         protected override void UnsubscribeEvents()
         {
             PlayerEvent.Destroying -= OnDestroying;
@@ -147,7 +141,7 @@ namespace ExtendedItems.Items
         {
             Log.Debug("Executing OnExploding method.");
             PlacedCharges.Remove(ev.Projectile);
-
+            base.OnExploding(ev);
         }
 
         private void OnDestroying(DestroyingEventArgs ev)
@@ -165,7 +159,7 @@ namespace ExtendedItems.Items
             {
                 if (charge.Value == ev.Player)
                 {
-                    Handler(charge.Key, C4RemoveMethod.Drop);
+                    Handler(charge.Key);
                 }
             }
         }
@@ -189,6 +183,7 @@ namespace ExtendedItems.Items
         private void OnRoundEnded(RoundEndedEventArgs ev)
         {
             PlacedCharges.Clear();
+            
         }
     }
 }

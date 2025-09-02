@@ -13,20 +13,11 @@ namespace ExtendedItems
 
         #region Config Settings
 
-        [Description("Where SCP-1162 spawns")]
-        public RoomType Scp1162Room { get; set; } = RoomType.Lcz173;
-
-        [Description("The offset from Scp1162Room Origin point")]
-        public Vector3 SpawnOffset = new(16.68f, 11.6f, 8.11f);
-
         [Description("Weather a tranqed target hold the item they had when they were tranqed")]
-        public bool ReholdItems = false;
+        public bool ReholdItems { get; set; } = false;
 
         [Description("Weather the Tranq is effective on Tutorials")]
-        public bool EffectiveOnTutorials = false;
-
-        [Description("Permissions required to access Debug Commands")]
-        public PlayerPermissions DebugPermissions = PlayerPermissions.ServerConsoleCommands;
+        public bool EffectiveOnTutorials { get; set; } = false;
 
         [Description("The possable hints shown when you Win")]
         public string[] WinHints { get; set; } =
@@ -37,7 +28,7 @@ namespace ExtendedItems
             "Life to the Ruler",
             "Be Brave",
             "The Savior is here",
-            "The end is never near"
+            "The end is never near",
         ];
 
         [Description("List of possible causes of death when the coin lands on tails")]

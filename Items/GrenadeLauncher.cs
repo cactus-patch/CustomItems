@@ -12,16 +12,14 @@ using YamlDotNet.Serialization;
 using E = ExtendedItems.Utils;
 using ItemEvents = Exiled.Events.Handlers.Item;
 
-
 namespace ExtendedItems.Items
 {
-
     [CustomItem(ItemType.GunLogicer)]
     public class GrenadeLauncher : CustomWeapon
     {
         public override uint Id { get; set; } = 805;
         public override string Name { get; set; } = "Grenade Launcher";
-        public override string Description { get; set; } = "A modified Chaos Insergency LMG that fires High Explisove Grenades";
+        public override string Description { get; set; } = "A modified Chaos Insurgency LMG that fires High Explosive Grenades";
         public override float Weight { get; set; } = 10f;
         public override float Damage { get; set; } = 0f;
         public override byte ClipSize { get; set; } = 1;
