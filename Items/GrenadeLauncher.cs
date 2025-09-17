@@ -19,32 +19,39 @@ namespace ExtendedItems.Items
     {
         public override uint Id { get; set; } = 805;
         public override string Name { get; set; } = "Grenade Launcher";
-        public override string Description { get; set; } = "A modified Chaos Insurgency LMG that fires High Explosive Grenades";
+
+        public override string Description { get; set; } =
+            "A modified Chaos Insurgency LMG that fires High Explosive Grenades";
+
         public override float Weight { get; set; } = 10f;
         public override float Damage { get; set; } = 0f;
         public override byte ClipSize { get; set; } = 1;
+
         [YamlIgnore]
-        public override AttachmentName[] Attachments { get; set; } = [AttachmentName.Laser, AttachmentName.IronSights, AttachmentName.ShortBarrel];
+        public override AttachmentName[] Attachments { get; set; } =
+            [AttachmentName.Laser, AttachmentName.IronSights, AttachmentName.ShortBarrel,];
+
         public override SpawnProperties? SpawnProperties { get; set; } = new()
 
         {
             Limit = 1,
             DynamicSpawnPoints =
             [
-                new DynamicSpawnPoint()
+                new DynamicSpawnPoint
                 {
                     Chance = 100,
                     Location = SpawnLocationType.InsideHidChamber,
                 },
-             ],
+            ],
         };
 
         protected override void OnShooting(ShootingEventArgs ev)
         {
             var throwable = ev.Player.ThrowGrenade(ProjectileType.FragGrenade);
-            ushort ammo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
+            var ammo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
 
-            throwable.Projectile.GameObject.AddComponent<CollisionHandler>().Init(ev.Player.GameObject, throwable.Projectile.Base);
+            throwable.Projectile.GameObject.AddComponent<CollisionHandler>()
+                .Init(ev.Player.GameObject, throwable.Projectile.Base);
 
             ev.Firearm.MagazineAmmo = 0;
             ev.Firearm.BarrelAmmo = 0;
@@ -56,22 +63,25 @@ namespace ExtendedItems.Items
 
         protected override void OnReloading(ReloadingWeaponEventArgs ev)
         {
-            if (ev.Player.CountItem(ItemType.GrenadeHE) > 0)
-            {
-                ev.IsAllowed = true;
-                ev.Player.RemoveItem(ev.Player.Items.First(it => it.Type == ItemType.GrenadeHE));
-                base.OnReloading(ev);
-            }
-
-            else
+            if (!Check(ev.Item)) return;
+            
+            if (ev.Player.GetAmmo(AmmoType.Nato762) == 0)
             {
                 ev.IsAllowed = false;
-                ev.Player.ShowHint(
-                    ev.Player.GetAmmo(AmmoType.Nato762) == 0
-                        ? "You need 1 7.62 to fire."
-                        : "You need a HE Grenade to reload this weapon", 5);
-                base.OnReloading(ev);
+                ev.Player.ShowHint("You don't have any 7.62mm ammo to reload the grenade launcher!", 5);
             }
+            else if (ev.Player.GetAmmo(AmmoType.Nato762) < 10)
+            {
+                ev.IsAllowed = false;
+                ev.Player.ShowHint("You need more than 10 7.62 to reload the grenade launcher!", 5);
+            }
+            else
+            {
+                var ammo = ev.Player.GetAmmo(AmmoType.Nato762);
+                ammo -= Plugin.Instance.Config.GrenadeLauncherAmmoUsage;
+                ev.Player.SetAmmo(AmmoType.Nato762, ammo) ;
+            }
+            base.OnReloading(ev);
         }
 
         protected override void SubscribeEvents()
@@ -90,7 +100,7 @@ namespace ExtendedItems.Items
 
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
-            if (!Check(ev.Item) || ev.Player.NetId < 2)  return;
+            if (!Check(ev.Item) || ev.Player.NetId < 2) return;
 
             Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.Player.Broadcast(5, "You can't change the attachments on this weapon");
@@ -99,7 +109,7 @@ namespace ExtendedItems.Items
 
         private static IEnumerator<float> Detonate(Throwable throwable)
         {
-            for (; ; )
+            for (;;)
             {
                 float comp = -2;
                 var yVelocity = throwable.Projectile.Rigidbody.linearVelocity.y - comp;

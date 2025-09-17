@@ -1,22 +1,13 @@
-># Update 3.2.1
->
->>## General
->>> - Added new custom weapon: **AdminAbuse ("Regert")**. Fires a frag grenade on shot and prevents attachment changes.
->>> - Introduced new debug/admin commands for C4 detonation and plugin debugging.
->>> - Improved error handling and logging, including more detailed error messages with timestamps and time zone info.
->
->>## SCP-1162
->>> - Removed the `SCP-1162` item from the game, as it was moved to a dedicated plugin.
->
->>## Sniper
->>> - Prevented attachment changes on the Sniper (SR-118) and provided user feedback.
->>> - Ensured the Sniper's magazine and barrel are emptied after each shot.
->
->>## Utils
->>> - Added and improved utility methods for item handling, color conversion, and candy logic.
->>> - Updated item name mappings and added new item types.
->>> - Improved documentation and code comments for maintainability.
->
->>## Internal
->>> - Refactored and organized command registration and permission checks for better maintainability.
->>> - Improved event subscription management to prevent duplicate event handler calls.
+># Update 3.2.2
+> 
+>> ## General
+>>> - Refactored a lot of code to make it easier to read
+> 
+>>## Plastic (C-4)
+>>> - Added the ability to explode the C-4 via a keybind (default: Delete)
+>>> 
+> 
+>>## Tranquilizer
+>>>- Changed from a person who is tranqed being invulnerable to just having a 60% damage resistance
+>>>
+> 

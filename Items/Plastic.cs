@@ -1,4 +1,5 @@
 ﻿// Exiled imports
+
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
@@ -9,11 +10,9 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Map;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Server;
-
-// Non-System or Exiled imports
 using InventorySystem.Items.ThrowableProjectiles;
 using UnityEngine;
-using YamlDotNet.Serialization;
+// Non-System or Exiled imports
 
 // System imports
 
@@ -27,22 +26,33 @@ namespace ExtendedItems.Items
     [CustomItem(ItemType.GrenadeHE)]
     public class Plastic : CustomGrenade
     {
+        public enum C4RemoveMethod
+        {
+            Remove = 0,
+            Detonate = 1,
+            Drop = 2,
+        }
+
         // Former Name: Hexahydro-1,3,5-trinitro-1,3,5-triazine
         public override string Name { get; set; } = "C4 Explosive Charge";
-        public override string Description { get; set; } = "A Remote Explosive that can be detonated when you are within 100m (about 1049.866 Big macs)";
+
+        public override string Description { get; set; } =
+            "A Remote Explosive that can be detonated when you are within 100m (about 1049.866 Big macs)";
+
         public override uint Id { get; set; } = 806;
         public override float Weight { get; set; } = 1.5f;
         public override bool ExplodeOnCollision { get; set; } = false;
-        public override float FuseTime { get; set; } = 999f;
+        public override float FuseTime { get; set; } = 10800f;
         public static Dictionary<Pickup, Player> PlacedCharges { get; } = [];
         private static Dictionary<ushort, Player> Charges { get; } = [];
         public static Plastic Instance { get; private set; } = null!;
+
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
             Limit = 2,
             RoomSpawnPoints =
             [
-                new RoomSpawnPoint() { Room = RoomType.HczNuke, Chance = 50 },
+                new RoomSpawnPoint { Room = RoomType.HczNuke, Chance = 50, },
             ],
             DynamicSpawnPoints =
             [
@@ -54,23 +64,21 @@ namespace ExtendedItems.Items
             ],
         };
 
-        public enum C4RemoveMethod
-        {
-            Remove = 0,
-            Detonate = 1,
-            Drop = 2,
-        }
-        
         public override ItemType Type { get; set; } = ItemType.GrenadeHE;
 
         public void Handler(Pickup? charge, C4RemoveMethod method = C4RemoveMethod.Drop, Player? detonator = null)
         {
-            if (charge?.Position is null) return;
+            if (charge is null) return;
 
-            if (detonator == null && charge != null) { method = C4RemoveMethod.Drop; }
-            else { detonator = charge != null && Charges.TryGetValue(charge.Serial, out var foundPlayer) ? foundPlayer : null; }
+            if (detonator == null) method = C4RemoveMethod.Drop;
+            else
+            {
+                detonator = charge != null && Charges.TryGetValue(charge.Serial, out var foundPlayer)
+                    ? foundPlayer
+                    : null;
+            }
 
-
+#pragma warning disable CS8602
             switch (method)
             {
                 case C4RemoveMethod.Detonate:
@@ -85,6 +93,7 @@ namespace ExtendedItems.Items
                     charge.Destroy();
                     break;
                 }
+                case C4RemoveMethod.Drop: //This looks ugly af...  what the fuck Microsoft
                 default:
                 {
                     TrySpawn(Id, charge.Position, out _);
@@ -95,7 +104,7 @@ namespace ExtendedItems.Items
             PlacedCharges.Remove(charge);
             charge.Destroy();
         }
-
+#pragma warning restore CS8602
         protected override void SubscribeEvents()
         {
             Instance = this;
@@ -108,7 +117,7 @@ namespace ExtendedItems.Items
 
             base.SubscribeEvents();
         }
-        
+
         protected override void UnsubscribeEvents()
         {
             PlayerEvent.Destroying -= OnDestroying;
@@ -141,49 +150,39 @@ namespace ExtendedItems.Items
         {
             Log.Debug("Executing OnExploding method.");
             PlacedCharges.Remove(ev.Projectile);
+            
             base.OnExploding(ev);
         }
 
         private void OnDestroying(DestroyingEventArgs ev)
         {
             Log.Debug("Executing OnDestoying method.");
-            foreach (KeyValuePair<Pickup, Player> charge in PlacedCharges.ToList())
-            {
-                if (charge.Value == ev.Player) Handler(charge.Key, C4RemoveMethod.Remove);
-            }
+            foreach (var charge in PlacedCharges.ToList().Where(charge => charge.Value == ev.Player))
+                Handler(charge.Key, C4RemoveMethod.Remove);
         }
 
         private void OnDied(DiedEventArgs ev)
         {
-            foreach (KeyValuePair<Pickup, Player> charge in PlacedCharges.ToList())
-            {
-                if (charge.Value == ev.Player)
-                {
-                    Handler(charge.Key);
-                }
-            }
+            foreach (var charge in PlacedCharges.ToList().Where(charge => charge.Value == ev.Player))
+                Handler(charge.Key);
         }
 
         private void OnShooting(ShootingEventArgs ev)
         {
-            Vector3 forward = ev.Player.CameraTransform.forward;
+            var forward = ev.Player.CameraTransform.forward;
 
-            if (!Physics.Raycast(ev.Player.CameraTransform.position + forward, forward, out RaycastHit hit, 500))
+            if (!Physics.Raycast(ev.Player.CameraTransform.position + forward, forward, out var hit, 500))
                 return;
 
-            EffectGrenade grenade = hit.collider.gameObject.GetComponentInParent<EffectGrenade>();
+            var grenade = hit.collider.gameObject.GetComponentInParent<EffectGrenade>();
 
             if (grenade == null) return;
-            if (PlacedCharges.ContainsKey(Pickup.Get(grenade)))
-            {
-                Handler(Pickup.Get(grenade), C4RemoveMethod.Remove);
-            }
+            if (PlacedCharges.ContainsKey(Pickup.Get(grenade))) Handler(Pickup.Get(grenade), C4RemoveMethod.Remove);
         }
 
         private void OnRoundEnded(RoundEndedEventArgs ev)
         {
             PlacedCharges.Clear();
-            
         }
     }
 }

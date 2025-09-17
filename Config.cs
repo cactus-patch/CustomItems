@@ -1,8 +1,6 @@
-using Exiled.API.Enums;
+using System.ComponentModel;
 using Exiled.API.Interfaces;
 using ExtendedItems.Items;
-using System.ComponentModel;
-using UnityEngine;
 
 namespace ExtendedItems
 {
@@ -13,11 +11,14 @@ namespace ExtendedItems
 
         #region Config Settings
 
-        [Description("Weather a tranqed target hold the item they had when they were tranqed")]
-        public bool ReholdItems { get; set; } = false;
-
         [Description("Weather the Tranq is effective on Tutorials")]
         public bool EffectiveOnTutorials { get; set; } = false;
+
+        [Description("The Distance from Larry a player can be before they can no longer use SCP-1499")]
+        public float LarryDistance { get; set; } = 1f;
+        
+        [Description("Ammount of ammo to remove when Grenade Launcher is fired (Can not be negitive)")]
+        public ushort GrenadeLauncherAmmoUsage { get; set; } = 10;
 
         [Description("The possable hints shown when you Win")]
         public string[] WinHints { get; set; } =
@@ -44,6 +45,7 @@ namespace ExtendedItems
         ];
 
         #endregion
+
         #region Custom Items setup
 
         public Coin Coin { get; set; } = new();
@@ -54,8 +56,6 @@ namespace ExtendedItems
         public Plastic Plastic { get; set; } = new();
         public AdminAbuse AdminAbuse { get; set; } = new();
 
-
         #endregion
     }
-
 }

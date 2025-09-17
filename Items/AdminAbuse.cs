@@ -1,4 +1,5 @@
-﻿using Exiled.API.Enums;
+﻿using System.ComponentModel;
+using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Components;
@@ -8,26 +9,27 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
-using System.ComponentModel;
 using E = ExtendedItems.Utils;
 using ItemEvents = Exiled.Events.Handlers.Item;
 
 namespace ExtendedItems.Items
 {
-
     [CustomItem(ItemType.GunRevolver)]
     public class AdminAbuse : CustomWeapon
     {
         [Description("thanks to hayden for the idea on buckshot or else it wouldnt have worked")]
         public override uint Id { get; set; } = 799;
+
         public override string Name { get; set; } = "Regert (dont use this because it crashes the server)";
         public override string Description { get; set; } = "you asked for it!";
         public override float Weight { get; set; } = 0f;
         public override float Damage { get; set; } = 0;
+
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
             Limit = 0,
         };
+
         public override AttachmentName[] Attachments { get; set; } =
         [
             AttachmentName.CylinderMag7,
@@ -43,7 +45,8 @@ namespace ExtendedItems.Items
             // so you need to call ev.Firearm.MagazineAmmo :)
             ev.Firearm.MagazineAmmo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
 
-            throwable.Projectile.GameObject.AddComponent<CollisionHandler>().Init(ev.Player.GameObject, throwable.Projectile.Base);
+            throwable.Projectile.GameObject.AddComponent<CollisionHandler>()
+                .Init(ev.Player.GameObject, throwable.Projectile.Base);
 
             base.OnShot(ev);
         }
@@ -71,9 +74,10 @@ namespace ExtendedItems.Items
 
             base.UnsubscribeEvents();
         }
+
         private static IEnumerator<float> Detonate(Throwable throwable)
         {
-            for (; ; )
+            for (;;)
             {
                 float comp = -2;
                 var yVelocity = throwable.Projectile.Rigidbody.linearVelocity.y - comp;

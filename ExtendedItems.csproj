@@ -1,5 +1,4 @@
-﻿
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net48</TargetFramework>
@@ -9,15 +8,15 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
 
-	<PropertyGroup>
-		<NoWarn>$(NoWarn);MSB3270</NoWarn>
-	</PropertyGroup>
+    <PropertyGroup>
+        <NoWarn>$(NoWarn);MSB3270</NoWarn>
+    </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ExMod.Exiled" Version="9.7.0" />
+        <PackageReference Include="ExMod.Exiled" Version="9.8.1"/>
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 

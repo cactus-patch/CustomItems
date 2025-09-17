@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
@@ -6,10 +7,9 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
 using ExtendedItems.Types;
 using MEC;
-using System.ComponentModel;
 using PlayerStatsSystem;
-using PlayerEvents = Exiled.Events.Handlers.Player;
 using UnityEngine;
+using PlayerEvents = Exiled.Events.Handlers.Player;
 
 namespace ExtendedItems.Items
 {
@@ -26,28 +26,29 @@ namespace ExtendedItems.Items
             Limit = 3,
             RoomSpawnPoints =
             [
-                new RoomSpawnPoint() { Room = RoomType.LczCafe, Chance = 50 },
-                new RoomSpawnPoint() { Room = RoomType.LczToilets, Chance = 50 },
-                new RoomSpawnPoint() { Room = RoomType.HczArmory, Chance = 50 },
+                new RoomSpawnPoint { Room = RoomType.LczCafe, Chance = 50, },
+                new RoomSpawnPoint { Room = RoomType.LczToilets, Chance = 50, },
+                new RoomSpawnPoint { Room = RoomType.HczArmory, Chance = 50, },
             ],
             DynamicSpawnPoints =
             [
-                new DynamicSpawnPoint() { Location = SpawnLocationType.InsideEscapePrimary, Chance = 50 },
-            ]
+                new DynamicSpawnPoint { Location = SpawnLocationType.InsideEscapePrimary, Chance = 50, },
+            ],
         };
 
         [Description("Effects to give if coin landed on heads.")]
-        private static CoinEffect[] Effects  =>
+        private static CoinEffect[] Effects =>
         [
-            new() { Type = EffectType.DamageReduction, Duration = 15, Intensity = 75 },
-            new() { Type = EffectType.RainbowTaste, Duration = 15, Intensity = byte.MaxValue },
-            new() { Type = EffectType.Invigorated, Duration = 15, Intensity = byte.MaxValue },
-            new() { Type = EffectType.MovementBoost, Duration = 15, Intensity = 75 },
+            new() { Type = EffectType.DamageReduction, Duration = 15, Intensity = 75, },
+            new() { Type = EffectType.RainbowTaste, Duration = 15, Intensity = byte.MaxValue, },
+            new() { Type = EffectType.Invigorated, Duration = 15, Intensity = byte.MaxValue, },
+            new() { Type = EffectType.MovementBoost, Duration = 15, Intensity = 75, },
         ];
 
         protected override void SubscribeEvents()
         {
             PlayerEvents.FlippingCoin += OnFlippingCoin;
+            PlayerEvents.ChangingRole += OnRoleChanging;
 
             base.SubscribeEvents();
         }
@@ -55,6 +56,7 @@ namespace ExtendedItems.Items
         protected override void UnsubscribeEvents()
         {
             PlayerEvents.FlippingCoin -= OnFlippingCoin;
+            PlayerEvents.ChangingRole -= OnRoleChanging;
 
             base.UnsubscribeEvents();
         }
@@ -68,14 +70,14 @@ namespace ExtendedItems.Items
                 if (ev.IsTails && !ev.Player.IsDead)
                 {
                     ev.Player.Scale = Vector3.zero;
-                    string cause = Plugin.Instance?.Config.LoseCauses.RandomItem() ?? "<Error: Coin Reason Not Found>";
-                    Ragdoll? ragdoll = Ragdoll.CreateAndSpawn(ev.Player.Role.Type, ev.Player.DisplayNickname,
+                    var cause = Plugin.Instance?.Config.LoseCauses.RandomItem() ?? "<Error: Coin Reason Not Found>";
+                    var ragdoll = Ragdoll.CreateAndSpawn(ev.Player.Role.Type, ev.Player.DisplayNickname,
                         new CustomReasonDamageHandler($"{cause}"),
                         ev.Player.Position, ev.Player.Rotation, ev.Player);
 
                     ev.Player.IsGodModeEnabled = false;
 
-                    ev.Player.Explode();
+                    ev.Player.ExplodeEffect(ProjectileType.FragGrenade);
                     ev.Player.Kill($"{cause}");
                     ev.Player.Scale = Vector3.one;
                     return;
@@ -83,12 +85,17 @@ namespace ExtendedItems.Items
 
                 ev.Player.ShowHint($"{Plugin.Instance?.Config.WinHints.RandomItem()}");
 
-                Effects.ForEach((effect) =>
+                Effects.ForEach(effect =>
                 {
                     ev.Player.EnableEffect(effect.Type, effect.Intensity, effect.Duration, true);
                 });
             });
         }
 
+        private void OnRoleChanging(ChangingRoleEventArgs ev)
+        {
+            ev.Player.Scale = Vector3.one;
+            ev.Player.DisableAllEffects();
+        }
     }
 }

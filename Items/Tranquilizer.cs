@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
@@ -8,57 +9,58 @@ using MEC;
 using PlayerRoles;
 using PlayerRoles.PlayableScps.Scp096;
 using PlayerStatsSystem;
-using System.ComponentModel;
 using UnityEngine;
 using YamlDotNet.Serialization;
-using Map = Exiled.Events.Handlers.Map;
-using PlayerEvents = Exiled.Events.Handlers.Player;
 using Random = System.Random;
 using Scp096Role = Exiled.API.Features.Roles.Scp096Role;
+using PlayerEvents = Exiled.Events.Handlers.Player;
 
 namespace ExtendedItems.Items
 {
     [CustomItem(ItemType.GunCOM15)]
     public class Tranquilizer : CustomWeapon
     {
+        [YamlIgnore] private readonly Dictionary<uint, float> _resistances = [];
+
+
+        [YamlIgnore] private readonly Random _rng = new();
         public override string Name { get; set; } = "Tranquilizer";
         public override uint Id { get; set; } = 801;
 
-        public override string Description { get; set; } = "A gun that temporarily tranquilizes entities; might be unreliable.";
+        public override string Description { get; set; } =
+            "A gun that temporarily tranquilizes entities; might be unreliable.";
 
         public override float Weight { get; set; } = 1f;
         public override float Damage { get; set; } = 1f;
         public override byte ClipSize { get; set; } = 3;
 
         [Description("Whether the tranquilizer is effective on SCP-173.")]
-        private bool EffectiveOn173 { get; set; } = false;
+        private bool EffectiveOn173 { get; } = false;
 
         [Description("The effectiveness of tranquilizer on SCPs in decimal percentage.")]
-        private double ScpChance { get; set; } = 0.5f;
+        private float ScpChance { get; } = 0.5f;
 
         [Description("The effectiveness of tranquilizer on humans in decimal percentage.")]
-        private double HumanChance { get; set; } = 0.75f;
+        private float HumanChance { get; } = 0.75f;
 
         [Description("Resistance to remove from the chance after being shot.")]
-        public float Resistance { get; set; } = 0.05f;
+        private float Resistance { get; } = 0.05f;
 
         [Description("Whether tranquilizer should not effect those with Adrenaline.")]
-        private bool AdrenalineBuff { get; set; } = true;
+        private bool AdrenalineBuff { get; } = true;
+
         private bool Affected { get; set; } = true;
-
-
-        [YamlIgnore] private readonly Random _rng = new();
-        [YamlIgnore] private readonly Dictionary<uint, double> _resistances = [];
-        
+        public ItemType[] Inventory { get; set; } = [];
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
             Limit = 1,
-            RoomSpawnPoints = [
-            new RoomSpawnPoint() { Room = RoomType.LczCafe, Chance = 25 },
-            new RoomSpawnPoint() { Room = RoomType.LczGlassBox, Chance = 25 },
-            new RoomSpawnPoint() { Room = RoomType.LczPlants, Chance = 75 }
-        ]
+            RoomSpawnPoints =
+            [
+                new RoomSpawnPoint { Room = RoomType.LczCafe, Chance = 25, },
+                new RoomSpawnPoint { Room = RoomType.LczGlassBox, Chance = 25, },
+                new RoomSpawnPoint { Room = RoomType.LczPlants, Chance = 75, },
+            ],
         };
 
         protected override void SubscribeEvents()
@@ -87,22 +89,14 @@ namespace ExtendedItems.Items
             if (ev.Target.IsTutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
 
             foreach (var targetActiveEffect in ev.Target.ActiveEffects)
-            {
-                if (AdrenalineBuff && targetActiveEffect.name == "Invigorated") Affected = false;
-            }
+                if (AdrenalineBuff && targetActiveEffect.name == "Invigorated")
+                    Affected = false;
             if (!Affected) return;
 
-            Exiled.API.Features.Items.Item? item = null;
+            var rand = _rng.NextDouble();
+            _resistances.TryGetValue(ev.Target.NetId, out var tResistance);
 
-            if ((Plugin.Instance.Config.ReholdItems))
-            {
-                item = ev.Target.CurrentItem;
-            }
-
-            double rand = _rng.NextDouble();
-            _resistances.TryGetValue(ev.Target.NetId, out double tResistance);
-
-            bool effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
+            var effective = ev.Target.IsScp ? rand < ScpChance - tResistance : rand < HumanChance - tResistance;
 
             if ((ev.Target.Role == RoleTypeId.Scp173 && !EffectiveOn173) || !effective)
             {
@@ -110,46 +104,40 @@ namespace ExtendedItems.Items
                 return;
             }
 
-            Lift lift = ev.Player.Lift;
+            var lift = ev.Player.Lift;
 
             ev.Target.Scale = Vector3.zero;
-            _resistances[ev.Target.NetId] = tResistance + (_rng.NextDouble());
+            _resistances[ev.Target.NetId] = tResistance + Resistance;
 
             ev.Target.EnableEffect(EffectType.Ensnared, byte.MaxValue);
             ev.Target.EnableEffect(EffectType.Flashed, byte.MaxValue);
             ev.Target.EnableEffect(EffectType.Deafened, byte.MaxValue);
+            ev.Target.EnableEffect(EffectType.DamageReduction, 60);
 
-            
-            if (Warhead.DetonationTimer < 5f && ev.Player.Zone != ZoneType.Surface)
-            {
-                ev.Player.Kill("Tranquilized during warhead detonation.");
-                base.OnShot(ev);
-                return;
-            }
-            
             Ragdoll? ragdoll = null;
 
             if (ev.Target.IsHuman)
             {
                 ev.Target.CurrentItem = null;
-                ev.Target.Inventory.enabled = false;
                 ev.Target.EnableEffect(EffectType.AmnesiaItems, byte.MaxValue);
             }
             else
             {
                 if (ev.Target.Role != RoleTypeId.Scp106)
                 {
-                    ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname, new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation, ev.Target);
+                    ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname,
+                        new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation,
+                        ev.Target);
                 }
+
                 if (ev.Target.Role == RoleTypeId.Scp096)
                 {
                     var crybaby = (Scp096Role)ev.Target.Role;
                     if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed)
-                    {
                         crybaby.RageManager.ServerEndEnrage();
-                    }
                 }
             }
+
             Timing.CallDelayed(5, () =>
             {
                 ev.Target.Inventory.enabled = true;
@@ -158,27 +146,15 @@ namespace ExtendedItems.Items
                 ev.Target.DisableEffect(EffectType.Flashed);
                 ev.Target.DisableEffect(EffectType.Deafened);
                 ev.Target.DisableEffect(EffectType.AmnesiaItems);
-                ev.Target.CurrentItem = item;
+                ev.Target.DisableEffect(EffectType.DamageReduction);
+
                 if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 2f);
-                else ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f); 
+                else ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f);
                 ev.Target.Scale = Vector3.one;
                 ragdoll?.Destroy();
             });
 
             base.OnShot(ev);
-        }
-
-        protected override void OnShooting(ShootingEventArgs ev)
-        {
-            if (!Check(ev.Item)) return;
-            if (ev.Firearm.MagazineAmmo >= 4)
-            {
-                ev.Firearm.MagazineAmmo = 2;
-            }
-            else
-            {
-                Log.Debug("Hi Cactus");
-            }
         }
     }
 }

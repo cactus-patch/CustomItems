@@ -1,5 +1,6 @@
 ﻿using Exiled.API.Features;
 using Exiled.API.Features.Core.UserSettings;
+using ExtendedItems.Items;
 using UnityEngine;
 using UserSettings.ServerSpecific;
 
@@ -7,7 +8,8 @@ namespace ExtendedItems
 {
     public class Ssss
     {
-        public static IEnumerable<SettingBase> _settings;
+        // ReSharper disable once InconsistentNaming
+        private static IEnumerable<SettingBase>? _settings;
 
         public static void Register()
         {
@@ -18,7 +20,6 @@ namespace ExtendedItems
             [
                 new HeaderSetting(10, "Example Header", "Example Header Description", true),
                 new KeybindSetting(24, "Example Keybind", KeyCode.Delete, hintDescription: "Example"),
-                
             ];
             SettingBase.Register(_settings);
         }
@@ -27,36 +28,42 @@ namespace ExtendedItems
         {
             ServerSpecificSettingsSync.ServerOnSettingValueReceived -= Keybind;
         }
-        
-        public static void Keybind(ReferenceHub referenceHub, ServerSpecificSettingBase settingBase)
+
+        private static void Keybind(ReferenceHub referenceHub, ServerSpecificSettingBase settingBase)
         {
-            if (settingBase is not SSKeybindSetting keybindSetting || keybindSetting.SettingId != 24 || !keybindSetting.SyncIsPressed)
+            if (settingBase is not SSKeybindSetting keybindSetting || keybindSetting.SettingId != 24 ||
+                !keybindSetting.SyncIsPressed)
                 return;
-            if (!Player.TryGet(referenceHub, out Player player))
+            if (!Player.TryGet(referenceHub, out var player))
                 return;
-            
+
             Log.Info("Keybind used by " + player.Nickname);
-            var i = 0;
-            foreach (var charge in Items.Plastic.PlacedCharges.ToList())
+            if (keybindSetting.SettingId == 24)
             {
-                float posy = charge.Key.Position.y;
-                if (charge.Value != player) continue;
+                var i = 0;
+                foreach (var charge in Plastic.PlacedCharges.ToList())
+                {
+                    var posy = charge.Key.Position.y;
+                    if (charge.Value != player) continue;
 
-                if (player.Position.y >= posy - 100 && player.Position.y <= posy + 100)
-                {
-                    Items.Plastic.Instance.Handler(charge.Key, Items.Plastic.C4RemoveMethod.Detonate, player);
-                    i++;
+                    if (player.Position.y >= posy - 100 && player.Position.y <= posy + 100)
+                    {
+                        Plastic.Instance.Handler(charge.Key, Plastic.C4RemoveMethod.Detonate, player);
+                        i++;
+                    }
+                    else
+                    {
+                        player.SendConsoleMessage(
+                            "One of your charges is out of range. You need to get within the zone that it was placed",
+                            "yellow");
+                    }
+
+                    player.ShowHint(i == 1
+                        ? $"\n<color=green>{i} C4 charge has been detonated!</color>"
+                        : $"\n<color=green>{i} C4 charges have been detonated!</color>");
                 }
-                else
-                {
-                    player.SendConsoleMessage($"One of your charges is out of range. You need to get within the zone that it was placed", "yellow");
-                }
-                player.ShowHint(i == 1
-                    ? $"\n<color=green>{i} C4 charge has been detonated!</color>"
-                    : $"\n<color=green>{i} C4 charges have been detonated!</color>");
             }
-
-            // Code Here.
+            
         }
     }
 }
