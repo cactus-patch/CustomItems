@@ -39,7 +39,7 @@ namespace ExtendedItems.Items
         public override string Description { get; set; } =
             "A Remote Explosive that can be detonated when you are within 100m (about 1049.866 Big macs)";
 
-        public override uint Id { get; set; } = 806;
+        public override uint Id { get; set; } = 6;
         public override float Weight { get; set; } = 1.5f;
         public override bool ExplodeOnCollision { get; set; } = false;
         public override float FuseTime { get; set; } = 10800f;
@@ -73,7 +73,7 @@ namespace ExtendedItems.Items
             if (detonator == null) method = C4RemoveMethod.Drop;
             else
             {
-                detonator = charge != null && Charges.TryGetValue(charge.Serial, out var foundPlayer)
+                detonator = Charges.TryGetValue(charge.Serial, out var foundPlayer)
                     ? foundPlayer
                     : null;
             }

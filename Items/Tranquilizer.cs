@@ -25,7 +25,7 @@ namespace ExtendedItems.Items
 
         [YamlIgnore] private readonly Random _rng = new();
         public override string Name { get; set; } = "Tranquilizer";
-        public override uint Id { get; set; } = 801;
+        public override uint Id { get; set; } = 1;
 
         public override string Description { get; set; } =
             "A gun that temporarily tranquilizes entities; might be unreliable.";
@@ -50,7 +50,6 @@ namespace ExtendedItems.Items
         private bool AdrenalineBuff { get; } = true;
 
         private bool Affected { get; set; } = true;
-        public ItemType[] Inventory { get; set; } = [];
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {

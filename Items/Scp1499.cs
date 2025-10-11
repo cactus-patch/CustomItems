@@ -20,7 +20,7 @@ namespace ExtendedItems.Items
         [Description("Relative position of room mentioned above to teleport player to after using SCP-1499.")]
         private readonly Vector3 _relativePosition = new(5.75f, 10f, -10.75f);
 
-        public override uint Id { get; set; } = 803;
+        public override uint Id { get; set; } = 3;
         public override string Name { get; set; } = "SCP-1499";
         public override string Description { get; set; } = "<i>A breath away from oblivion.</i>";
         public override float Weight { get; set; } = 5f;

@@ -1,5 +1,6 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.API.Features.Items;
 using PlayerRoles;
 using UnityEngine;
 using EP = Exiled.API.Features.Player;
@@ -56,15 +57,14 @@ namespace ExtendedItems
         // ReSharper disable once InconsistentNaming
         public static bool PDWarning(EP player)
         {
-            foreach (var actEffects in player.ActiveEffects)
-            {
-                var Larry = EP.List.FirstOrDefault(L => L.Role == RoleTypeId.Scp106).Position;
-                var b = actEffects.name == "Corroding" && Plugin.Instance != null &&
-                        Vector3.Distance(player.Position, Larry) < Plugin.Instance.Config.LarryDistance;
-                return b;
-            }
+            return (from actEffects in player.ActiveEffects let Larry = EP.List.First(L => L.Role == RoleTypeId.Scp106).Position select actEffects.name == "Corroding" && Plugin.Instance != null && Vector3.Distance(player.Position, Larry) < Plugin.Instance.Config.LarryDistance).FirstOrDefault();
+        }
 
-            return false;
+        public static void Exploding(EP player)
+        {
+            var grenade = (ExplosiveGrenade)Item.Create(ItemType.GrenadeHE);
+            grenade.FuseTime = 0.1f;
+            grenade.SpawnActive(player.Position + new Vector3(0, 1, 0), player);
         }
     }
 }

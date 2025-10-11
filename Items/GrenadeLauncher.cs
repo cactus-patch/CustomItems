@@ -17,7 +17,7 @@ namespace ExtendedItems.Items
     [CustomItem(ItemType.GunLogicer)]
     public class GrenadeLauncher : CustomWeapon
     {
-        public override uint Id { get; set; } = 805;
+        public override uint Id { get; set; } = 5;
         public override string Name { get; set; } = "Grenade Launcher";
 
         public override string Description { get; set; } =
@@ -70,10 +70,10 @@ namespace ExtendedItems.Items
                 ev.IsAllowed = false;
                 ev.Player.ShowHint("You don't have any 7.62mm ammo to reload the grenade launcher!", 5);
             }
-            else if (ev.Player.GetAmmo(AmmoType.Nato762) < 10)
+            else if (ev.Player.GetAmmo(AmmoType.Nato762) < Plugin.Instance.Config.GrenadeLauncherAmmoUsage)
             {
                 ev.IsAllowed = false;
-                ev.Player.ShowHint("You need more than 10 7.62 to reload the grenade launcher!", 5);
+                ev.Player.ShowHint($"You need more than {Plugin.Instance.Config.GrenadeLauncherAmmoUsage} 7.62 to reload the grenade launcher!", 5);
             }
             else
             {
@@ -100,22 +100,10 @@ namespace ExtendedItems.Items
 
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
-            if (!Check(ev.Item) || ev.Player.NetId < 2) return;
-
+            if (!Check(ev.Item)) return;
             Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.Player.Broadcast(5, "You can't change the attachments on this weapon");
             ev.IsAllowed = false;
-        }
-
-        private static IEnumerator<float> Detonate(Throwable throwable)
-        {
-            for (;;)
-            {
-                float comp = -2;
-                var yVelocity = throwable.Projectile.Rigidbody.linearVelocity.y - comp;
-
-                Log.Info(yVelocity);
-            }
         }
     }
 }

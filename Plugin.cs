@@ -28,8 +28,8 @@ namespace ExtendedItems
 
             _settings =
             [
-                new SSGroupHeader(10, "Custom Items"),
-                new SSKeybindSetting(24, "C4 Detonation", KeyCode.Delete, hint: "explodes all C4 placed by you"),
+                new SSGroupHeader(10, "Extended Items"),
+                new SSKeybindSetting(24, "C4 Detonation", KeyCode.Delete, hint: "Explodes all C4 placed by you"),
             ];
 
             ServerSpecificSettingsSync.DefinedSettings = _settings.ToArray();

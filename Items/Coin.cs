@@ -17,7 +17,7 @@ namespace ExtendedItems.Items
     public class Coin : CustomItem
     {
         public override string Name { get; set; } = "SCP-1289";
-        public override uint Id { get; set; } = 804;
+        public override uint Id { get; set; } = 4;
         public override string Description { get; set; } = "<i>\"What's the most you ever lost on a coin toss?\"</i>";
         public override float Weight { get; set; } = 1f;
 
@@ -65,34 +65,64 @@ namespace ExtendedItems.Items
         {
             if (!Check(ev.Item)) return;
 
-            Timing.CallDelayed(2f, () =>
-            {
-                if (ev.IsTails && !ev.Player.IsDead)
+            Timing.CallDelayed(2f,
+                () =>
                 {
-                    ev.Player.Scale = Vector3.zero;
-                    var cause = Plugin.Instance?.Config.LoseCauses.RandomItem() ?? "<Error: Coin Reason Not Found>";
-                    var ragdoll = Ragdoll.CreateAndSpawn(ev.Player.Role.Type, ev.Player.DisplayNickname,
-                        new CustomReasonDamageHandler($"{cause}"),
-                        ev.Player.Position, ev.Player.Rotation, ev.Player);
+                    if (ev.IsTails)
+                    {
+                        if (ev.Player.ActiveEffects.Any(targetActiveEffect => targetActiveEffect.name == nameof(EffectType.AntiScp207)))
+                        {
+                            Log.Debug($"{ev.Player.Nickname} had Anti-207");
+                            ev.Player.Explode(ProjectileType.FragGrenade, ev.Player);
+                        }
+                        else
+                        {
+                            Log.Debug("Coin Landed on tails");
+                            ev.Player.Scale = Vector3.zero;
+                            Log.Debug($"Scaling {ev.Player.Nickname} to zero");
 
-                    ev.Player.IsGodModeEnabled = false;
+                            // ReSharper disable once InconsistentNaming
+                            var _temp = Plugin.Instance?.Config.LoseCauses.RandomItem() ??
+                                        "<Error: Coin Reason Not Found>";
+                            
+                            string cause = _temp.Any(char.IsWhiteSpace) ? $"the words {_temp} are etched into the scalp" : $"the word {_temp} is etched in the scalp";
+                            Ragdoll.CreateAndSpawn(ev.Player.Role.Type,
+                                ev.Player.DisplayNickname,
+                                new CustomReasonDamageHandler(cause),
+                                ev.Player.Position,
+                                ev.Player.Rotation,
+                                ev.Player);
 
-                    ev.Player.ExplodeEffect(ProjectileType.FragGrenade);
-                    ev.Player.Kill($"{cause}");
-                    ev.Player.Scale = Vector3.one;
-                    return;
-                }
+                            ev.Player.IsGodModeEnabled = false;
 
-                ev.Player.ShowHint($"{Plugin.Instance?.Config.WinHints.RandomItem()}");
+                            Log.Debug("Spawning Grenade");
+                            Utils.Exploding(ev.Player);
+                            ev.Player.Kill(cause);
+                        }
+                    }
+                    else
+                    {
+                        ev.Player.ShowHint($"{Plugin.Instance?.Config.WinHints.RandomItem()}");
 
-                Effects.ForEach(effect =>
-                {
-                    ev.Player.EnableEffect(effect.Type, effect.Intensity, effect.Duration, true);
+                        if (ev.Player.Health + ev.Player.ArtificialHealth < ev.Player.MaxHealth / 2)
+                        {
+                            ev.Player.AddRegeneration(duration: 10, rate: 5);
+                        }
+                        else
+                        {
+                            Effects.ForEach(effect =>
+                            {
+                                ev.Player.EnableEffect(effect.Type,
+                                    effect.Intensity,
+                                    effect.Duration,
+                                    true);
+                            });
+                        }
+                    }
                 });
-            });
         }
 
-        private void OnRoleChanging(ChangingRoleEventArgs ev)
+        private static void OnRoleChanging(ChangingRoleEventArgs ev)
         {
             ev.Player.Scale = Vector3.one;
             ev.Player.DisableAllEffects();

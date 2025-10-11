@@ -9,6 +9,7 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
+using UnityEngine;
 using E = ExtendedItems.Utils;
 using ItemEvents = Exiled.Events.Handlers.Item;
 
@@ -18,11 +19,12 @@ namespace ExtendedItems.Items
     public class AdminAbuse : CustomWeapon
     {
         [Description("thanks to hayden for the idea on buckshot or else it wouldnt have worked")]
-        public override uint Id { get; set; } = 799;
+        public override uint Id { get; set; } = 20;
 
+        public override ItemType Type { get; set; } = ItemType.GunRevolver;
         public override string Name { get; set; } = "Regert (dont use this because it crashes the server)";
         public override string Description { get; set; } = "you asked for it!";
-        public override float Weight { get; set; } = 0f;
+        public override float Weight { get; set; } = 1f;
         public override float Damage { get; set; } = 0;
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
@@ -43,8 +45,9 @@ namespace ExtendedItems.Items
             var throwable = ev.Player.ThrowGrenade(ProjectileType.FragGrenade);
             // defining ammo by itself will not change the ammo count
             // so you need to call ev.Firearm.MagazineAmmo :)
-            ev.Firearm.MagazineAmmo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
-
+            
+            // ev.Firearm.MagazineAmmo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
+            
             throwable.Projectile.GameObject.AddComponent<CollisionHandler>()
                 .Init(ev.Player.GameObject, throwable.Projectile.Base);
 
@@ -53,7 +56,7 @@ namespace ExtendedItems.Items
 
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
-            if (!Check(ev.Item) || ev.Player.NetId < 2) return;
+            if (!Check(ev.Item)) return;
 
             Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.IsAllowed = false;
@@ -73,17 +76,6 @@ namespace ExtendedItems.Items
             ItemEvents.ChangingAttachments -= OnChangingAttachments;
 
             base.UnsubscribeEvents();
-        }
-
-        private static IEnumerator<float> Detonate(Throwable throwable)
-        {
-            for (;;)
-            {
-                float comp = -2;
-                var yVelocity = throwable.Projectile.Rigidbody.linearVelocity.y - comp;
-
-                Log.Info(yVelocity);
-            }
         }
     }
 }

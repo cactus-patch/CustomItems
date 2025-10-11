@@ -13,7 +13,7 @@ namespace ExtendedItems.Items
     [CustomItem(ItemType.GunE11SR)]
     public class Sniper : CustomWeapon
     {
-        public override uint Id { get; set; } = 802;
+        public override uint Id { get; set; } = 2;
         public ItemCategory Category { get; set; } = ItemCategory.SpecialWeapon;
 
         public override string Name { get; set; } = "SR-118";
@@ -57,7 +57,7 @@ namespace ExtendedItems.Items
 
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
-            if (!Check(ev.Item) || ev.Player.NetId < 2) return;
+            if (!Check(ev.Item)) return;
 
             Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.IsAllowed = false;
