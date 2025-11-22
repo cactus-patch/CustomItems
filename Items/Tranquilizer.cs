@@ -45,11 +45,7 @@ namespace ExtendedItems.Items
 
         [Description("Resistance to remove from the chance after being shot.")]
         private float Resistance { get; } = 0.05f;
-
-        [Description("Whether tranquilizer should not effect those with Adrenaline.")]
-        private bool AdrenalineBuff { get; } = true;
-
-        private bool Affected { get; set; } = true;
+        
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
@@ -82,15 +78,14 @@ namespace ExtendedItems.Items
 
         protected override void OnShot(ShotEventArgs ev)
         {
-            Affected = true;
-
             if (ev.Target == null || Plugin.Instance == null) return;
             if (ev.Target.IsTutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
 
-            foreach (var targetActiveEffect in ev.Target.ActiveEffects)
-                if (AdrenalineBuff && targetActiveEffect.name == "Invigorated")
-                    Affected = false;
-            if (!Affected) return;
+            if (!Utils.HasEffect(ev.Target, EffectType.Invigorated))
+            {
+                return;
+            }
+            
 
             var rand = _rng.NextDouble();
             _resistances.TryGetValue(ev.Target.NetId, out var tResistance);

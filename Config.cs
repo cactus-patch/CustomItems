@@ -13,7 +13,10 @@ namespace ExtendedItems
 
         [Description("Weather the Tranq is effective on Tutorials")]
         public bool EffectiveOnTutorials { get; set; } = false;
-
+        
+        [Description("Weather the Tranq is still useable when Nuke is on")]
+        public bool NukeTranq { get; set; } = true;
+        
         [Description("The Distance from Larry a player can be before they can no longer use SCP-1499")]
         public float LarryDistance { get; set; } = 1f;
         

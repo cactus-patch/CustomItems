@@ -6,6 +6,7 @@ using UserSettings.ServerSpecific;
 
 namespace ExtendedItems
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class Plugin : Plugin<Config>
     {
         public static Plugin? Instance;
@@ -45,7 +46,6 @@ namespace ExtendedItems
             Ssss.Unregister();
 
             _settings = null;
-
             Instance = null;
 
             base.OnDisabled();

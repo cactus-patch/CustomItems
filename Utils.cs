@@ -1,4 +1,5 @@
-﻿using Exiled.API.Enums;
+﻿using System.ComponentModel;
+using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Items;
 using PlayerRoles;
@@ -10,7 +11,7 @@ namespace ExtendedItems
     public static class Utils
     {
         /// <summary>
-        ///     Calculates the global coords of a point inside a room based on the room type and the location
+        /// Calculates the global coords of a point inside a room based on the room type and the location
         /// </summary>
         /// <param name="roomType"></param>
         /// <param name="localPos"></param>
@@ -57,7 +58,11 @@ namespace ExtendedItems
         // ReSharper disable once InconsistentNaming
         public static bool PDWarning(EP player)
         {
-            return (from actEffects in player.ActiveEffects let Larry = EP.List.First(L => L.Role == RoleTypeId.Scp106).Position select actEffects.name == "Corroding" && Plugin.Instance != null && Vector3.Distance(player.Position, Larry) < Plugin.Instance.Config.LarryDistance).FirstOrDefault();
+            return (from actEffects in player.ActiveEffects
+                    let Larry = EP.List.First(L => L.Role == RoleTypeId.Scp106).Position
+                    select actEffects.name == "Corroding" && Plugin.Instance != null &&
+                           Vector3.Distance(player.Position, Larry) < Plugin.Instance.Config.LarryDistance)
+                .FirstOrDefault();
         }
 
         public static void Exploding(EP player)
@@ -65,6 +70,11 @@ namespace ExtendedItems
             var grenade = (ExplosiveGrenade)Item.Create(ItemType.GrenadeHE);
             grenade.FuseTime = 0.1f;
             grenade.SpawnActive(player.Position + new Vector3(0, 1, 0), player);
+        }
+
+        public static bool HasEffect(EP player, EffectType effect)
+        {
+            return !Enum.IsDefined(typeof(EffectType), effect) ? throw new InvalidEnumArgumentException(nameof(effect), (int)effect, typeof(EffectType)) : player.ActiveEffects.Any(targetActiveEffect => targetActiveEffect.name == nameof(effect));
         }
     }
 }

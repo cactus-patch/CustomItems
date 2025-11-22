@@ -14,15 +14,13 @@ namespace ExtendedItems.Items
     public class Sniper : CustomWeapon
     {
         public override uint Id { get; set; } = 2;
-        public ItemCategory Category { get; set; } = ItemCategory.SpecialWeapon;
-
         public override string Name { get; set; } = "SR-118";
 
         public override string Description { get; set; } =
             "A modified E-11 that fires 5.56 at supersonic velocity that deals significantly more damage";
 
-        public override float Weight { get; set; } = 5f;
-        public override float Damage { get; set; } = 112f;
+        public override float Weight { get; set; } = 4f;
+        public override float Damage { get; set; } = 125f;
         public override byte ClipSize { get; set; } = 1;
 
         [YamlIgnore]
@@ -58,10 +56,19 @@ namespace ExtendedItems.Items
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
             if (!Check(ev.Item)) return;
-
+            
             Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
-            ev.IsAllowed = false;
-            ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
+            try
+            {
+                ev.IsAllowed = false;
+                ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
+            }
+            catch (Exception ex) {
+                Log.Error($"{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+                ev.Player.CurrentItem.Destroy();
+                ev.Player.CurrentItem = null;
+                ev.Player.ShowHint("An error has occured and the Sniper has been removed");
+            }
         }
     }
 }
