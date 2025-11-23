@@ -3,14 +3,11 @@ using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Components;
-using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
-using UnityEngine;
-using E = ExtendedItems.Utils;
 using ItemEvents = Exiled.Events.Handlers.Item;
 
 namespace ExtendedItems.Items
@@ -61,6 +58,8 @@ namespace ExtendedItems.Items
             Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.IsAllowed = false;
             ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
+            
+            base.OnChangingAttachment(ev);
         }
 
         [Description("can be removed if not necesarry")]

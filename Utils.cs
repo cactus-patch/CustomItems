@@ -61,8 +61,7 @@ namespace ExtendedItems
             return (from actEffects in player.ActiveEffects
                     let Larry = EP.List.First(L => L.Role == RoleTypeId.Scp106).Position
                     select actEffects.name == "Corroding" && Plugin.Instance != null &&
-                           Vector3.Distance(player.Position, Larry) < Plugin.Instance.Config.LarryDistance)
-                .FirstOrDefault();
+                           Vector3.Distance(player.Position, Larry) < Plugin.Instance.Config.LarryDistance).FirstOrDefault();
         }
 
         public static void Exploding(EP player)

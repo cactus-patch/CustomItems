@@ -31,8 +31,7 @@ namespace ExtendedItems
 
         private static void Keybind(ReferenceHub referenceHub, ServerSpecificSettingBase settingBase)
         {
-            if (settingBase is not SSKeybindSetting keybindSetting || keybindSetting.SettingId != 24 ||
-                !keybindSetting.SyncIsPressed)
+            if (settingBase is not SSKeybindSetting { SettingId: 24, SyncIsPressed: true } keybindSetting)
                 return;
             if (!Player.TryGet(referenceHub, out var player))
                 return;

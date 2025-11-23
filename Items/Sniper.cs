@@ -58,17 +58,10 @@ namespace ExtendedItems.Items
             if (!Check(ev.Item)) return;
             
             Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
-            try
-            {
-                ev.IsAllowed = false;
-                ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
-            }
-            catch (Exception ex) {
-                Log.Error($"{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
-                ev.Player.CurrentItem.Destroy();
-                ev.Player.CurrentItem = null;
-                ev.Player.ShowHint("An error has occured and the Sniper has been removed");
-            }
+            ev.IsAllowed = false;
+            ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
+            base.OnChangingAttachment(ev);
+            
         }
     }
 }

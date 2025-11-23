@@ -18,7 +18,7 @@ namespace ExtendedItems
         public bool NukeTranq { get; set; } = true;
         
         [Description("The Distance from Larry a player can be before they can no longer use SCP-1499")]
-        public float LarryDistance { get; set; } = 1f;
+        public float LarryDistance { get; set; } = 10f;
         
         [Description("Ammount of ammo to remove when Grenade Launcher is fired (Can not be negitive)")]
         public ushort GrenadeLauncherAmmoUsage { get; set; } = 10;

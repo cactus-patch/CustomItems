@@ -26,10 +26,10 @@ namespace ExtendedItems.Items
         public override float Weight { get; set; } = 5f;
 
         [Description("Room to teleport player to after using SCP-1499.")]
-        private RoomType TeleportRoom { get; } = RoomType.Hcz106;
+        private RoomType TeleportRoom = RoomType.Hcz106;
 
         [Description("Time for player to wander in seconds.")]
-        private float Duration { get; } = 15f;
+        private float Duration = 15f;
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {

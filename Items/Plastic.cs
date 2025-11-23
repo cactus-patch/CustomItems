@@ -123,6 +123,7 @@ namespace ExtendedItems.Items
             PlayerEvent.Destroying -= OnDestroying;
             PlayerEvent.Died -= OnDied;
             PlayerEvent.Shooting -= OnShooting;
+            
             ServerEvent.RoundEnded -= OnRoundEnded;
 
             base.UnsubscribeEvents();
@@ -159,12 +160,14 @@ namespace ExtendedItems.Items
             Log.Debug("Executing OnDestoying method.");
             foreach (var charge in PlacedCharges.ToList().Where(charge => charge.Value == ev.Player))
                 Handler(charge.Key, C4RemoveMethod.Remove);
+            
         }
 
         private void OnDied(DiedEventArgs ev)
         {
             foreach (var charge in PlacedCharges.ToList().Where(charge => charge.Value == ev.Player))
                 Handler(charge.Key);
+            
         }
 
         private void OnShooting(ShootingEventArgs ev)
@@ -178,9 +181,10 @@ namespace ExtendedItems.Items
 
             if (grenade == null) return;
             if (PlacedCharges.ContainsKey(Pickup.Get(grenade))) Handler(Pickup.Get(grenade), C4RemoveMethod.Remove);
+            
         }
 
-        private void OnRoundEnded(RoundEndedEventArgs ev)
+        private static void OnRoundEnded(RoundEndedEventArgs ev)
         {
             PlacedCharges.Clear();
         }

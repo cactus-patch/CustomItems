@@ -2,7 +2,6 @@
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Components;
-using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
@@ -64,6 +63,7 @@ namespace ExtendedItems.Items
         protected override void OnReloading(ReloadingWeaponEventArgs ev)
         {
             if (!Check(ev.Item)) return;
+            if (Plugin.Instance is null) return;
             
             if (ev.Player.GetAmmo(AmmoType.Nato762) == 0)
             {
@@ -104,6 +104,8 @@ namespace ExtendedItems.Items
             Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
             ev.Player.Broadcast(5, "You can't change the attachments on this weapon");
             ev.IsAllowed = false;
+            
+            base.OnChangingAttachment(ev);
         }
     }
 }
