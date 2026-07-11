@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Exiled.API.Interfaces;
 using ExtendedItems.Items;
+using InventorySystem.Items.Firearms.Attachments;
 
 namespace ExtendedItems
 {
@@ -15,7 +16,7 @@ namespace ExtendedItems
         public bool EffectiveOnTutorials { get; set; } = false;
         
         [Description("Weather the Tranq is still useable when Nuke is on")]
-        public bool NukeTranq { get; set; } = true;
+        public AttachmentName[] ForcedSniperAttch { get; set; } = [AttachmentName.MuzzleBrake, AttachmentName.RecoilReducingStock, AttachmentName.RifleBody];
         
         [Description("The Distance from Larry a player can be before they can no longer use SCP-1499")]
         public float LarryDistance { get; set; } = 10f;
@@ -57,7 +58,7 @@ namespace ExtendedItems
         public Sniper Sniper { get; set; } = new();
         public Tranquilizer Tranquilizer { get; set; } = new();
         public Plastic Plastic { get; set; } = new();
-        public AdminAbuse AdminAbuse { get; set; } = new();
+        public GLShot GLShot { get; set; } = new();
 
         #endregion
     }

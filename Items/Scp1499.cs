@@ -26,17 +26,17 @@ namespace ExtendedItems.Items
         public override float Weight { get; set; } = 5f;
 
         [Description("Room to teleport player to after using SCP-1499.")]
-        private RoomType TeleportRoom = RoomType.Hcz106;
+        private readonly RoomType _teleportRoom = RoomType.Hcz106;
 
         [Description("Time for player to wander in seconds.")]
-        private float Duration = 15f;
+        private readonly float _duration = 15f;
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
             Limit = 1,
             LockerSpawnPoints = 
             [
-                new LockerSpawnPoint { Type = LockerType.Scp268Pedestal, Chance = 100, Zone = ZoneType.LightContainment, },
+                new LockerSpawnPoint { Type = LockerType.Scp268Pedestal, Chance = 100, Zone = ZoneType.HeavyContainment, },
             ],
         };
 
@@ -57,12 +57,12 @@ namespace ExtendedItems.Items
             if (!Check(ev.Item)) return;
 
             ev.Player.DisableEffect(EffectType.Invisible);
-            ev.Player.EnableEffect(EffectType.DamageReduction, byte.MaxValue, Duration);
+            ev.Player.EnableEffect(EffectType.DamageReduction, byte.MaxValue, _duration);
 
-            var handle = Timing.CallDelayed(Duration, () => TeleportPrevious(ev.Player.NetId));
+            var handle = Timing.CallDelayed(_duration, () => TeleportPrevious(ev.Player.NetId));
 
             _lastPositions.Add(ev.Player.NetId, (ev.Player.Position, ev.Player.Lift, handle));
-            ev.Player.Teleport(Utils.GetGlobalCords(TeleportRoom, _relativePosition));
+            ev.Player.Teleport(Utils.GetGlobalCords(_teleportRoom, _relativePosition));
         }
 
         private void TeleportPrevious(uint netId)

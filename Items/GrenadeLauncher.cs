@@ -1,15 +1,16 @@
 ﻿using Exiled.API.Enums;
-using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Components;
+using Exiled.API.Features.Pickups;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
+using InventorySystem.Items.ThrowableProjectiles;
+using MEC;
+using UnityEngine;
 using YamlDotNet.Serialization;
-using E = ExtendedItems.Utils;
-using ItemEvents = Exiled.Events.Handlers.Item;
 
 namespace ExtendedItems.Items
 {
@@ -25,6 +26,9 @@ namespace ExtendedItems.Items
         public override float Weight { get; set; } = 10f;
         public override float Damage { get; set; } = 0f;
         public override byte ClipSize { get; set; } = 1;
+        
+        private static bool _grenadeLaunchCoroutine = false;
+        
 
         [YamlIgnore]
         public override AttachmentName[] Attachments { get; set; } =
@@ -46,66 +50,72 @@ namespace ExtendedItems.Items
 
         protected override void OnShooting(ShootingEventArgs ev)
         {
-            var throwable = ev.Player.ThrowGrenade(ProjectileType.FragGrenade);
-            var ammo = E.Subtract((ushort)ev.Firearm.MagazineAmmo);
+            bool? hasSpawn = TrySpawn(10, ev.Player.Position + new Vector3(0f, .25f, 0f), out var pickupBase);
 
-            throwable.Projectile.GameObject.AddComponent<CollisionHandler>()
-                .Init(ev.Player.GameObject, throwable.Projectile.Base);
-
-            ev.Firearm.MagazineAmmo = 0;
-            ev.Firearm.BarrelAmmo = 0;
-
-            ev.Player.AddAmmo(AmmoType.Nato762, ammo);
+            if(hasSpawn is true)
+            {
+                if (!_grenadeLaunchCoroutine)
+                {
+                    ThrownProjectile thrownProjectile = pickupBase!.GameObject.AddComponent<ThrownProjectile>();
+                    pickupBase!.GameObject.AddComponent<CollisionHandler>().Init(ev.Player.GameObject, thrownProjectile );
+                    pickupBase.Rigidbody.linearVelocity = new Vector3(3f, .05f);
+                    if (!_grenadeLaunchCoroutine)
+                    {
+                        _grenadeLaunchCoroutine = true;
+                        Timing.RunCoroutine(GrenadeLaunch(pickupBase));
+                    }
+                }
+                
+            }
+            else
+            {
+                ev.Player.ShowHint("Cant shoot yet", 5f);
+            }
 
             base.OnShooting(ev);
         }
 
-        protected override void OnReloading(ReloadingWeaponEventArgs ev)
-        {
-            if (!Check(ev.Item)) return;
-            if (Plugin.Instance is null) return;
-            
-            if (ev.Player.GetAmmo(AmmoType.Nato762) == 0)
-            {
-                ev.IsAllowed = false;
-                ev.Player.ShowHint("You don't have any 7.62mm ammo to reload the grenade launcher!", 5);
-            }
-            else if (ev.Player.GetAmmo(AmmoType.Nato762) < Plugin.Instance.Config.GrenadeLauncherAmmoUsage)
-            {
-                ev.IsAllowed = false;
-                ev.Player.ShowHint($"You need more than {Plugin.Instance.Config.GrenadeLauncherAmmoUsage} 7.62 to reload the grenade launcher!", 5);
-            }
-            else
-            {
-                var ammo = ev.Player.GetAmmo(AmmoType.Nato762);
-                ammo -= Plugin.Instance.Config.GrenadeLauncherAmmoUsage;
-                ev.Player.SetAmmo(AmmoType.Nato762, ammo) ;
-            }
-            base.OnReloading(ev);
-        }
-
         protected override void SubscribeEvents()
         {
-            ItemEvents.ChangingAttachments += OnChangingAttachments;
-
             base.SubscribeEvents();
         }
 
         protected override void UnsubscribeEvents()
         {
-            ItemEvents.ChangingAttachments -= OnChangingAttachments;
-
             base.UnsubscribeEvents();
         }
 
-        private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
+        protected override void OnChangingAttachment(ChangingAttachmentsEventArgs ev)
         {
-            if (!Check(ev.Item)) return;
-            Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
-            ev.Player.Broadcast(5, "You can't change the attachments on this weapon");
-            ev.IsAllowed = false;
-            
+            if (ev.NewAttachmentIdentifiers.Any(attachment => attachment.Name == AttachmentName.ShortBarrel))
+            {
+                ev.IsAllowed = true;
+            }
+            else
+            {
+                ev.IsAllowed = false;
+                ev.Player.ShowHint("You need a Short Barrel because I said so :) -Noobest1001", 5f);
+            }
             base.OnChangingAttachment(ev);
+        }
+
+        private static IEnumerator<float> GrenadeLaunch(Pickup pickup)
+        {
+            if (pickup is not GrenadePickup)
+            {
+                yield break;
+            }
+            while (true)
+            {
+                yield return Timing.WaitForSeconds(.5f);
+                
+                if (pickup.Rigidbody.linearVelocity.magnitude < .5f)
+                {
+                    Utils.Explode(pickup, pickup.PreviousOwner);
+                    _grenadeLaunchCoroutine = false;
+                    yield break;
+                }
+            }
         }
     }
 }

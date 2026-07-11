@@ -1,9 +1,9 @@
 using Exiled.API.Enums;
-using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
+using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
 using YamlDotNet.Serialization;
 using ItemEvents = Exiled.Events.Handlers.Item;
@@ -33,9 +33,9 @@ namespace ExtendedItems.Items
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
             Limit = 1,
-            RoomSpawnPoints =
+            LockerSpawnPoints = 
             [
-                new RoomSpawnPoint { Room = RoomType.HczArmory, Chance = 100, },
+                new LockerSpawnPoint {Type = LockerType.RifleRack, Chance = 100, UseChamber = true, Zone = ZoneType.HeavyContainment},
             ],
         };
 
@@ -56,12 +56,19 @@ namespace ExtendedItems.Items
         private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
         {
             if (!Check(ev.Item)) return;
-            
-            Log.Debug($"Player {ev.Player.Nickname} tried to change attachments for {Name}");
-            ev.IsAllowed = false;
-            ev.Player.ShowHint("You are not allowed to change the attachment for this weapon.");
-            base.OnChangingAttachment(ev);
-            
+
+            // ReSharper disable once InconsistentNaming
+            AttachmentName[] Monica = Plugin.Instance!.Config.ForcedSniperAttch;
+            AttachmentName[] subMonica = ev.NewAttachmentIdentifiers.Select(user => user.Name).ToArray();
+            ev.IsAllowed = subMonica.All(item => Monica.Contains(item));
+        }
+
+        protected override void OnReloading(ReloadingWeaponEventArgs ev)
+        {
+            if (Check(ev.Item))
+            {
+                ev.IsAllowed = true;
+            }
         }
     }
 }

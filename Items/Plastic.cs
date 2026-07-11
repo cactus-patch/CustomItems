@@ -49,7 +49,7 @@ namespace ExtendedItems.Items
 
         public override SpawnProperties? SpawnProperties { get; set; } = new()
         {
-            Limit = 2,
+            Limit = 1,
             RoomSpawnPoints =
             [
                 new RoomSpawnPoint { Room = RoomType.HczNuke, Chance = 50, },
@@ -84,7 +84,7 @@ namespace ExtendedItems.Items
                 case C4RemoveMethod.Detonate:
                 {
                     var grenade = (ExplosiveGrenade) Item.Create(Type);
-                    grenade.FuseTime = 0.1f;
+                    grenade.FuseTime = 1f;
                     grenade.SpawnActive(charge.Position, detonator);
                     break;
                 }

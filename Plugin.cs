@@ -11,16 +11,19 @@ namespace ExtendedItems
     {
         public static Plugin? Instance;
 
+        public static EventHandler? _event;
+
         private List<ServerSpecificSettingBase>? _settings;
         public override string Prefix => "Extended Items";
         public override string Name => "Extended Items";
         public override string Author => "Noobest1001";
-        public override Version Version => new(3, 3, 0, 0);
+        public override Version Version => new(4, 0, 0, 0);
         public override Version RequiredExiledVersion => new(9, 7, 0);
 
         public override void OnEnabled()
         {
             Instance = this;
+            _event = new EventHandler(Instance);
 
             Ssss.Register();
 
@@ -46,6 +49,7 @@ namespace ExtendedItems
             Ssss.Unregister();
 
             _settings = null;
+            _event = null;
             Instance = null;
 
             base.OnDisabled();

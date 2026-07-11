@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel;
 using Exiled.API.Enums;
-using Exiled.API.Features;
 using Exiled.API.Features.Items;
+using Exiled.API.Features.Pickups.Projectiles;
 using PlayerRoles;
 using UnityEngine;
 using EP = Exiled.API.Features.Player;
+using Item = Exiled.API.Features.Items.Item;
+using Pickup = Exiled.API.Features.Pickups.Pickup;
+using Room = Exiled.API.Features.Room;
 
 namespace ExtendedItems
 {
@@ -34,27 +37,7 @@ namespace ExtendedItems
                 _ => Vector3.zero,
             };
         }
-
-        /// <summary>
-        ///     Removes 1 from an ushort (I hate this language sometimes)
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="mask"></param>
-        /// <returns>input - 1</returns>
-        // I want someone to double-check this before it goes into full prod
-        public static ushort Subtract(ushort input, int mask = 1)
-        {
-            int temp = input;
-            while (!((temp & mask) > 0))
-            {
-                temp ^= mask;
-                mask <<= 1;
-            }
-
-            temp ^= mask;
-            return (ushort)temp;
-        }
-
+        
         // ReSharper disable once InconsistentNaming
         public static bool PDWarning(EP player)
         {
@@ -74,6 +57,47 @@ namespace ExtendedItems
         public static bool HasEffect(EP player, EffectType effect)
         {
             return !Enum.IsDefined(typeof(EffectType), effect) ? throw new InvalidEnumArgumentException(nameof(effect), (int)effect, typeof(EffectType)) : player.ActiveEffects.Any(targetActiveEffect => targetActiveEffect.name == nameof(effect));
+        }
+
+        public static void Grenade_Damage(EffectGrenadeProjectile grenade, EP player)
+        {
+            if (Vector3.Distance(grenade.Position, player.Position) <= 4)
+            {
+                if (Physics.Raycast(grenade.Position, player.Position, out var _, 4, (int) LayerMasks.Grenade))
+                {
+                    if (player is { IsScp: true, HumeShield: > 900 })
+                    {
+                        player.Hurt(player, 900, armorPenetration: 50);
+                    }
+                    else if (player.IsHuman)
+                    {
+                        player.Hurt(grenade.PreviousOwner, 150, armorPenetration: 50);
+                    }
+                }
+                
+            }
+            else if(Physics.Raycast(grenade.Position, player.Position, out var hit, 20, (int) LayerMasks.Grenade))
+            {
+                player.Hurt(player, 25, armorPenetration: 50);
+            }
+        }
+        public static void Explode(Pickup? grenade, EP player)
+        {
+            if (grenade is null)
+            {
+                player.ShowHint("Shits Fucked up :(\nmb gng");
+            }
+            else
+            {
+                Vector3 lVoloc = grenade.Rigidbody.linearVelocity;
+                Vector3 pos = grenade.Position;
+                grenade.Destroy();
+                var explosiveGrenade = (ExplosiveGrenade) Item.Create(ItemType.GrenadeHE, player);
+                explosiveGrenade.FuseTime = Vector3.Distance(pos, player.Position) > 7f ? 1f : 5f;
+        
+                explosiveGrenade.Projectile.Rigidbody.linearVelocity = lVoloc;
+                explosiveGrenade.SpawnActive(pos, player);
+            }
         }
     }
 }

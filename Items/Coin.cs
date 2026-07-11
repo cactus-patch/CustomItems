@@ -120,6 +120,12 @@ namespace ExtendedItems.Items
                         }
                     }
                 });
+            ev.IsAllowed = false;
+            
+            Timing.CallDelayed(5f, () =>
+            {
+                ev.IsAllowed = true;
+            });
         }
 
         private static void OnRoleChanging(ChangingRoleEventArgs ev)
