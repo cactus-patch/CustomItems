@@ -3,63 +3,60 @@ using Exiled.API.Interfaces;
 using ExtendedItems.Items;
 using InventorySystem.Items.Firearms.Attachments;
 
-namespace ExtendedItems
+namespace ExtendedItems;
+
+public class Config : IConfig
 {
-    public class Config : IConfig
-    {
-        public bool IsEnabled { get; set; } = true;
-        public bool Debug { get; set; } = true;
+    public bool IsEnabled { get; set; } = true;
+    public bool Debug { get; set; } = true;
 
-        #region Config Settings
+    #region Config Settings
 
-        [Description("Weather the Tranq is effective on Tutorials")]
-        public bool EffectiveOnTutorials { get; set; } = false;
-        
-        [Description("Weather the Tranq is still useable when Nuke is on")]
-        public AttachmentName[] ForcedSniperAttch { get; set; } = [AttachmentName.MuzzleBrake, AttachmentName.RecoilReducingStock, AttachmentName.RifleBody];
-        
-        [Description("The Distance from Larry a player can be before they can no longer use SCP-1499")]
-        public float LarryDistance { get; set; } = 10f;
-        
-        [Description("Ammount of ammo to remove when Grenade Launcher is fired (Can not be negitive)")]
-        public ushort GrenadeLauncherAmmoUsage { get; set; } = 10;
+    [Description("Weather the Tranq is effective on Tutorials")]
+    public bool EffectiveOnTutorials { get; set; } = false;
 
-        [Description("The possable hints shown when you Win")]
-        public string[] WinHints { get; set; } =
-        [
-            "Long Live the King",
-            "Use Force",
-            "Utilize Might",
-            "Life to the Ruler",
-            "Be Brave",
-            "The Savior is here",
-            "The end is never near",
-        ];
+    [Description("Weather the Tranq is still useable when Nuke is on")]
+    public AttachmentName[] ForcedSniperAttch { get; set; } =
+        [AttachmentName.MuzzleBrake, AttachmentName.RecoilReducingStock, AttachmentName.RifleBody];
 
-        [Description("List of possible causes of death when the coin lands on tails")]
-        public string[] LoseCauses { get; set; } =
-        [
-            "Silence",
-            "Quiet",
-            "Don't Look",
-            "Look Away",
-            "Death to the King",
-            "Death to the Ruler",
-            "The End",
-        ];
+    [Description("The Distance from Larry a player can be before they can no longer use SCP-1499")]
+    public float LarryDistance { get; set; } = 10f;
+    
+    [Description("The possable hints shown when you Win")]
+    public string[] WinHints { get; set; } =
+    [
+        "Long Live the King",
+        "Use Force",
+        "Utilize Might",
+        "Life to the Ruler",
+        "Be Brave",
+        "The Savior is here",
+        "The end is never near"
+    ];
 
-        #endregion
+    [Description("List of possible causes of death when the coin lands on tails")]
+    public string[] LoseCauses { get; set; } =
+    [
+        "Silence",
+        "Quiet",
+        "Don't Look",
+        "Look Away",
+        "Death to the King",
+        "Death to the Ruler",
+        "The End"
+    ];
 
-        #region Custom Items setup
+    #endregion
 
-        public Coin Coin { get; set; } = new();
-        public Scp1499 Scp1499 { get; set; } = new();
-        public GrenadeLauncher GrenadeLauncher { get; set; } = new();
-        public Sniper Sniper { get; set; } = new();
-        public Tranquilizer Tranquilizer { get; set; } = new();
-        public Plastic Plastic { get; set; } = new();
-        public GLShot GLShot { get; set; } = new();
+    #region Custom Items setup
 
-        #endregion
-    }
+    public Coin Coin { get; set; } = new();
+    public Scp1499 Scp1499 { get; set; } = new();
+    public GrenadeLauncher GrenadeLauncher { get; set; } = new();
+    public Sniper Sniper { get; set; } = new();
+    public Tranquilizer Tranquilizer { get; set; } = new();
+    public Plastic Plastic { get; set; } = new();
+    public GLShot GLShot { get; set; } = new();
+
+    #endregion
 }

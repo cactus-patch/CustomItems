@@ -14,8 +14,9 @@ public class GLShot : CustomGrenade
 
     public override SpawnProperties? SpawnProperties { get; set; } = new()
     {
-        Limit = 0,
+        Limit = 0
     };
+
     public override bool ExplodeOnCollision { get; set; } = false;
     public override float FuseTime { get; set; } = 1000;
 }

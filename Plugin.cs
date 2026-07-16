@@ -3,56 +3,59 @@ using Exiled.API.Features;
 using Exiled.CustomItems.API.Features;
 using UnityEngine;
 using UserSettings.ServerSpecific;
+using Map = Exiled.Events.Handlers.Map;
 
-namespace ExtendedItems
+namespace ExtendedItems;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+public class Plugin : Plugin<Config>
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    public class Plugin : Plugin<Config>
+    public static Plugin? Instance;
+
+    public static EventHandler? _event;
+
+    private List<ServerSpecificSettingBase>? _settings;
+    public override string Name => "Extended Items";
+    public override string Author => "Noobest1001";
+    public override Version Version => new(4, 0, 0, 1);
+    public override Version RequiredExiledVersion => new(9, 14, 2);
+
+    public override void OnEnabled()
     {
-        public static Plugin? Instance;
+        Instance = this;
+        _event = new EventHandler();
 
-        public static EventHandler? _event;
+        Ssss.Register();
 
-        private List<ServerSpecificSettingBase>? _settings;
-        public override string Prefix => "Extended Items";
-        public override string Name => "Extended Items";
-        public override string Author => "Noobest1001";
-        public override Version Version => new(4, 0, 0, 0);
-        public override Version RequiredExiledVersion => new(9, 7, 0);
+        Log.Send("Registering items", LogLevel.Info, ConsoleColor.DarkYellow);
+        CustomItem.RegisterItems(overrideClass: Config);
 
-        public override void OnEnabled()
-        {
-            Instance = this;
-            _event = new EventHandler(Instance);
+        _settings =
+        [
+            new SSGroupHeader(10, "Cactus Patch"),
+            new SSKeybindSetting(24, "C4 Detonation", KeyCode.Delete, hint: "Explodes all C4 placed by you")
+        ];
 
-            Ssss.Register();
+        ServerSpecificSettingsSync.DefinedSettings = _settings.ToArray();
 
-            Log.Send("Registering items", LogLevel.Info, ConsoleColor.DarkYellow);
-            CustomItem.RegisterItems(overrideClass: Config);
+        Map.ExplodingGrenade += EventHandler.OnGrenadeExploding;
 
-            _settings =
-            [
-                new SSGroupHeader(10, "Extended Items"),
-                new SSKeybindSetting(24, "C4 Detonation", KeyCode.Delete, hint: "Explodes all C4 placed by you"),
-            ];
+        base.OnEnabled();
+    }
 
-            ServerSpecificSettingsSync.DefinedSettings = _settings.ToArray();
+    public override void OnDisabled()
+    {
+        Map.ExplodingGrenade -= EventHandler.OnGrenadeExploding;
 
-            base.OnEnabled();
-        }
+        Log.Send("Unregistering items", LogLevel.Info, ConsoleColor.DarkYellow);
+        CustomItem.UnregisterItems();
 
-        public override void OnDisabled()
-        {
-            Log.Send("Unregistering items", LogLevel.Info, ConsoleColor.DarkYellow);
-            CustomItem.UnregisterItems();
+        Ssss.Unregister();
 
-            Ssss.Unregister();
+        _settings = null;
+        _event = null;
+        Instance = null;
 
-            _settings = null;
-            _event = null;
-            Instance = null;
-
-            base.OnDisabled();
-        }
+        base.OnDisabled();
     }
 }
