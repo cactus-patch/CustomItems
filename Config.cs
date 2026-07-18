@@ -9,8 +9,12 @@ public class Config : IConfig
 {
     public bool IsEnabled { get; set; } = true;
     public bool Debug { get; set; } = true;
+    public bool EasterEggs { get; set; } = false;
 
     #region Config Settings
+    
+    [Description("How Common Easter Eggs are")]
+    public float EasterEggsChance { get; set; } = 0.01f;
 
     [Description("Weather the Tranq is effective on Tutorials")]
     public bool EffectiveOnTutorials { get; set; } = false;
