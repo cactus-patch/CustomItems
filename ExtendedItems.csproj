@@ -46,6 +46,9 @@
       <Reference Include="Facepunch.Steamworks.Posix">
         <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Facepunch.Steamworks.Posix.dll</HintPath>
       </Reference>
+      <Reference Include="Facepunch.Steamworks.Win64">
+        <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
+      </Reference>
       <Reference Include="Interop">
         <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Interop.dll</HintPath>
       </Reference>
@@ -106,9 +109,6 @@
       <Reference Include="System.Net.Http">
         <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\System.Net.Http.dll</HintPath>
       </Reference>
-      <Reference Include="System.Numerics.Vectors">
-        <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\System.Numerics.Vectors.dll</HintPath>
-      </Reference>
       <Reference Include="System.Runtime">
         <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\System.Runtime.dll</HintPath>
       </Reference>
@@ -126,9 +126,6 @@
       </Reference>
       <Reference Include="System.Text.Json">
         <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\System.Text.Json.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Threading.Tasks.Extensions">
-        <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\System.Threading.Tasks.Extensions.dll</HintPath>
       </Reference>
       <Reference Include="System.Transactions">
         <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\System.Transactions.dll</HintPath>
@@ -415,10 +412,6 @@
       <Reference Include="zxing">
         <HintPath>..\..\..\..\mnt\games\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\zxing.dll</HintPath>
       </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Sounds\" />
     </ItemGroup>
 
 </Project>

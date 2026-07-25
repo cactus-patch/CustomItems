@@ -64,64 +64,72 @@ public class Coin : CustomItem
     private void OnFlippingCoin(FlippingCoinEventArgs ev)
     {
         if (!Check(ev.Item)) return;
-
-        Timing.CallDelayed(2f,
-            () =>
-            {
-                if (ev.IsTails)
+        if (ev.IsAllowed)
+        {
+            Timing.CallDelayed(2f,
+                () =>
                 {
-                    if (ev.Player.ActiveEffects.Any(targetActiveEffect =>
-                            targetActiveEffect.name == nameof(EffectType.AntiScp207)))
+                    if (ev.IsTails)
                     {
-                        Log.Debug($"{ev.Player.Nickname} had Anti-207");
-                        ev.Player.Explode(ProjectileType.FragGrenade, ev.Player);
-                    }
-                    else
-                    {
-                        Log.Debug("Coin Landed on tails");
-                        ev.Player.Scale = Vector3.zero;
-                        Log.Debug($"Scaling {ev.Player.Nickname} to zero");
-
-                        // ReSharper disable once InconsistentNaming
-                        var _temp = Plugin.Instance?.Config.LoseCauses.RandomItem() ??
-                                    "<Error: Coin Reason Not Found>";
-
-                        var cause = _temp.Any(char.IsWhiteSpace)
-                            ? $"the words {_temp} are etched into the scalp"
-                            : $"the word {_temp} is etched in the scalp";
-                        Ragdoll.CreateAndSpawn(ev.Player.Role.Type,
-                            ev.Player.DisplayNickname,
-                            new CustomReasonDamageHandler(cause),
-                            ev.Player.Position,
-                            ev.Player.Rotation,
-                            ev.Player);
-
-                        ev.Player.IsGodModeEnabled = false;
-
-                        Log.Debug("Spawning Grenade");
-                        Utils.Exploding(ev.Player);
-                        ev.Player.Kill(cause);
-                    }
-                }
-                else
-                {
-                    ev.Player.ShowHint($"{Plugin.Instance?.Config.WinHints.RandomItem()}");
-
-                    if (ev.Player.Health + ev.Player.ArtificialHealth < ev.Player.MaxHealth / 2)
-                        ev.Player.AddRegeneration(duration: 10, rate: 5);
-                    else
-                        Effects.ForEach(effect =>
+                        if (ev.Player.ActiveEffects.Any(targetActiveEffect =>
+                                targetActiveEffect.name == nameof(EffectType.AntiScp207)))
                         {
-                            ev.Player.EnableEffect(effect.Type,
-                                effect.Intensity,
-                                effect.Duration,
-                                true);
-                        });
-                }
-            });
-        ev.IsAllowed = false;
+                            Log.Debug($"{ev.Player.Nickname} had Anti-207");
+                            ev.Player.Explode(ProjectileType.FragGrenade, ev.Player);
+                        }
+                        else
+                        {
+                            Log.Debug("Coin Landed on tails");
+                            ev.Player.Scale = Vector3.zero;
+                            Log.Debug($"Scaling {ev.Player.Nickname} to zero");
 
-        Timing.CallDelayed(5f, () => { ev.IsAllowed = true; });
+                            // ReSharper disable once InconsistentNaming
+                            var _temp = Plugin.Instance?.Config.LoseCauses.RandomItem() ??
+                                        "<Error: Coin Reason Not Found>";
+
+                            var cause = _temp.Any(char.IsWhiteSpace)
+                                ? $"the words {_temp} are etched into the scalp"
+                                : $"the word {_temp} is etched in the scalp";
+                            Ragdoll.CreateAndSpawn(ev.Player.Role.Type,
+                                ev.Player.DisplayNickname,
+                                new CustomReasonDamageHandler(cause),
+                                ev.Player.Position,
+                                ev.Player.Rotation,
+                                ev.Player);
+
+                            ev.Player.IsGodModeEnabled = false;
+
+                            Log.Debug("Spawning Grenade");
+                            Utils.Exploding(ev.Player);
+                            ev.Player.Kill(cause);
+                        }
+                    }
+                    else
+                    {
+                        ev.Player.ShowHint($"{Plugin.Instance?.Config.WinHints.RandomItem()}");
+
+                        if (ev.Player.Health + ev.Player.ArtificialHealth < ev.Player.MaxHealth / 2)
+                            ev.Player.AddRegeneration(duration: 10, rate: 5);
+                        else
+                            Effects.ForEach(effect =>
+                            {
+                                ev.Player.EnableEffect(effect.Type,
+                                    effect.Intensity,
+                                    effect.Duration,
+                                    true);
+                            });
+                    }
+                });
+            ev.IsAllowed = false;
+
+            Timing.CallDelayed(5f, () => { ev.IsAllowed = true; });
+        }
+        else
+        {
+            ev.Player.ShowHint("Wait", 1f);
+        }
+
+       
     }
 
     private static void OnRoleChanging(ChangingRoleEventArgs ev)

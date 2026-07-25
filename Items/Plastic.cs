@@ -9,11 +9,13 @@ using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Map;
 using Exiled.Events.EventArgs.Player;
-using Exiled.Events.EventArgs.Server;
 using InventorySystem.Items.ThrowableProjectiles;
+using LabApi.Events.Arguments.ServerEvents;
 using UnityEngine;
 // shortcuted imports
 using PlayerEvent = Exiled.Events.Handlers.Player;
+using Random = System.Random;
+using RoundEndedEventArgs = Exiled.Events.EventArgs.Server.RoundEndedEventArgs;
 using ServerEvent = Exiled.Events.Handlers.Server;
 
 
@@ -43,43 +45,33 @@ public class Plastic : CustomGrenade
     private static Dictionary<ushort, Player> Charges { get; } = [];
     public static Plastic Instance { get; private set; } = null!;
 
+    public readonly int Limit = 1;
+    
     public override SpawnProperties? SpawnProperties { get; set; } = new()
     {
-        Limit = 1,
-        LockerSpawnPoints =
-        [
-            new LockerSpawnPoint
-            {
-                Chance = 50,
-                Zone = ZoneType.LightContainment,
-                Type = LockerType.Scp500Pedestal,
-                UseChamber = true
-            },
-            new LockerSpawnPoint
-            {
-                Chance = 4,
-                Zone = ZoneType.HeavyContainment,
-                Type = LockerType.Scp500Pedestal,
-                UseChamber = true
-            },
-            new LockerSpawnPoint
-            {
-                Chance = 1,
-                Type = LockerType.AntiScp207Pedestal,
-                UseChamber = true
-            },
-            new LockerSpawnPoint
-            {
-                Chance = 45,
-                Zone = ZoneType.HeavyContainment,
-                Type = LockerType.LargeGun,
-                UseChamber = true
-            }
-        ]
+        Limit = 0,
     };
 
     public override ItemType Type { get; set; } = ItemType.GrenadeHE;
 
+    private readonly Dictionary<LockerType, int> Fallback = new() { {LockerType.Scp500Pedestal, 70}, {LockerType.AntiScp207Pedestal, 1}, {LockerType.LargeGun, 39}};
+
+    protected int[] NormalizeC4()
+    {
+        var NonNormalized = Plugin.Instance.Config.C4Spawns.Values.ToArray();
+        var Max = NonNormalized.Sum();
+        int[] Normalized = new int[NonNormalized.Length];
+        int x = 0;
+        
+        foreach (var chance in NonNormalized)
+        {
+            Normalized[x] =  chance / Max;
+        }
+        Random rand = new();
+        double Roll = rand.NextDouble() * Max;
+        
+    }
+    
     public void Handler(Pickup? charge, C4RemoveMethod method = C4RemoveMethod.Drop, Player? detonator = null)
     {
         if (charge is null) return;

@@ -19,7 +19,7 @@ public static class Utils
     /// <param name="roomType"></param>
     /// <param name="localPos"></param>
     /// <returns>Vector3</returns>
-    public static UnityEngine.Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos)
+    public static Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos)
     {
         var room = Room.Get(roomType);
 

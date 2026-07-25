@@ -17,7 +17,7 @@ public class Plugin : Plugin<Config>
     private List<ServerSpecificSettingBase>? _settings;
     public override string Name => "Extended Items";
     public override string Author => "Noobest1001";
-    public override Version Version => new(4, 0, 0, 1);
+    public override Version Version => new(4, 0, 0);
     public override Version RequiredExiledVersion => new(9, 14, 2);
 
     public override void OnEnabled()

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Exiled.API.Enums;
 using Exiled.API.Interfaces;
 using ExtendedItems.Items;
 using InventorySystem.Items.Firearms.Attachments;
@@ -13,8 +14,8 @@ public class Config : IConfig
 
     #region Config Settings
     
-    [Description("How Common Easter Eggs are")]
-    public float EasterEggsChance { get; set; } = 0.01f;
+    // [Description("How Common Easter Eggs are")]
+    // public float EasterEggsChance { get; set; } = 0.01f;
 
     [Description("Weather the Tranq is effective on Tutorials")]
     public bool EffectiveOnTutorials { get; set; } = false;
@@ -23,6 +24,9 @@ public class Config : IConfig
     public AttachmentName[] ForcedSniperAttch { get; set; } =
         [AttachmentName.MuzzleBrake, AttachmentName.RecoilReducingStock, AttachmentName.RifleBody];
 
+    [Description("The Places and Chance a C4 can Spawn")]
+    public Dictionary<LockerType, int> C4Spawns { get; set; } = new() { {LockerType.Scp500Pedestal, 70}, {LockerType.AntiScp207Pedestal, 1}, {LockerType.LargeGun, 39}};
+    
     [Description("The Distance from Larry a player can be before they can no longer use SCP-1499")]
     public float LarryDistance { get; set; } = 10f;
     
@@ -56,11 +60,12 @@ public class Config : IConfig
 
     public Coin Coin { get; set; } = new();
     public Scp1499 Scp1499 { get; set; } = new();
-    public GrenadeLauncher GrenadeLauncher { get; set; } = new();
+    // public GLShot GLShot { get; set; } = new();
+    // public GrenadeLauncher GrenadeLauncher { get; set; } = new();
     public Sniper Sniper { get; set; } = new();
     public Tranquilizer Tranquilizer { get; set; } = new();
     public Plastic Plastic { get; set; } = new();
-    public GLShot GLShot { get; set; } = new();
+    
 
     #endregion
 }
