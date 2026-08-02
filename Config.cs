@@ -29,6 +29,18 @@ public class Config : IConfig
     
     [Description("The Distance from Larry a player can be before they can no longer use SCP-1499")]
     public float LarryDistance { get; set; } = 10f;
+
+    [Description("The color that glows from where SCP-1289 is")]
+    public string SCP1289Color { get; set; } = "White";
+
+    [Description("How long it takes for the glow effect to start around SCP-1289 (in seconds)")]
+    public float SCP1289Timer { get; set; } = 10f;
+
+    [Description("How far should the Hint light for SCP-1289 should reach")]
+    public float SCP1289LightRange { get; set; } = 10f;
+
+    [Description("How long it take for the glow effect to reach full intensity (in seconds)")]
+    public float TimeToFullGlow { get; set; } = 60f;
     
     [Description("The possable hints shown when you Win")]
     public string[] WinHints { get; set; } =

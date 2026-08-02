@@ -2,10 +2,12 @@
 using Exiled.API.Enums;
 using Exiled.API.Features.Items;
 using Exiled.API.Features.Pickups.Projectiles;
+using MEC;
 using PlayerRoles;
 using UnityEngine;
 using EP = Exiled.API.Features.Player;
 using Item = Exiled.API.Features.Items.Item;
+using LightSourceToy = LabApi.Features.Wrappers.LightSourceToy;
 using Pickup = Exiled.API.Features.Pickups.Pickup;
 using Room = Exiled.API.Features.Room;
 
@@ -96,6 +98,73 @@ public static class Utils
 
             explosiveGrenade.Projectile.Rigidbody.linearVelocity = lVoloc;
             explosiveGrenade.SpawnActive(pos, player);
+        }
+    }
+
+    // For when the Coin hasn't been picked up for a set amount of time
+    public static void CoinHintHandler(Pickup pickup, out CoroutineHandle handle)
+    {
+        var glowCoroutine = Timing.RunCoroutine(CoinCoroutine(pickup));
+        handle = glowCoroutine;
+    }
+
+    private static Color ParseConfigColor()
+    {
+        var color = Plugin.Instance.Config.SCP1289Color;
+        var fallback = Color.white;
+        if (color[0] == '#')
+            try
+            {
+                var temp = Enumerable.Range(1, color.Length)
+                    .Where(x => x % 2 == 0)
+                    .Select(x => Convert.ToByte(color.Substring(x, 2), 16))
+                    .ToArray();
+                fallback = new Color(temp[0], temp[1], temp[2]);
+            }
+            catch (Exception e)
+            {
+                return fallback;
+            }
+        else
+            switch (color.ToLower())
+            {
+                case "red":
+                    return Color.red;
+                case "yellow":
+                    return Color.yellow;
+                case "green":
+                    return Color.green;
+                case "blue":
+                    return Color.blue;
+                case "cyan":
+                    return Color.cyan;
+                case "magenta":
+                    return Color.magenta;
+                case "black":
+                    return Color.black;
+                case "gray":
+                    return Color.gray;
+            }
+
+        return fallback;
+    }
+
+    private static IEnumerator<float> CoinCoroutine(Pickup pickup)
+    {
+        yield return Timing.WaitForSeconds(Plugin.Instance.Config.SCP1289Timer);
+        var intensity = 0;
+        var light = LightSourceToy.Create(new Vector3(0, 0, 0), pickup.Rotation, pickup.Transform, false);
+        light.Color = ParseConfigColor();
+        light.Range = Plugin.Instance.Config.SCP1289LightRange;
+        light.Type = LightType.Tube;
+        light.ShadowStrength = .5f;
+        light.
+
+        while (intensity != 100)
+        {
+            light.Intensity = intensity;
+            yield return Timing.WaitForSeconds(Plugin.Instance.Config.TimeToFullGlow / 100);
+            intensity++;
         }
     }
 }

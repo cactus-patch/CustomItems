@@ -1,5 +1,5 @@
 ﻿using Exiled.Events.EventArgs.Map;
-using LabApi.Events.Arguments.PlayerEvents;
+using MapGeneration.Distributors;
 
 namespace ExtendedItems;
 
@@ -20,4 +20,9 @@ public class EventHandler()
     //     }
     //     ev.Locker.Base._deniedBeep = 
     // }
+
+    public void OnStructureSpawn(ItemDistributor ev)
+    {
+        ev.PlaceSpawnables();
+    }
 }

@@ -2,6 +2,7 @@ using System.ComponentModel;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
+using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
@@ -20,6 +21,7 @@ public class Coin : CustomItem
     public override uint Id { get; set; } = 4;
     public override string Description { get; set; } = "<i>\"What's the most you ever lost on a coin toss?\"</i>";
     public override float Weight { get; set; } = 1f;
+    private CoroutineHandle _handler;
 
     public override SpawnProperties? SpawnProperties { get; set; } = new()
     {
@@ -39,10 +41,10 @@ public class Coin : CustomItem
     [Description("Effects to give if coin landed on heads.")]
     private static CoinEffect[] Effects =>
     [
-        new() { Type = EffectType.DamageReduction, Duration = 15, Intensity = 75 },
+        new() { Type = EffectType.DamageReduction, Duration = 15, Intensity = 20 },
         new() { Type = EffectType.RainbowTaste, Duration = 15, Intensity = byte.MaxValue },
         new() { Type = EffectType.Invigorated, Duration = 15, Intensity = byte.MaxValue },
-        new() { Type = EffectType.MovementBoost, Duration = 15, Intensity = 75 }
+        new() { Type = EffectType.MovementBoost, Duration = 15, Intensity = 25 }
     ];
 
     protected override void SubscribeEvents()
@@ -130,6 +132,18 @@ public class Coin : CustomItem
         }
 
        
+    }
+
+    protected override void OnDroppingItem(DroppingItemEventArgs ev)
+    {
+        Utils.CoinHintHandler(ev.Item.CreatePickup(ev.Player.Position, ev.Player.Rotation, false), out _handler);
+        base.OnDroppingItem(ev);
+    }
+
+    protected override void OnAcquired(Player player, Item item, bool displayMessage)
+    {
+        if (_handler.IsValid) Timing.KillCoroutines(_handler);
+        base.OnAcquired(player, item, displayMessage);
     }
 
     private static void OnRoleChanging(ChangingRoleEventArgs ev)

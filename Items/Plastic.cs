@@ -10,7 +10,7 @@ using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Map;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.ThrowableProjectiles;
-using LabApi.Events.Arguments.ServerEvents;
+using MapGeneration.Distributors;
 using UnityEngine;
 // shortcuted imports
 using PlayerEvent = Exiled.Events.Handlers.Player;
@@ -54,24 +54,45 @@ public class Plastic : CustomGrenade
 
     public override ItemType Type { get; set; } = ItemType.GrenadeHE;
 
-    private readonly Dictionary<LockerType, int> Fallback = new() { {LockerType.Scp500Pedestal, 70}, {LockerType.AntiScp207Pedestal, 1}, {LockerType.LargeGun, 39}};
+    private readonly Dictionary<LockerType, int> _c4Spawns = Plugin.Instance.Config.C4Spawns ??
+                                                             new Dictionary<LockerType, int>
+                                                             {
+                                                                 { LockerType.Scp500Pedestal, 70 },
+                                                                 { LockerType.AntiScp207Pedestal, 1 },
+                                                                 { LockerType.LargeGun, 39 }
+                                                             };
 
-    protected int[] NormalizeC4()
+    protected LockerType NormalizeC4()
     {
-        var NonNormalized = Plugin.Instance.Config.C4Spawns.Values.ToArray();
-        var Max = NonNormalized.Sum();
-        int[] Normalized = new int[NonNormalized.Length];
+        var nonNormalized = Plugin.Instance.Config.C4Spawns.Values.ToArray();
+        var Max = nonNormalized.Sum();
+        var Normalized = new int[nonNormalized.Length];
         int x = 0;
         
-        foreach (var chance in NonNormalized)
-        {
-            Normalized[x] =  chance / Max;
-        }
         Random rand = new();
-        double Roll = rand.NextDouble() * Max;
-        
+
+        double Roll = rand.Next(0, Max);
+        foreach (KeyValuePair<LockerType, int> place in _c4Spawns)
+        {
+            if (Roll < place.Value) return place.Key;
+
+            Roll -= place.Value;
+        }
+
+        foreach (var locker in Locker.)
+
+            return LockerType.Scp500Pedestal;
     }
-    
+
+    private void OnSpawningItem(SpawningItemEventArgs ev)
+    {
+    }
+
+    public override Pickup? Spawn(Vector3 position, Player? previousOwner = null)
+    {
+        return base.Spawn(position, previousOwner);
+    }
+
     public void Handler(Pickup? charge, C4RemoveMethod method = C4RemoveMethod.Drop, Player? detonator = null)
     {
         if (charge is null) return;
