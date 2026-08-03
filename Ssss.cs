@@ -22,7 +22,9 @@ public class Ssss
             new HeaderSetting(10, "Cactus Patch", "o/", true),
             new KeybindSetting(24, "C4 Detonation", KeyCode.Delete, hintDescription: "Explodes all C4 placed by you")
         ];
-        SettingBase.Register(_settings.ToArray());
+        SettingBase.Register([
+            .. _settings
+        ]);
     }
 
     public static void Unregister()

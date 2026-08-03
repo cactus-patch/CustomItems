@@ -12,6 +12,7 @@ using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.ThrowableProjectiles;
 using MapGeneration.Distributors;
 using UnityEngine;
+
 // shortcuted imports
 using PlayerEvent = Exiled.Events.Handlers.Player;
 using Random = System.Random;
@@ -79,18 +80,14 @@ public class Plastic : CustomGrenade
             Roll -= place.Value;
         }
 
-        foreach (var locker in Locker.)
+        foreach (var locker in Locker)
 
             return LockerType.Scp500Pedestal;
     }
 
     private void OnSpawningItem(SpawningItemEventArgs ev)
     {
-    }
-
-    public override Pickup? Spawn(Vector3 position, Player? previousOwner = null)
-    {
-        return base.Spawn(position, previousOwner);
+        
     }
 
     public void Handler(Pickup? charge, C4RemoveMethod method = C4RemoveMethod.Drop, Player? detonator = null)

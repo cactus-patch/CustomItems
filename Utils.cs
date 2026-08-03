@@ -15,6 +15,7 @@ namespace ExtendedItems;
 
 public static class Utils
 {
+    private static Dictionary<LightSourceToy, ushort> Lights = [];
     /// <summary>
     ///     Calculates the global coords of a point inside a room based on the room type and the location
     /// </summary>
@@ -154,17 +155,23 @@ public static class Utils
         yield return Timing.WaitForSeconds(Plugin.Instance.Config.SCP1289Timer);
         var intensity = 0;
         var light = LightSourceToy.Create(new Vector3(0, 0, 0), pickup.Rotation, pickup.Transform, false);
+        Lights.Add(light, pickup.Serial);
+        
         light.Color = ParseConfigColor();
         light.Range = Plugin.Instance.Config.SCP1289LightRange;
         light.Type = LightType.Tube;
         light.ShadowStrength = .5f;
-        light.
-
+        light.Intensity = intensity;
+        light.Parent = pickup.Transform;
+        
+        light.Spawn();
+       
         while (intensity != 100)
         {
             light.Intensity = intensity;
             yield return Timing.WaitForSeconds(Plugin.Instance.Config.TimeToFullGlow / 100);
             intensity++;
         }
+        
     }
 }
