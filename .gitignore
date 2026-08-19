@@ -8,4 +8,3 @@ refs/
 *.user
 .sln
 .vs/
-./ExtendedItems.csproj

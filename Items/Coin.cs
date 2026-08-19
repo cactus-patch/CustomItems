@@ -2,26 +2,40 @@ using System.ComponentModel;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
-using Exiled.API.Features.Items;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
+using ExtendedItems.API.Interface;
 using ExtendedItems.Types;
+using LabApi.Features.Wrappers;
 using MEC;
 using PlayerStatsSystem;
 using UnityEngine;
+using Item = Exiled.API.Features.Items.Item;
+using Pickup = Exiled.API.Features.Pickups.Pickup;
+using Player = Exiled.API.Features.Player;
 using PlayerEvents = Exiled.Events.Handlers.Player;
+using Ragdoll = Exiled.API.Features.Ragdoll;
 
 namespace ExtendedItems.Items;
 
 [CustomItem(ItemType.Coin)]
-public class Coin : CustomItem
+public class Coin : CustomItem, IGlowEffect
 {
+    // Exiled's API 🤮 (all jokes)
     public override string Name { get; set; } = "SCP-1289";
     public override uint Id { get; set; } = 4;
     public override string Description { get; set; } = "<i>\"What's the most you ever lost on a coin toss?\"</i>";
     public override float Weight { get; set; } = 1f;
+
+    // My API for shits and giggles :)
+    public Pickup? Parent { get; set; }
+    public byte Intensity { get; set; } = 0;
+    public byte LightId { get; init; }
+
+
     private CoroutineHandle _handler;
+    internal LightSourceToy? _lightSourceToy;
 
     public override SpawnProperties? SpawnProperties { get; set; } = new()
     {
@@ -38,6 +52,31 @@ public class Coin : CustomItem
         ]
     };
 
+    public void Create(Pickup pickup)
+    {
+        LightId =
+            _lightSourceToy = LightSourceToy.Create(pickup.Transform, false);
+    }
+
+    public void Remove(Pickup pickup)
+    {
+        _lightSourceToy?.Destroy();
+    }
+
+    ~Coin()
+    {
+        if (Parent is not null) Remove(Parent);
+        Parent = null;
+        if (_handler.IsValid) Timing.KillCoroutines(_handler);
+        _handler = default;
+    }
+
+    public override Pickup? Spawn(Vector3 position, Player? previousOwner = null)
+    {
+        Parent = base.Spawn(position, previousOwner);
+        return Parent;
+    }
+
     [Description("Effects to give if coin landed on heads.")]
     private static CoinEffect[] Effects =>
     [
@@ -51,6 +90,7 @@ public class Coin : CustomItem
     {
         PlayerEvents.FlippingCoin += OnFlippingCoin;
         PlayerEvents.ChangingRole += OnRoleChanging;
+        PlayerEvents.ItemAdded += ItemAdded;
 
         base.SubscribeEvents();
     }
@@ -59,8 +99,15 @@ public class Coin : CustomItem
     {
         PlayerEvents.FlippingCoin -= OnFlippingCoin;
         PlayerEvents.ChangingRole -= OnRoleChanging;
+        PlayerEvents.ItemAdded -= ItemAdded;
 
         base.UnsubscribeEvents();
+    }
+
+    private void ItemAdded(ItemAddedEventArgs ev)
+    {
+        if (!Check(ev.Item)) return;
+        Utils.RemoveLight(ev.Item.CreatePickup(ev.Player.Position, ev.Player.Rotation, false));
     }
 
     private void OnFlippingCoin(FlippingCoinEventArgs ev)
@@ -78,6 +125,7 @@ public class Coin : CustomItem
                         {
                             Log.Debug($"{ev.Player.Nickname} had Anti-207");
                             ev.Player.Explode(ProjectileType.FragGrenade, ev.Player);
+                            ev.Player.DisableEffect(EffectType.AntiScp207);
                         }
                         else
                         {
@@ -130,25 +178,50 @@ public class Coin : CustomItem
         {
             ev.Player.ShowHint("Wait", 1f);
         }
-
-       
     }
 
     protected override void OnDroppingItem(DroppingItemEventArgs ev)
     {
-        Utils.CoinHintHandler(ev.Item.CreatePickup(ev.Player.Position, ev.Player.Rotation, false), out _handler);
+        if (!Check(ev.Item)) return;
+        CoinHintHandler(ev.Item.CreatePickup(ev.Player.Position, ev.Player.Rotation, false), out _handler);
         base.OnDroppingItem(ev);
     }
 
     protected override void OnAcquired(Player player, Item item, bool displayMessage)
     {
+        if (!Check(item)) return;
         if (_handler.IsValid) Timing.KillCoroutines(_handler);
+        _lightSourceToy.Destroy();
         base.OnAcquired(player, item, displayMessage);
     }
 
-    private static void OnRoleChanging(ChangingRoleEventArgs ev)
+    private void OnRoleChanging(ChangingRoleEventArgs ev)
     {
         ev.Player.Scale = Vector3.one;
         ev.Player.DisableAllEffects();
+    }
+
+    private static IEnumerator<float> CoinCoroutine(Pickup pickup)
+    {
+        yield return Timing.WaitForSeconds(Plugin.Instance.Config.SCP1289Timer);
+        var intensity = 0;
+        var light = LightSourceToy.Create(pickup.Position, pickup.Rotation, pickup.Transform, false);
+        light.Color = Utils.ParseConfigColor();
+        light.Range = Plugin.Instance.Config.SCP1289LightRange;
+        light.Type = LightType.Tube;
+        light.ShadowStrength = .5f;
+
+        while (intensity != 100)
+        {
+            light.Intensity = intensity;
+            yield return Timing.WaitForSeconds(Plugin.Instance.Config.TimeToFullGlow / 100);
+            intensity++;
+        }
+    }
+
+    private static void CoinHintHandler(Pickup pickup, out CoroutineHandle handle)
+    {
+        var glowCoroutine = Timing.RunCoroutine(CoinCoroutine(pickup));
+        handle = glowCoroutine;
     }
 }

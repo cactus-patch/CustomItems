@@ -1,28 +1,19 @@
-﻿using Exiled.Events.EventArgs.Map;
-using MapGeneration.Distributors;
+using Exiled.API.Enums;
+using Exiled.Events.EventArgs.Map;
 
 namespace ExtendedItems;
 
-public class EventHandler()
+public class EventHandler
 {
-    // private Random random = new();
-    // private bool HasProperFolder =  Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,".."));
     public static void OnGrenadeExploding(ExplodingGrenadeEventArgs ev)
     {
         foreach (var player in ev.TargetsToAffect.ToArray()) Utils.Grenade_Damage(ev.Projectile, player);
     }
 
-    // public void OnLockerOpen(PlayerInteractedLockerEventArgs ev)
-    // {
-    //     if (!Plugin.Instance.Config.EasterEggs)
-    //     {
-    //         return;
-    //     }
-    //     ev.Locker.Base._deniedBeep = 
-    // }
-
-    public void OnStructureSpawn(ItemDistributor ev)
+    public void OnFillingLockers(FillingLockerEventArgs ev)
     {
-        ev.PlaceSpawnables();
+        if (ev.Pickup.Type == ItemType.GrenadeHE)
+            ev.Chamber.RequiredPermissions = KeycardPermissions.ArmoryLevelThree |
+                                             KeycardPermissions.ContainmentLevelTwo | KeycardPermissions.ExitGates;
     }
 }

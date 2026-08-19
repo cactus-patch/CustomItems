@@ -9,21 +9,20 @@ using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Map;
 using Exiled.Events.EventArgs.Player;
+using ExtendedItems.API.Interface;
 using InventorySystem.Items.ThrowableProjectiles;
-using MapGeneration.Distributors;
 using UnityEngine;
+using Map = Exiled.Events.Handlers.Map;
 
-// shortcuted imports
+// shortened imports
 using PlayerEvent = Exiled.Events.Handlers.Player;
-using Random = System.Random;
 using RoundEndedEventArgs = Exiled.Events.EventArgs.Server.RoundEndedEventArgs;
 using ServerEvent = Exiled.Events.Handlers.Server;
-
 
 namespace ExtendedItems.Items;
 
 [CustomItem(ItemType.GrenadeHE)]
-public class Plastic : CustomGrenade
+public class Plastic : CustomGrenade, IGlowEffect
 {
     public enum C4RemoveMethod
     {
@@ -40,54 +39,59 @@ public class Plastic : CustomGrenade
 
     public override uint Id { get; set; } = 6;
     public override float Weight { get; set; } = 1.5f;
+    public override SpawnProperties? SpawnProperties { get; set; }
     public override bool ExplodeOnCollision { get; set; } = false;
     public override float FuseTime { get; set; } = 10800f;
     public static Dictionary<Pickup, Player> PlacedCharges { get; } = [];
     private static Dictionary<ushort, Player> Charges { get; } = [];
-    public static Plastic Instance { get; private set; } = null!;
 
-    public readonly int Limit = 1;
+    // ReSharper disable once RedundantDefaultMemberInitializer
+    public static Plastic? Instance { get; private set; } = null!;
+
+    private Vector3 _toSpawn;
     
-    public override SpawnProperties? SpawnProperties { get; set; } = new()
+    public readonly int Limit = 1;
+
+    public SpawnProperties? SpawnPoints { get; set; } = new()
     {
         Limit = 0,
+        LockerSpawnPoints =
+        {
+            new LockerSpawnPoint
+            {
+                Type = LockerType.Scp500Pedestal,
+                Chance = 70
+            },
+            new LockerSpawnPoint
+            {
+                Type = LockerType.AntiScp207Pedestal,
+                Chance = 1
+            },
+            new LockerSpawnPoint
+            {
+                Type = LockerType.LargeGun,
+                Chance = 39
+            }
+        }
     };
 
     public override ItemType Type { get; set; } = ItemType.GrenadeHE;
 
-    private readonly Dictionary<LockerType, int> _c4Spawns = Plugin.Instance.Config.C4Spawns ??
-                                                             new Dictionary<LockerType, int>
-                                                             {
-                                                                 { LockerType.Scp500Pedestal, 70 },
-                                                                 { LockerType.AntiScp207Pedestal, 1 },
-                                                                 { LockerType.LargeGun, 39 }
-                                                             };
+    private readonly Dictionary<Vector3, float> _c4Spawns = Utils.GetSpawnLocations(Instance?.SpawnPoints);
 
-    protected LockerType NormalizeC4()
+    private void OnFillingLocker(FillingLockerEventArgs ev)
     {
-        var nonNormalized = Plugin.Instance.Config.C4Spawns.Values.ToArray();
-        var Max = nonNormalized.Sum();
-        var Normalized = new int[nonNormalized.Length];
-        int x = 0;
-        
-        Random rand = new();
-
-        double Roll = rand.Next(0, Max);
-        foreach (KeyValuePair<LockerType, int> place in _c4Spawns)
+        if (ev.Chamber is null || ev.Pickup is null)
         {
-            if (Roll < place.Value) return place.Key;
-
-            Roll -= place.Value;
+            return;
         }
 
-        foreach (var locker in Locker)
-
-            return LockerType.Scp500Pedestal;
-    }
-
-    private void OnSpawningItem(SpawningItemEventArgs ev)
-    {
-        
+        Utils.NormalizeLockerSpawns(_c4Spawns, out _toSpawn);
+        if (ev.Locker.Position == _toSpawn)
+        {
+            ev.IsAllowed = false;
+            if (TryGet(6, out var item)) item?.Spawn(ev.Locker.Position);
+        }
     }
 
     public void Handler(Pickup? charge, C4RemoveMethod method = C4RemoveMethod.Drop, Player? detonator = null)
@@ -115,7 +119,7 @@ public class Plastic : CustomGrenade
                 charge.Destroy();
                 break;
             }
-            case C4RemoveMethod.Drop: //This looks ugly af...  what the fuck Microsoft
+            case C4RemoveMethod.Drop: //This looks ugly af... what the fuck Microsoft
             default:
             {
                 TrySpawn(Id, charge.Position, out _);
@@ -131,6 +135,8 @@ public class Plastic : CustomGrenade
     {
         Instance = this;
 
+        Map.FillingLocker += OnFillingLocker;
+
         PlayerEvent.Destroying += OnDestroying;
         PlayerEvent.Died += OnDied;
         PlayerEvent.Shooting += OnShooting;
@@ -142,12 +148,16 @@ public class Plastic : CustomGrenade
 
     protected override void UnsubscribeEvents()
     {
+        Map.FillingLocker -= OnFillingLocker;
+        
         PlayerEvent.Destroying -= OnDestroying;
         PlayerEvent.Died -= OnDied;
         PlayerEvent.Shooting -= OnShooting;
 
         ServerEvent.RoundEnded -= OnRoundEnded;
 
+        Instance = null;
+        
         base.UnsubscribeEvents();
     }
 
@@ -159,6 +169,7 @@ public class Plastic : CustomGrenade
 
     protected override void OnThrownProjectile(ThrownProjectileEventArgs ev)
     {
+        if (!Check(ev.Item)) return;
         Log.Debug("Executing OnThrownProjectile method.");
         if (!PlacedCharges.ContainsKey(ev.Projectile))
         {
@@ -179,17 +190,21 @@ public class Plastic : CustomGrenade
 
     private void OnDestroying(DestroyingEventArgs ev)
     {
-        Log.Debug("Executing OnDestoying method.");
+        Log.Debug("Executing OnDestroying method.");
         foreach (KeyValuePair<Pickup, Player> charge in PlacedCharges.ToList()
                      .Where(charge => charge.Value == ev.Player))
+        {
             Handler(charge.Key, C4RemoveMethod.Remove);
+        }
     }
 
     private void OnDied(DiedEventArgs ev)
     {
         foreach (KeyValuePair<Pickup, Player> charge in PlacedCharges.ToList()
                      .Where(charge => charge.Value == ev.Player))
+        {
             Handler(charge.Key);
+        }
     }
 
     private void OnShooting(ShootingEventArgs ev)
@@ -197,11 +212,13 @@ public class Plastic : CustomGrenade
         var forward = ev.Player.CameraTransform.forward;
 
         if (!Physics.Raycast(ev.Player.CameraTransform.position + forward, forward, out var hit, 500))
+        {
             return;
+        }
 
         var grenade = hit.collider.gameObject.GetComponentInParent<EffectGrenade>();
 
-        if (grenade == null) return;
+        if (grenade is null) return;
         if (PlacedCharges.ContainsKey(Pickup.Get(grenade))) Handler(Pickup.Get(grenade), C4RemoveMethod.Remove);
     }
 

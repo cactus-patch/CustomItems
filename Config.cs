@@ -41,6 +41,9 @@ public class Config : IConfig
 
     [Description("How long it take for the glow effect to reach full intensity (in seconds)")]
     public float TimeToFullGlow { get; set; } = 60f;
+
+    [Description("Wether a player that is shot in the head with Sniper when they have heavy armor will have 207?")]
+    public bool HeadRemove207 { get; set; } = true;
     
     [Description("The possable hints shown when you Win")]
     public string[] WinHints { get; set; } =

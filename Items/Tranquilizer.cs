@@ -21,9 +21,8 @@ namespace ExtendedItems.Items;
 public class Tranquilizer : CustomWeapon
 {
     [YamlIgnore] private readonly Dictionary<uint, float> _resistances = [];
-
-
     [YamlIgnore] private readonly Random _rng = new();
+    
     public override string Name { get; set; } = "Tranquilizer";
     public override uint Id { get; set; } = 1;
 
@@ -78,10 +77,11 @@ public class Tranquilizer : CustomWeapon
 
     protected override void OnShot(ShotEventArgs ev)
     {
+        if (!Check(ev.Item)) return;
         if (ev.Target == null || Plugin.Instance == null) return;
         if (ev.Target.IsTutorial && !Plugin.Instance.Config.EffectiveOnTutorials) return;
 
-        if (!Utils.HasEffect(ev.Target, EffectType.Invigorated)) return;
+        if (ev.Player.ActiveEffects.Any(effect => effect.name != "Invigorated")) return;
 
 
         var rand = _rng.NextDouble();
@@ -114,17 +114,17 @@ public class Tranquilizer : CustomWeapon
         }
         else
         {
-            if (ev.Target.Role != RoleTypeId.Scp106)
-                ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname,
-                    new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation,
-                    ev.Target);
-
             if (ev.Target.Role == RoleTypeId.Scp096)
             {
                 var crybaby = (Scp096Role)ev.Target.Role;
                 if (crybaby.RageState is Scp096RageState.Enraged or Scp096RageState.Distressed)
                     crybaby.RageManager.ServerEndEnrage();
             }
+
+            if (ev.Target.Role != RoleTypeId.Scp106)
+                ragdoll = Ragdoll.CreateAndSpawn(ev.Target.Role.Type, ev.Target.DisplayNickname,
+                    new CustomReasonDamageHandler("Tranquilized."), ev.Target.Position, ev.Target.Rotation,
+                    ev.Target);
         }
 
         Timing.CallDelayed(5, () =>
@@ -134,11 +134,13 @@ public class Tranquilizer : CustomWeapon
             ev.Target.DisableEffect(EffectType.Ensnared);
             ev.Target.DisableEffect(EffectType.Flashed);
             ev.Target.DisableEffect(EffectType.Deafened);
-            ev.Target.DisableEffect(EffectType.AmnesiaItems);
+            if (ev.Player.IsHuman) ev.Target.DisableEffect(EffectType.AmnesiaItems);
             ev.Target.DisableEffect(EffectType.DamageReduction);
 
-            if (lift != null) ev.Target.Teleport(lift.Position + Vector3.up * 2f);
-            else ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f);
+            if (lift is not null)
+                ev.Target.Teleport(lift.Position + Vector3.up * 2f);
+            else
+                ev.Target.Teleport(ev.Target.Position + Vector3.up * 2f);
             ev.Target.Scale = Vector3.one;
             ragdoll?.Destroy();
         });

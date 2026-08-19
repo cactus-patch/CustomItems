@@ -1,14 +1,16 @@
-﻿using System.ComponentModel;
-using Exiled.API.Enums;
+﻿using Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.API.Features.Items;
+using Exiled.API.Features.Lockers;
 using Exiled.API.Features.Pickups.Projectiles;
+using Exiled.API.Features.Spawn;
 using MEC;
-using PlayerRoles;
 using UnityEngine;
 using EP = Exiled.API.Features.Player;
 using Item = Exiled.API.Features.Items.Item;
 using LightSourceToy = LabApi.Features.Wrappers.LightSourceToy;
 using Pickup = Exiled.API.Features.Pickups.Pickup;
+using Random = System.Random;
 using Room = Exiled.API.Features.Room;
 
 namespace ExtendedItems;
@@ -25,13 +27,10 @@ public static class Utils
     public static Vector3 GetGlobalCords(RoomType roomType, Vector3 localPos)
     {
         var room = Room.Get(roomType);
-
-        var rotation = room.Rotation;
         var roomPos = room.Position;
+        var quarterTurns = Mathf.RoundToInt(room.Rotation.eulerAngles.y / 90f) % 4;
 
-        var offsetY = Math.Round(Math.Abs(rotation.eulerAngles.y / 90f));
-
-        return offsetY switch
+        return quarterTurns switch
         {
             0 => new Vector3(roomPos.x + localPos.x, roomPos.y + localPos.y, roomPos.z + localPos.z),
             1 => new Vector3(roomPos.x + localPos.z, roomPos.y + localPos.y, roomPos.z - localPos.x),
@@ -41,31 +40,13 @@ public static class Utils
         };
     }
 
-    // ReSharper disable once InconsistentNaming
-    public static bool PDWarning(EP player)
-    {
-        return (player.ActiveEffects
-            // ReSharper disable once InconsistentNaming
-            .Select(actEffects => new { actEffects, Larry = EP.List.First(L => L.Role == RoleTypeId.Scp106).Position })
-            .Select(@t =>
-                @t.actEffects.name == "Corroding" && Plugin.Instance != null &&
-                Vector3.Distance(player.Position, @t.Larry) < Plugin.Instance.Config.LarryDistance)).FirstOrDefault();
-    }
-
     public static void Exploding(EP player)
     {
         var grenade = (ExplosiveGrenade)Item.Create(ItemType.GrenadeHE);
         grenade.FuseTime = 0.1f;
         grenade.SpawnActive(player.Position + new Vector3(0, 1, 0), player);
     }
-
-    public static bool HasEffect(EP player, EffectType effect)
-    {
-        return !Enum.IsDefined(typeof(EffectType), effect)
-            ? throw new InvalidEnumArgumentException(nameof(effect), (int)effect, typeof(EffectType))
-            : player.ActiveEffects.Any(targetActiveEffect => targetActiveEffect.name == nameof(effect));
-    }
-
+    
     public static void Grenade_Damage(EffectGrenadeProjectile grenade, EP player)
     {
         if (Vector3.Distance(grenade.Position, player.Position) <= 4)
@@ -77,7 +58,7 @@ public static class Utils
                 else if (player.IsHuman) player.Hurt(grenade.PreviousOwner, 150, armorPenetration: 50);
             }
         }
-        else if (Physics.Raycast(grenade.Position, player.Position, out var hit, 20, (int)LayerMasks.Grenade))
+        else if (Physics.Raycast(grenade.Position, player.Position, out _, 20, (int)LayerMasks.Grenade))
         {
             player.Hurt(player, 25, armorPenetration: 50);
         }
@@ -109,8 +90,41 @@ public static class Utils
         handle = glowCoroutine;
     }
 
-    private static Color ParseConfigColor()
+    internal static void NormalizeLockerSpawns(Dictionary<Vector3, float> spawns, out Vector3 toSpawn)
     {
+        var totalWeight = spawns.Values.Sum();
+        var random = new Random();
+
+        var roll = random.Next(0, (int)totalWeight);
+        Vector3? selectedLockerType = Locker.Random(lockerType: LockerType.Scp500Pedestal)?.Position;
+
+        foreach (KeyValuePair<Vector3, float> spawn in spawns)
+        {
+            if (roll < spawn.Value)
+            {
+                selectedLockerType = spawn.Key;
+                break;
+            }
+
+            roll = (int)Mathf.Round(roll - spawn.Value);
+        }
+
+        Locker[] matchingLockers = Locker.List
+            .Where(locker => locker.Position == selectedLockerType)
+            .ToArray();
+
+        if (matchingLockers.Length == 0)
+        {
+            toSpawn = Vector3.zero;
+            return;
+        }
+
+        toSpawn = matchingLockers[random.Next(0, matchingLockers.Length)].Position;
+    }
+
+    internal static Color ParseConfigColor()
+    {
+        if (Plugin.Instance is null) return Color.white;
         var color = Plugin.Instance.Config.SCP1289Color;
         var fallback = Color.white;
         if (color[0] == '#')
@@ -122,7 +136,7 @@ public static class Utils
                     .ToArray();
                 fallback = new Color(temp[0], temp[1], temp[2]);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return fallback;
             }
@@ -150,28 +164,62 @@ public static class Utils
         return fallback;
     }
 
+    internal static Dictionary<Vector3, float> GetSpawnLocations(SpawnProperties? spawnProperties)
+    {
+        if (spawnProperties is null)
+        {
+            Log.Warn("SpawnProperties is null.");
+            return new Dictionary<Vector3, float>();
+        }
+
+        Dictionary<Vector3, float> spawnLocations = spawnProperties.LockerSpawnPoints
+            .TakeWhile(lockerSpawnPoints => lockerSpawnPoints.Chance != 0f).ToDictionary(
+                lockerSpawnPoints => lockerSpawnPoints.Position, lockerSpawnPoints => lockerSpawnPoints.Chance);
+        foreach (var dynamicSpawnLocation in spawnProperties.DynamicSpawnPoints)
+            spawnLocations.Add(dynamicSpawnLocation.Position + new Vector3(0, .5f, 0), dynamicSpawnLocation.Chance);
+
+        foreach (var roomSpawnLocation in spawnProperties.RoomSpawnPoints)
+            spawnLocations.Add(Room.Get(roomSpawnLocation.Room).Position + new Vector3(0, .5f, 0),
+                roomSpawnLocation.Chance);
+        foreach (var staticSpawnLocation in spawnProperties.StaticSpawnPoints)
+            spawnLocations.Add(staticSpawnLocation.Position + new Vector3(0, .5f, 0), staticSpawnLocation.Chance);
+
+        return spawnLocations;
+    }
+
     private static IEnumerator<float> CoinCoroutine(Pickup pickup)
     {
-        yield return Timing.WaitForSeconds(Plugin.Instance.Config.SCP1289Timer);
-        var intensity = 0;
-        var light = LightSourceToy.Create(new Vector3(0, 0, 0), pickup.Rotation, pickup.Transform, false);
-        Lights.Add(light, pickup.Serial);
-        
-        light.Color = ParseConfigColor();
-        light.Range = Plugin.Instance.Config.SCP1289LightRange;
-        light.Type = LightType.Tube;
-        light.ShadowStrength = .5f;
-        light.Intensity = intensity;
-        light.Parent = pickup.Transform;
-        
-        light.Spawn();
-       
-        while (intensity != 100)
+        if (Plugin.Instance != null)
         {
+            yield return Timing.WaitForSeconds(Plugin.Instance.Config.SCP1289Timer);
+            var intensity = 0;
+            var light = LightSourceToy.Create(new Vector3(0, 0, 0), pickup.Rotation, pickup.Transform, false);
+            Lights.Add(light, pickup.Serial);
+
+            light.Color = ParseConfigColor();
+            light.Range = Plugin.Instance.Config.SCP1289LightRange;
+            light.Type = LightType.Tube;
+            light.ShadowStrength = .5f;
             light.Intensity = intensity;
-            yield return Timing.WaitForSeconds(Plugin.Instance.Config.TimeToFullGlow / 100);
-            intensity++;
+            light.Parent = pickup.Transform;
+
+            light.Spawn();
+
+            while (intensity != 100)
+            {
+                light.Intensity = intensity;
+                yield return Timing.WaitForSeconds(Plugin.Instance.Config.TimeToFullGlow / 100);
+                intensity++;
+            }
         }
-        
+    }
+
+    internal static void RemoveLight(Pickup pickup)
+    {
+        if (Lights.ContainsKey(Lights.FirstOrDefault(light => light.Value == pickup.Serial).Key))
+        {
+            Lights.Remove(Lights.FirstOrDefault(light => light.Value == pickup.Serial).Key);
+            Lights.FirstOrDefault(light => light.Value == pickup.Serial).Key.Destroy();
+        }
     }
 }

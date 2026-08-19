@@ -5,7 +5,9 @@ using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
+using ExtendedItems.API.Interface;
 using MEC;
+using PlayerRoles;
 using UnityEngine;
 using YamlDotNet.Serialization;
 using PlayerEvents = Exiled.Events.Handlers.Player;
@@ -13,7 +15,7 @@ using PlayerEvents = Exiled.Events.Handlers.Player;
 namespace ExtendedItems.Items;
 
 [CustomItem(ItemType.SCP268)]
-public class Scp1499 : CustomItem
+public class Scp1499 : CustomItem, IGlowEffect
 {
     [Description("Room to teleport player to after using SCP-1499.")]
     // ReSharper disable once InconsistentNaming
@@ -35,29 +37,30 @@ public class Scp1499 : CustomItem
 
     public override SpawnProperties? SpawnProperties { get; set; } = new()
     {
-        Limit = 1,
-        LockerSpawnPoints =
-        [
-            new LockerSpawnPoint
-            {
-                Type = LockerType.Scp268Pedestal,
-                Chance = 50f,
-                Zone = ZoneType.HeavyContainment,
-                UseChamber = true
-            }
-        ]
+        Limit = 0
     };
 
     private void OnUsingItem(UsingItemEventArgs ev)
     {
         if (!Check(ev.Item)) return;
-        if (ev.Player.IsInPocketDimension || Utils.PDWarning(ev.Player))
+
+        if (ev.Player.IsInPocketDimension || IsBlockedByPocketDimensionRules(ev.Player))
         {
             ev.Player.ShowHint(
                 "You put on the gas mask but nothing happens.\nIt seems that this SCP item has its limits.");
             ev.IsAllowed = false;
             ev.Cooldown = 0.5f;
         }
+    }
+
+    private static bool IsBlockedByPocketDimensionRules(Player player)
+    {
+        if (Plugin.Instance is null || !player.ActiveEffects.Any(effect => effect.name == "Corroding"))
+            return false;
+
+        var scp106 = Player.List.FirstOrDefault(rolePlayer => rolePlayer.Role == RoleTypeId.Scp106);
+        return scp106 is not null &&
+               Vector3.Distance(player.Position, scp106.Position) < Plugin.Instance.Config.LarryDistance;
     }
 
     private void OnUsedItem(UsedItemEventArgs ev)
