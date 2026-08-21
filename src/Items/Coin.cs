@@ -5,12 +5,12 @@ using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
-using ExtendedItems.API.Interface;
 using ExtendedItems.Types;
 using LabApi.Features.Wrappers;
 using MEC;
 using PlayerStatsSystem;
 using UnityEngine;
+
 using Item = Exiled.API.Features.Items.Item;
 using Pickup = Exiled.API.Features.Pickups.Pickup;
 using Player = Exiled.API.Features.Player;
@@ -20,22 +20,15 @@ using Ragdoll = Exiled.API.Features.Ragdoll;
 namespace ExtendedItems.Items;
 
 [CustomItem(ItemType.Coin)]
-public class Coin : CustomItem, IGlowEffect
+public class Coin : CustomItem
 {
-    // Exiled's API 🤮 (all jokes)
     public override string Name { get; set; } = "SCP-1289";
     public override uint Id { get; set; } = 4;
     public override string Description { get; set; } = "<i>\"What's the most you ever lost on a coin toss?\"</i>";
     public override float Weight { get; set; } = 1f;
-
-    // My API for shits and giggles :)
-    public Pickup? Parent { get; set; }
-    public byte Intensity { get; set; } = 0;
-    public byte LightId { get; init; }
-
-
+    
     private CoroutineHandle _handler;
-    internal LightSourceToy? _lightSourceToy;
+    private LightSourceToy? _lightSourceToy;
 
     public override SpawnProperties? SpawnProperties { get; set; } = new()
     {
@@ -52,29 +45,11 @@ public class Coin : CustomItem, IGlowEffect
         ]
     };
 
-    public void Create(Pickup pickup)
-    {
-        LightId =
-            _lightSourceToy = LightSourceToy.Create(pickup.Transform, false);
-    }
-
-    public void Remove(Pickup pickup)
-    {
-        _lightSourceToy?.Destroy();
-    }
-
     ~Coin()
     {
-        if (Parent is not null) Remove(Parent);
-        Parent = null;
         if (_handler.IsValid) Timing.KillCoroutines(_handler);
+        _lightSourceToy = null;
         _handler = default;
-    }
-
-    public override Pickup? Spawn(Vector3 position, Player? previousOwner = null)
-    {
-        Parent = base.Spawn(position, previousOwner);
-        return Parent;
     }
 
     [Description("Effects to give if coin landed on heads.")]

@@ -9,7 +9,6 @@ using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Map;
 using Exiled.Events.EventArgs.Player;
-using ExtendedItems.API.Interface;
 using InventorySystem.Items.ThrowableProjectiles;
 using UnityEngine;
 using Map = Exiled.Events.Handlers.Map;
@@ -22,7 +21,7 @@ using ServerEvent = Exiled.Events.Handlers.Server;
 namespace ExtendedItems.Items;
 
 [CustomItem(ItemType.GrenadeHE)]
-public class Plastic : CustomGrenade, IGlowEffect
+public class Plastic : CustomGrenade
 {
     public enum C4RemoveMethod
     {
@@ -39,7 +38,10 @@ public class Plastic : CustomGrenade, IGlowEffect
 
     public override uint Id { get; set; } = 6;
     public override float Weight { get; set; } = 1.5f;
-    public override SpawnProperties? SpawnProperties { get; set; }
+    public override SpawnProperties? SpawnProperties { get; set; } = new()
+    {
+        Limit = 0
+    };
     public override bool ExplodeOnCollision { get; set; } = false;
     public override float FuseTime { get; set; } = 10800f;
     public static Dictionary<Pickup, Player> PlacedCharges { get; } = [];
@@ -89,6 +91,8 @@ public class Plastic : CustomGrenade, IGlowEffect
         Utils.NormalizeLockerSpawns(_c4Spawns, out _toSpawn);
         if (ev.Locker.Position == _toSpawn)
         {
+            ev.Chamber.RequiredPermissions = KeycardPermissions.ArmoryLevelThree |
+                                             KeycardPermissions.ContainmentLevelTwo | KeycardPermissions.ExitGates;
             ev.IsAllowed = false;
             if (TryGet(6, out var item)) item?.Spawn(ev.Locker.Position);
         }

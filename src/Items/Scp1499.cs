@@ -5,7 +5,6 @@ using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Player;
-using ExtendedItems.API.Interface;
 using MEC;
 using PlayerRoles;
 using UnityEngine;
@@ -15,7 +14,7 @@ using PlayerEvents = Exiled.Events.Handlers.Player;
 namespace ExtendedItems.Items;
 
 [CustomItem(ItemType.SCP268)]
-public class Scp1499 : CustomItem, IGlowEffect
+public class Scp1499 : CustomItem
 {
     [Description("Room to teleport player to after using SCP-1499.")]
     // ReSharper disable once InconsistentNaming

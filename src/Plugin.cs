@@ -39,6 +39,7 @@ public class Plugin : Plugin<Config>
         ServerSpecificSettingsSync.DefinedSettings = _settings.ToArray();
 
         Map.ExplodingGrenade += EventHandler.OnGrenadeExploding;
+        Map.FillingLocker += EventHandler.OnFillingLockers;
 
         base.OnEnabled();
     }
@@ -46,6 +47,7 @@ public class Plugin : Plugin<Config>
     public override void OnDisabled()
     {
         Map.ExplodingGrenade -= EventHandler.OnGrenadeExploding;
+        Map.FillingLocker -= EventHandler.OnFillingLockers;
 
         Log.Send("Unregistering items", LogLevel.Info, ConsoleColor.DarkYellow);
         CustomItem.UnregisterItems();

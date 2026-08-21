@@ -6,7 +6,6 @@ using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
-using ExtendedItems.API.Interface;
 using InventorySystem.Items.Firearms.Attachments;
 using PlayerRoles;
 using PlayerStatsSystem;
@@ -18,7 +17,7 @@ using ItemEvents = Exiled.Events.Handlers.Item;
 namespace ExtendedItems.Items;
 
 [CustomItem(ItemType.GunE11SR)]
-public class Sniper : CustomWeapon, IGlowEffect
+public class Sniper : CustomWeapon
 {
     public override uint Id { get; set; } = 2;
     public override string Name { get; set; } = "SR-118";
@@ -33,8 +32,12 @@ public class Sniper : CustomWeapon, IGlowEffect
     [YamlIgnore]
     public override AttachmentName[] Attachments { get; set; } =
     [
-        AttachmentName.LowcapMagAP, AttachmentName.Foregrip, AttachmentName.DotSight,
-        AttachmentName.RecoilReducingStock, AttachmentName.RifleBody, AttachmentName.MuzzleBrake
+        AttachmentName.LowcapMagAP,
+        AttachmentName.Foregrip,
+        AttachmentName.DotSight,
+        AttachmentName.RecoilReducingStock,
+        AttachmentName.RifleBody,
+        AttachmentName.MuzzleBrake
     ];
     
     public override SpawnProperties? SpawnProperties { get; set; } = new()

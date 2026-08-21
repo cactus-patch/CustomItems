@@ -10,10 +10,11 @@ public class EventHandler
         foreach (var player in ev.TargetsToAffect.ToArray()) Utils.Grenade_Damage(ev.Projectile, player);
     }
 
-    public void OnFillingLockers(FillingLockerEventArgs ev)
+    public static void OnFillingLockers(FillingLockerEventArgs ev)
     {
-        if (ev.Pickup.Type == ItemType.GrenadeHE)
-            ev.Chamber.RequiredPermissions = KeycardPermissions.ArmoryLevelThree |
-                                             KeycardPermissions.ContainmentLevelTwo | KeycardPermissions.ExitGates;
+        if (ev.Pickup.Type == ItemType.GunFRMG0)
+        {
+            ev.IsAllowed = false;
+        }
     }
 }
