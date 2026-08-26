@@ -20,7 +20,7 @@ namespace ExtendedItems.Items;
 [CustomItem(ItemType.GunCOM15)]
 public class Tranquilizer : CustomWeapon
 {
-    [YamlIgnore] private readonly Dictionary<uint, float> _resistances = [];
+    [YamlIgnore] private Dictionary<uint, float> _resistances = [];
     [YamlIgnore] private readonly Random _rng = new();
     
     public override string Name { get; set; } = "Tranquilizer";
@@ -56,7 +56,7 @@ public class Tranquilizer : CustomWeapon
             new RoomSpawnPoint { Room = RoomType.LczPlants, Chance = 75 }
         ]
     };
-
+    
     protected override void SubscribeEvents()
     {
         PlayerEvents.ChangingRole += OnChangingRole;
@@ -83,7 +83,8 @@ public class Tranquilizer : CustomWeapon
 
         if (ev.Player.ActiveEffects.Any(effect => effect.name != "Invigorated")) return;
 
-
+        ev.CanHurt = false;
+        
         var rand = _rng.NextDouble();
         _resistances.TryGetValue(ev.Target.NetId, out var tResistance);
 

@@ -6,7 +6,6 @@ using Exiled.API.Features.Pickups.Projectiles;
 using Exiled.API.Features.Spawn;
 using MEC;
 using UnityEngine;
-using EP = Exiled.API.Features.Player;
 using Item = Exiled.API.Features.Items.Item;
 using LightSourceToy = LabApi.Features.Wrappers.LightSourceToy;
 using Pickup = Exiled.API.Features.Pickups.Pickup;
@@ -18,6 +17,8 @@ namespace ExtendedItems;
 public static class Utils
 {
     private static Dictionary<LightSourceToy, ushort> Lights = [];
+    internal static bool[] PlayerShot = Enumerable.Repeat(false, 40).ToArray();
+    internal static Player?[] PlayersUsedCoin = Enumerable.Repeat<Player?>(null, 40).ToArray();
     /// <summary>
     ///     Calculates the global coords of a point inside a room based on the room type and the location
     /// </summary>
@@ -40,14 +41,14 @@ public static class Utils
         };
     }
 
-    public static void Exploding(EP player)
+    public static void Exploding(Player player)
     {
         var grenade = (ExplosiveGrenade)Item.Create(ItemType.GrenadeHE);
         grenade.FuseTime = 0.1f;
         grenade.SpawnActive(player.Position + new Vector3(0, 1, 0), player);
     }
-    
-    public static void Grenade_Damage(EffectGrenadeProjectile grenade, EP player)
+
+    public static void Grenade_Damage(EffectGrenadeProjectile grenade, Player player)
     {
         if (Vector3.Distance(grenade.Position, player.Position) <= 4)
         {
@@ -64,7 +65,7 @@ public static class Utils
         }
     }
 
-    public static void Explode(Pickup? grenade, EP player)
+    public static void Explode(Pickup? grenade, Player player)
     {
         if (grenade is null)
         {

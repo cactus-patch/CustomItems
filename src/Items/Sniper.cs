@@ -1,7 +1,7 @@
-using System.ComponentModel;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
+using Exiled.API.Features.Doors;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
@@ -73,60 +73,59 @@ public class Sniper : CustomWeapon
     {
         if (!Check(ev.Item) || Plugin.Instance is null || ev.Target is null) return;
         ev.CanHurt = false;
-        var raycast = Physics.Raycast(ev.Player.Position, ev.Player.Transform.forward, 100f,
-            LayerMask.GetMask("OnlyWorldOnlyWorldCollision", "Player"));
-        switch (raycast)
+        Physics.Raycast(ev.Player.Position, ev.Player.Transform.forward, out var hit, 100f);
+
+        var playerHit = Player.Get(hit.collider.gameObject);
+        HitboxType? hitbox = hit.collider.gameObject.GetComponent<HitboxIdentity>().HitboxType;
+        var doorHit = Door.Get(hit.collider.gameObject);
+
+        if (doorHit is null && playerHit is null) return;
+
+        if (playerHit is not null && Utils.PlayerShot[playerHit.Id])
         {
-            // ev.Target.Kill(new CustomReasonDamageHandler("A Large bullet wound observed in the head of " + ev.Target.Nickname));
-            // Respawn.GrantInfluence(ev.Player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 2);
-            // Respawn.AdvanceTimer(ev.Player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 8f);
-            case true when ev.Target.IsHuman:
-                switch (ev.Hitbox.HitboxType)
+            Utils.PlayerShot[playerHit.Id] = false;
+            playerHit.Kill(new CustomReasonDamageHandler("A Large bullet wound observed in the Head. Presumed to be " +
+                                                         playerHit.Nickname));
+            return;
+        }
+
+        // The switch case of fucking doom and despair
+
+        switch (playerHit is not null)
+        {
+            case true when playerHit!.IsHuman:
+                switch (hitbox)
                 {
-                    case Headshot or Limb or Body when HasEffect(ev.Target, EffectType.AntiScp207) &&
-                                                       Plugin.Instance.Config.HeadRemove207:
-                        ev.Target.DisableEffect(EffectType.AntiScp207);
-                        ev.Target.Health = 1;
-                        ev.Target.EnableEffect(EffectType.Concussed, 10f);
-                        ev.Target.EnableEffect(EffectType.Invigorated, 5f);
+                    case Headshot when (HasEffect(playerHit, EffectType.AntiScp207) &&
+                                        Plugin.Instance.Config.HeadRemove207) ||
+                                       (playerHit.CurrentArmor.Type == ItemType.ArmorHeavy &&
+                                        !Utils.PlayerShot[playerHit.Id]):
+
+                        SavingPlayer(playerHit);
                         break;
 
-                    case Headshot or Body or Limb when ev.Target.CurrentArmor.Type == ItemType.ArmorHeavy &&
-                                                       !HasEffect(ev.Target, EffectType.AntiScp207):
-                        ev.Target.Health = 1;
-                        ev.Target.EnableEffect(EffectType.Concussed, 10f);
-                        ev.Target.EnableEffect(EffectType.Invigorated, 5f);
+                    case Limb or Body when HasEffect(playerHit, EffectType.AntiScp207) ||
+                                           (playerHit.CurrentArmor.Type == ItemType.ArmorHeavy &&
+                                            !Utils.PlayerShot[playerHit.Id]):
+                        SavingPlayer(playerHit);
                         break;
 
-                    case Headshot:
-                        ev.Target.Kill(new CustomReasonDamageHandler(
-                            "A Large bullet wound observed in the Head. Presumed to be " + ev.Target.Nickname));
-                        Respawn.GrantInfluence(ev.Player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 2);
-                        Respawn.AdvanceTimer(ev.Player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 8f);
-                        break;
-
-                    case Body:
-                        ev.Target.Kill(new CustomReasonDamageHandler("A Large bullet wound observed in the Body of " +
-                                                                     ev.Target.Nickname));
-                        Respawn.GrantInfluence(ev.Player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 2);
-                        Respawn.AdvanceTimer(ev.Player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 8f);
-                        break;
                     default:
-                        ev.Target.Kill(new CustomReasonDamageHandler(
-                            "A Large section of flesh in an extremity observed on " + ev.Target.Nickname));
-                        Respawn.GrantInfluence(ev.Player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 2);
-                        Respawn.AdvanceTimer(ev.Player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 8f);
+                        KillPlayer(playerHit, hitbox);
                         break;
                 }
 
                 break;
 
-            case true when ev.Target.IsScp:
-                if (ev.Target.Role == RoleTypeId.Scp0492 && ev.Hitbox.HitboxType == Headshot)
-                    ev.Target.Hurt(ev.Player, 300, armorPenetration: 75);
+            case true when playerHit.IsScp:
+                if (playerHit.Role == RoleTypeId.Scp0492 && hitbox == Headshot)
+                    playerHit.Hurt(ev.Player, 300, armorPenetration: 75);
                 else
-                    ev.Target.Hurt(ev.Player, 150, armorPenetration: 75);
+                    playerHit.Hurt(ev.Player, 150, armorPenetration: 75);
                 break;
+
+            default:
+                return;
         }
 
         base.OnShot(ev);
@@ -134,9 +133,8 @@ public class Sniper : CustomWeapon
 
     private static bool HasEffect(Player player, EffectType effectType)
     {
-        return !Enum.IsDefined(typeof(EffectType), effectType)
-            ? throw new InvalidEnumArgumentException(nameof(effectType), (int)effectType, typeof(EffectType))
-            : player.ActiveEffects.Any(effect => effect.name == nameof(effectType));
+        return Enum.IsDefined(typeof(EffectType), effectType) &&
+               player.ActiveEffects.Any(effect => effect.name == nameof(effectType));
     }
 
     private void OnChangingAttachments(ChangingAttachmentsEventArgs ev)
@@ -144,13 +142,31 @@ public class Sniper : CustomWeapon
         if (!Check(ev.Item)) return;
 
         // ReSharper disable once InconsistentNaming
-        AttachmentName[] Monica = Plugin.Instance!.Config.ForcedSniperAttch;
-        AttachmentName[] subMonica = ev.NewAttachmentIdentifiers.Select(user => user.Name).ToArray();
+        AttachmentName[] forcedSniperAttch = Plugin.Instance!.Config.ForcedSniperAttch;
+        AttachmentName[] subForcedSniperAttch = ev.NewAttachmentIdentifiers.Select(user => user.Name).ToArray();
 
         // I hate this, but this is a way to do this, and I don't want to fuck with this anymore
-        ev.IsAllowed = subMonica.All(Monica.Contains) &&
-                       (Monica.Contains(AttachmentName.LowcapMagAP) || Monica.Contains(AttachmentName.LowcapMagJHP));
+        ev.IsAllowed = subForcedSniperAttch.All(forcedSniperAttch.Contains) &&
+                       (forcedSniperAttch.Contains(AttachmentName.LowcapMagAP) ||
+                        forcedSniperAttch.Contains(AttachmentName.LowcapMagJHP));
         ev.Player.AddAmmo(AmmoType.Nato556, (ushort)ev.Firearm.MagazineAmmo);
         ev.Firearm.MagazineAmmo = 0;
+    }
+
+    private static void SavingPlayer(Player player)
+    {
+        if (player.CurrentArmor.Type == ItemType.ArmorHeavy) Utils.PlayerShot[player.Id] = true;
+        else player.DisableEffect(EffectType.AntiScp207);
+        player.Health = 1;
+        player.EnableEffect(EffectType.Invigorated, 10f);
+        player.EnableEffect(EffectType.Concussed, 5f);
+    }
+
+    private static void KillPlayer(Player player, HitboxType? hitbox)
+    {
+        if (hitbox != null && !Enum.IsDefined(typeof(HitboxType), hitbox)) hitbox = Body;
+        player.Kill(new CustomReasonDamageHandler("A Large bullet wound observed in the " + nameof(hitbox)));
+        Respawn.GrantInfluence(player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 2);
+        Respawn.AdvanceTimer(player.IsNTF ? Faction.FoundationStaff : Faction.FoundationEnemy, 8f);
     }
 }

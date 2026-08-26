@@ -3,7 +3,6 @@ using Exiled.API.Features;
 using Exiled.CustomItems.API.Features;
 using UnityEngine;
 using UserSettings.ServerSpecific;
-using Map = Exiled.Events.Handlers.Map;
 
 namespace ExtendedItems;
 
@@ -23,7 +22,7 @@ public class Plugin : Plugin<Config>
     public override void OnEnabled()
     {
         Instance = this;
-        _event = new EventHandler();
+        _event = new EventHandler(this);
 
         Ssss.Register();
 
@@ -37,17 +36,13 @@ public class Plugin : Plugin<Config>
         ];
 
         ServerSpecificSettingsSync.DefinedSettings = _settings.ToArray();
-
-        Map.ExplodingGrenade += EventHandler.OnGrenadeExploding;
-        Map.FillingLocker += EventHandler.OnFillingLockers;
+        
 
         base.OnEnabled();
     }
 
     public override void OnDisabled()
     {
-        Map.ExplodingGrenade -= EventHandler.OnGrenadeExploding;
-        Map.FillingLocker -= EventHandler.OnFillingLockers;
 
         Log.Send("Unregistering items", LogLevel.Info, ConsoleColor.DarkYellow);
         CustomItem.UnregisterItems();

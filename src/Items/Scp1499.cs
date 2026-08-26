@@ -54,7 +54,8 @@ public class Scp1499 : CustomItem
 
     private static bool IsBlockedByPocketDimensionRules(Player player)
     {
-        if (Plugin.Instance is null || !player.ActiveEffects.Any(effect => effect.name == "Corroding"))
+        if (Plugin.Instance is null || player.ActiveEffects.IsEmpty() ||
+            player.ActiveEffects.All(effect => effect.name != "Corroding"))
             return false;
 
         var scp106 = Player.List.FirstOrDefault(rolePlayer => rolePlayer.Role == RoleTypeId.Scp106);

@@ -10,10 +10,7 @@ using LabApi.Features.Wrappers;
 using MEC;
 using PlayerStatsSystem;
 using UnityEngine;
-
-using Item = Exiled.API.Features.Items.Item;
 using Pickup = Exiled.API.Features.Pickups.Pickup;
-using Player = Exiled.API.Features.Player;
 using PlayerEvents = Exiled.Events.Handlers.Player;
 using Ragdoll = Exiled.API.Features.Ragdoll;
 
@@ -32,7 +29,7 @@ public class Coin : CustomItem
 
     public override SpawnProperties? SpawnProperties { get; set; } = new()
     {
-        Limit = 3,
+        Limit = 0,
         RoomSpawnPoints =
         [
             new RoomSpawnPoint { Room = RoomType.LczCafe, Chance = 50 },
@@ -127,6 +124,7 @@ public class Coin : CustomItem
                             Log.Debug("Spawning Grenade");
                             Utils.Exploding(ev.Player);
                             ev.Player.Kill(cause);
+                            Utils.PlayersUsedCoin[ev.Player.Id] = ev.Player;
                         }
                     }
                     else
@@ -155,20 +153,20 @@ public class Coin : CustomItem
         }
     }
 
-    protected override void OnDroppingItem(DroppingItemEventArgs ev)
-    {
-        if (!Check(ev.Item)) return;
-        CoinHintHandler(ev.Item.CreatePickup(ev.Player.Position, ev.Player.Rotation, false), out _handler);
-        base.OnDroppingItem(ev);
-    }
-
-    protected override void OnAcquired(Player player, Item item, bool displayMessage)
-    {
-        if (!Check(item)) return;
-        if (_handler.IsValid) Timing.KillCoroutines(_handler);
-        _lightSourceToy.Destroy();
-        base.OnAcquired(player, item, displayMessage);
-    }
+    // protected override void OnDroppingItem(DroppingItemEventArgs ev)
+    // {
+    //     if (!Check(ev.Item)) return;
+    //     CoinHintHandler(ev.Item.CreatePickup(ev.Player.Position, ev.Player.Rotation, false), out _handler);
+    //     base.OnDroppingItem(ev);
+    // }
+    //
+    // protected override void OnAcquired(Player player, Item item, bool displayMessage)
+    // {
+    //     if (!Check(item)) return;
+    //     if (_handler.IsValid) Timing.KillCoroutines(_handler);
+    //     _lightSourceToy.Destroy();
+    //     base.OnAcquired(player, item, displayMessage);
+    // }
 
     private void OnRoleChanging(ChangingRoleEventArgs ev)
     {
